@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ProxiGuard — 3D Spatial Digital Twin</title>
+<title>ProxiGuard — Modular Hardware Digital Twin & Spatial Telemetry</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,9 +13,10 @@
 
 <style>
 :root {
-  --bg: #07080c;
-  --surface: rgba(15, 18, 28, 0.75);
-  --surface-border: rgba(255, 255, 255, 0.07);
+  --bg: #05070a;
+  --surface: rgba(13, 16, 26, 0.78);
+  --surface-hover: rgba(22, 26, 42, 0.9);
+  --surface-border: rgba(255, 255, 255, 0.08);
   --surface-border-subtle: rgba(255, 255, 255, 0.03);
   
   --text-primary: #f8fafc;
@@ -23,9 +24,13 @@
   --text-tertiary: #475569;
   
   --accent-cyan: #38bdf8;
+  --accent-blue: #60a5fa;
   --accent-amber: #fbbf24;
   --accent-crimson: #f43f5e;
+  --accent-emerald: #34d399;
+  --arduino-teal: #008184;
   
+  --radius-xl: 28px;
   --radius-lg: 22px;
   --radius-md: 14px;
   --radius-sm: 8px;
@@ -41,13 +46,14 @@
 body {
   background-color: var(--bg);
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.06) 0%, transparent 60%),
-    radial-gradient(circle at 80% 90%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 85% 90%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 15% 65%, rgba(244, 63, 94, 0.03) 0%, transparent 40%);
   background-attachment: fixed;
   color: var(--text-primary);
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
-  padding: 16px 14px;
+  padding: 16px 12px;
   display: flex;
   justify-content: center;
   overflow-x: hidden;
@@ -56,13 +62,15 @@ body {
 
 .app-wrapper {
   width: 100%;
-  max-width: 680px;
+  max-width: 740px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
 }
 
-/* Glass Panel */
+/* Glass Panel Base */
 .glass-panel {
   background: var(--surface);
   backdrop-filter: blur(32px);
@@ -71,7 +79,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 20px;
   position: relative;
-  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
 }
 
 /* Nav Header */
@@ -89,19 +97,19 @@ header.nav-header {
 }
 
 .brand-badge {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(99, 102, 241, 0.15));
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(99, 102, 241, 0.16));
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .brand-badge svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   stroke: var(--accent-cyan);
 }
 
@@ -139,8 +147,8 @@ header.nav-header {
 }
 
 .status-dot.active {
-  background: #34d399;
-  box-shadow: 0 0 12px #34d399;
+  background: var(--accent-emerald);
+  box-shadow: 0 0 12px var(--accent-emerald);
 }
 
 .status-dot.warn {
@@ -153,8 +161,57 @@ header.nav-header {
   box-shadow: 0 0 14px var(--accent-crimson);
 }
 
-/* 3D VIEWPORT CONTAINER */
-.viewport-card {
+/* SAMSUNG ONE UI / APPLE STYLE CAROUSEL NAV */
+.sensor-carousel-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(13, 16, 26, 0.9);
+  padding: 5px;
+  border-radius: 24px;
+  border: 1px solid var(--surface-border);
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.carousel-pill {
+  flex: 1;
+  text-align: center;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.carousel-pill.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-pill.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pill-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* RED BOX: THE SENSOR PLAYGROUND CARD */
+.sensor-playground-card {
   padding: 0;
   overflow: hidden;
   position: relative;
@@ -162,7 +219,7 @@ header.nav-header {
   flex-direction: column;
 }
 
-.viewport-toolbar {
+.playground-toolbar {
   position: absolute;
   top: 14px;
   left: 14px;
@@ -174,10 +231,10 @@ header.nav-header {
   pointer-events: none;
 }
 
-.view-modes {
+.view-presets {
   display: flex;
   gap: 4px;
-  background: rgba(15, 18, 28, 0.85);
+  background: rgba(13, 16, 26, 0.88);
   backdrop-filter: blur(16px);
   padding: 4px;
   border-radius: 20px;
@@ -202,28 +259,28 @@ header.nav-header {
   color: #ffffff;
 }
 
-.orbit-hint {
+.orbit-badge {
   font-size: 11px;
   color: var(--text-tertiary);
-  background: rgba(15, 18, 28, 0.7);
+  background: rgba(13, 16, 26, 0.85);
   padding: 4px 10px;
   border-radius: 12px;
   border: 1px solid var(--surface-border-subtle);
   pointer-events: auto;
 }
 
-#threeCanvasContainer {
+#sensorCanvasContainer {
   width: 100%;
-  height: 340px;
+  height: 380px;
   position: relative;
   cursor: grab;
 }
 
-#threeCanvasContainer:active {
+#sensorCanvasContainer:active {
   cursor: grabbing;
 }
 
-/* HUD Overlay on 3D Viewport */
+/* HUD Overlay on Sensor Viewport */
 .hud-telemetry {
   position: absolute;
   bottom: 14px;
@@ -243,12 +300,12 @@ header.nav-header {
 
 .hud-num {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 54px;
+  font-size: 58px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -2px;
   color: #ffffff;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
 }
 
 .hud-unit {
@@ -263,7 +320,7 @@ header.nav-header {
   border-radius: 16px;
   font-size: 11px;
   font-weight: 600;
-  background: rgba(15, 18, 28, 0.85);
+  background: rgba(13, 16, 26, 0.88);
   backdrop-filter: blur(16px);
   border: 1px solid var(--surface-border);
   color: var(--text-secondary);
@@ -271,7 +328,179 @@ header.nav-header {
   transition: all 0.3s ease;
 }
 
-/* Controls Strip */
+/* ARDUINO UNO MOTHERBOARD & LIVE PIN INSPECTOR STAGE */
+.motherboard-stage-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stage-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+}
+
+.stage-title .board-tag {
+  background: rgba(0, 129, 132, 0.25);
+  color: #2dd4bf;
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+}
+
+#unoCanvasContainer {
+  width: 100%;
+  height: 280px;
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--surface-border-subtle);
+  background: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.6) 0%, rgba(5, 7, 10, 0.95) 100%);
+  cursor: grab;
+}
+
+#unoCanvasContainer:active {
+  cursor: grabbing;
+}
+
+/* Floating 3D Circuit Diagnostic Inspector Tooltip */
+#pinInspectorHUD {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(15, 20, 32, 0.94);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 260px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 20;
+}
+
+.inspector-pin-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inspector-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 2px 0;
+}
+
+.inspector-row span.val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* LIVE HARDWARE PIN & ELECTRICAL STATUS BAR */
+.hardware-strip {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 540px) {
+  .hardware-strip {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.hw-chip {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hw-chip::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent-cyan);
+}
+
+.hw-chip.power::before { background: #10b981; }
+.hw-chip.echo::before { background: #818cf8; }
+.hw-chip.wifi::before { background: #f59e0b; }
+
+.hw-label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.hw-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hw-sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+.micro-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+}
+
+.micro-dot.pulse {
+  animation: pulse-dot 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Controls Cluster */
 .controls-cluster {
   display: flex;
   gap: 8px;
@@ -303,7 +532,7 @@ header.nav-header {
 .ctrl-btn.active {
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.24);
 }
 
 .ctrl-btn svg {
@@ -491,7 +720,7 @@ footer.footer-note {
       </div>
       <div class="brand-titles">
         <h1>ProxiGuard 3D</h1>
-        <div class="sub">Hardware Digital Twin</div>
+        <div class="sub">Modular Hardware Digital Twin</div>
       </div>
     </div>
     
@@ -501,21 +730,37 @@ footer.footer-note {
     </div>
   </header>
 
-  <!-- 3D Hardware Viewport -->
-  <section class="glass-panel viewport-card">
-    <div class="viewport-toolbar">
-      <div class="view-modes">
-        <button class="view-btn active" data-view="iso">Isometric</button>
+  <!-- SAMSUNG-STYLE SENSOR CAROUSEL SWITCHER -->
+  <nav class="sensor-carousel-bar">
+    <button class="carousel-pill active">
+      <span class="pill-indicator" style="background:var(--accent-cyan);"></span>
+      <span>HC-SR04 Ultrasonic</span>
+    </button>
+    <button class="carousel-pill disabled" title="Expansion Slot 2 (Future Component)">
+      <span class="pill-indicator" style="background:#64748b;"></span>
+      <span>Slot 2: Expansion</span>
+    </button>
+    <button class="carousel-pill disabled" title="Expansion Slot 3 (Future Component)">
+      <span class="pill-indicator" style="background:#64748b;"></span>
+      <span>Slot 3: Expansion</span>
+    </button>
+  </nav>
+
+  <!-- RED BOX: DEDICATED SENSOR PLAYGROUND -->
+  <section class="glass-panel sensor-playground-card">
+    <div class="playground-toolbar">
+      <div class="view-presets">
+        <button class="view-btn active" data-view="iso">Isometric 3D</button>
         <button class="view-btn" data-view="top">Top View</button>
-        <button class="view-btn" data-view="front">Frontal</button>
+        <button class="view-btn" data-view="front">Sensor Front</button>
       </div>
-      <span class="orbit-hint">Touch &amp; Drag to Rotate 3D</span>
+      <span class="orbit-badge">Rotate &amp; Zoom 3D</span>
     </div>
 
-    <!-- WebGL Three.js Canvas Container -->
-    <div id="threeCanvasContainer"></div>
+    <!-- WebGL Three.js Sensor Stage -->
+    <div id="sensorCanvasContainer"></div>
 
-    <!-- HUD Overlay on 3D Viewport -->
+    <!-- Live Telemetry HUD -->
     <div class="hud-telemetry">
       <div class="hud-readout">
         <div id="distanceNumber" class="hud-num">--</div>
@@ -525,11 +770,73 @@ footer.footer-note {
     </div>
   </section>
 
+  <!-- YELLOW REGION: ARDUINO UNO MOTHERBOARD & LIVE PIN INSPECTOR STAGE -->
+  <section class="glass-panel motherboard-stage-card">
+    <div class="stage-header">
+      <div class="stage-title">
+        <span>Arduino Uno R3 Hardware Controller</span>
+        <span class="board-tag">ATmega328P</span>
+      </div>
+      <span style="font-size:11px; color:var(--text-tertiary);">Hover / Tap Any Pin</span>
+    </div>
+
+    <!-- 3D Motherboard Container -->
+    <div id="unoCanvasContainer">
+      <!-- Dynamic Floating Circuit Diagnostic Tooltip -->
+      <div id="pinInspectorHUD">
+        <div class="inspector-pin-title">
+          <span id="inspPinDot" class="micro-dot" style="background:#10b981;"></span>
+          <span id="inspPinName">PIN D9 [TRIG]</span>
+        </div>
+        <div class="inspector-row">
+          <span>Function</span>
+          <span id="inspPinRole" class="val">Ultrasonic Trigger</span>
+        </div>
+        <div class="inspector-row">
+          <span>Signal Level</span>
+          <span id="inspPinVolt" class="val">5.0V Active High</span>
+        </div>
+        <div class="inspector-row">
+          <span>State / Pulse</span>
+          <span id="inspPinState" class="val">10µs Burst @ 6.8 Hz</span>
+        </div>
+        <div class="inspector-row">
+          <span>Current Draw</span>
+          <span id="inspPinLoad" class="val">~15 mA Peak</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Hardware Electrical Strip -->
+  <section class="hardware-strip">
+    <div class="hw-chip power">
+      <span class="hw-label">VCC / Power</span>
+      <span class="hw-val"><span class="micro-dot" style="background:#10b981;"></span> 5.04 V</span>
+      <span class="hw-sub">Arduino USB Rail</span>
+    </div>
+    <div class="hw-chip">
+      <span class="hw-label">Pin 9 (TRIG)</span>
+      <span class="hw-val"><span class="micro-dot pulse"></span> 10 µs Pulse</span>
+      <span class="hw-sub">Active Ultrasonic Burst</span>
+    </div>
+    <div class="hw-chip echo">
+      <span class="hw-label">Pin 10 (ECHO)</span>
+      <span class="hw-val"><span class="micro-dot" style="background:#818cf8;"></span> Timing Read</span>
+      <span class="hw-sub">Pulse-Width Receiver</span>
+    </div>
+    <div class="hw-chip wifi">
+      <span class="hw-label">ESP-01 (UART)</span>
+      <span class="hw-val"><span class="micro-dot" style="background:#f59e0b;"></span> 3.3V Link</span>
+      <span class="hw-sub">D11(RX) / D12(TX)</span>
+    </div>
+  </section>
+
   <!-- Control Cluster -->
   <div class="controls-cluster">
-    <button id="btnAcoustic" class="ctrl-btn">
+    <button id="btnAcoustic" class="ctrl-btn active">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-      <span id="soundLabel">Acoustic Assist</span>
+      <span id="soundLabel">Cinematic Sonar: ON</span>
     </button>
     <button id="btnAutoRotate" class="ctrl-btn active">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 1 9 9h-3"></path></svg>
@@ -565,7 +872,7 @@ footer.footer-note {
   <section class="glass-panel chart-panel">
     <div class="chart-header">
       <span class="title">Continuous Waveform</span>
-      <span id="sourceTag" style="font-size:11px; color:var(--text-tertiary);">Wi-Fi Stream</span>
+      <span id="sourceTag" style="font-size:11px; color:var(--text-tertiary);">Live Stream</span>
     </div>
     <div class="chart-stage">
       <canvas id="chartCanvas"></canvas>
@@ -586,35 +893,35 @@ footer.footer-note {
   <!-- Event Feed -->
   <section class="glass-panel tuning-panel">
     <div class="chart-header">
-      <span class="title">Telemetry Events</span>
+      <span class="title">Hardware Events</span>
       <button id="btnClearFeed" style="background:none; border:none; color:var(--text-tertiary); font-size:11px; cursor:pointer;">Clear</button>
     </div>
     <ul id="eventFeed" class="event-feed">
       <li class="event-entry">
-        <span>3D Digital Twin engine initialized</span>
-        <span class="entry-time">Ready</span>
+        <span>Arduino Uno Controller &amp; HC-SR04 Sensor Digital Twins ready</span>
+        <span class="entry-time">Online</span>
       </li>
     </ul>
   </section>
 
   <footer class="footer-note">
-    ProxiGuard 3D Interactive Telemetry System
+    ProxiGuard Complete Modular Hardware Digital Twin
   </footer>
 
 </div>
 
 <script>
-// --- State ---
+// --- State & Config ---
 const state = {
   connected: false,
   rawDistance: null,
-  smoothDistance: 80, // Lerp target for 3D obstacle translation
+  smoothDistance: 80,
   prevDistance: null,
   prevTimestamp: performance.now(),
   velocity: 0,
   unit: 'cm',
   threshold: 30,
-  acoustic: false,
+  acoustic: true,
   autoRotate: true,
   minDist: null,
   maxDist: null,
@@ -623,310 +930,505 @@ const state = {
   lastZone: null,
   packetCount: 0,
   rateTimer: performance.now(),
-  sampleRate: 0
+  sampleRate: 0,
+  ledTxRxPulse: 0
 };
 
 const $ = id => document.getElementById(id);
 
-// --- 3D Three.js Digital Twin Engine ---
-let scene, camera, renderer, controls;
-let sensorGroup, obstacleGroup, wavesGroup;
-const waveRings = [];
+// --- Pinout Database for 3D Raycasting Inspector ---
+const PIN_DATA = {
+  "D9": { name: "PIN D9 [PWM/OUTPUT]", role: "HC-SR04 Trigger (TRIG)", volt: "5.0V Active High", state: "10 µs Pulse Burst @ ~7Hz", load: "~15 mA (Burst)", color: "#38bdf8" },
+  "D10": { name: "PIN D10 [INPUT]", role: "HC-SR04 Echo (ECHO)", volt: "5.0V Logic (High-Z)", state: "Pulse-Width Timing Input", load: "< 1 mA", color: "#818cf8" },
+  "D11": { name: "PIN D11 [RX]", role: "ESP8266 UTXD (SoftwareSerial)", volt: "3.3V Logic Input", state: "9600 Baud Data Ingestion", load: "< 1 mA", color: "#fbbf24" },
+  "D12": { name: "PIN D12 [TX]", role: "ESP8266 URXD (SoftwareSerial)", volt: "5.0V Logic Output", state: "9600 Baud Command Stream", load: "~2 mA", color: "#f59e0b" },
+  "5V": { name: "5V POWER RAIL", role: "Sensor Operating VCC", volt: "5.04 V DC Regulated", state: "Continuous Active", load: "~15 mA (HC-SR04)", color: "#10b981" },
+  "3V3": { name: "3.3V POWER RAIL", role: "ESP8266 Wi-Fi Rail", volt: "3.31 V DC External", state: "Continuous Active", load: "~80-140 mA (ESP-01)", color: "#2dd4bf" },
+  "GND": { name: "COMMON GROUND", role: "System Ground Reference", volt: "0.0 V (GND)", state: "Return Current Path", load: "Common Ground", color: "#64748b" },
+  "D2": { name: "PIN D2 [GPIO]", role: "Unassigned Expansion Slot", volt: "0.0V (High-Z)", state: "Available for Component Slot 2", load: "0 mA", color: "#94a3b8" },
+  "D3": { name: "PIN D3 [PWM]", role: "Unassigned Expansion Slot", volt: "0.0V (High-Z)", state: "Available for Component Slot 3", load: "0 mA", color: "#94a3b8" },
+  "A0": { name: "ANALOG A0", role: "Analog Input Channel", volt: "10-bit ADC Available", state: "Available for Sensor Reading", load: "0 mA", color: "#94a3b8" }
+};
 
-function init3D() {
-  const container = $("threeCanvasContainer");
-  const w = container.clientWidth;
-  const h = container.clientHeight;
-
-  // Scene
-  scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x07080c, 0.035);
-
-  // Camera
-  camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
-  camera.position.set(0, 12, 28);
-
-  // Renderer with Antialiasing
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setSize(w, h);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
-  container.appendChild(renderer.domElement);
-
-  // OrbitControls
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
-  controls.maxPolarAngle = Math.PI / 2 + 0.15;
-  controls.minDistance = 8;
-  controls.maxDistance = 50;
-  controls.target.set(0, 0, 5);
-
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0x1e293b, 1.2);
-  scene.add(ambientLight);
-
-  const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
-  keyLight.position.set(10, 16, 14);
-  scene.add(keyLight);
-
-  const rimLight = new THREE.DirectionalLight(0x38bdf8, 2.8);
-  rimLight.position.set(-14, -4, -10);
-  scene.add(rimLight);
-
-  const fillLight = new THREE.DirectionalLight(0x818cf8, 1.0);
-  fillLight.position.set(0, -10, 10);
-  scene.add(fillLight);
-
-  // Build Procedural 3D HC-SR04 Hardware Model
-  buildHCSR04Model();
-
-  // Build 3D Obstacle Target Surface
-  buildObstacleTarget();
-
-  // Build 3D Acoustic Wave Array
-  buildAcousticWaves();
-
-  // Grid Plane Reference
-  const gridHelper = new THREE.GridHelper(40, 20, 0x1e293b, 0x0f172a);
-  gridHelper.position.y = -2.2;
-  gridHelper.position.z = 10;
-  scene.add(gridHelper);
-
-  // Resize handler
-  window.addEventListener('resize', onWindowResize);
-}
-
-function buildHCSR04Model() {
-  sensorGroup = new THREE.Group();
-
-  // 1. PCB Baseboard (Dark Blue Fiberglass)
-  const pcbGeo = new THREE.BoxGeometry(9.0, 4.2, 0.4);
-  const pcbMat = new THREE.MeshStandardMaterial({
-    color: 0x0c2444, // Classic HC-SR04 dark blue
-    roughness: 0.55,
-    metalness: 0.15
-  });
-  const pcb = new THREE.Mesh(pcbGeo, pcbMat);
-  sensorGroup.add(pcb);
-
-  // PCB Corner Mounting Holes
-  const holeGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.5, 16);
-  const holeMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 }); // Gold plated ring
-  const holeOffsets = [
-    [-4.0, 1.6], [4.0, 1.6],
-    [-4.0, -1.6], [4.0, -1.6]
-  ];
-  holeOffsets.forEach(([x, y]) => {
-    const hMesh = new THREE.Mesh(holeGeo, holeMat);
-    hMesh.rotation.x = Math.PI / 2;
-    hMesh.position.set(x, y, 0);
-    sensorGroup.add(hMesh);
-  });
-
-  // 2. Dual Aluminum Ultrasonic Transducers (The iconic "Eyes")
-  const cylGeo = new THREE.CylinderGeometry(1.6, 1.6, 2.6, 32);
-  const alumMat = new THREE.MeshStandardMaterial({
-    color: 0xd8e2ec, // Brushed aluminum
-    metalness: 0.92,
-    roughness: 0.22
-  });
-
-  const meshFaceGeo = new THREE.CylinderGeometry(1.45, 1.45, 0.1, 32);
-  const meshFaceMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b, // Dark acoustic mesh grill
-    metalness: 0.8,
-    roughness: 0.6
-  });
-
-  // Transmitter Cylinder 'T' (Left)
-  const transCyl = new THREE.Mesh(cylGeo, alumMat);
-  transCyl.rotation.x = Math.PI / 2;
-  transCyl.position.set(-2.5, 0, 1.3);
-  sensorGroup.add(transCyl);
-
-  const transMesh = new THREE.Mesh(meshFaceGeo, meshFaceMat);
-  transMesh.rotation.x = Math.PI / 2;
-  transMesh.position.set(-2.5, 0, 2.6);
-  sensorGroup.add(transMesh);
-
-  // Receiver Cylinder 'R' (Right)
-  const recvCyl = new THREE.Mesh(cylGeo, alumMat);
-  recvCyl.rotation.x = Math.PI / 2;
-  recvCyl.position.set(2.5, 0, 1.3);
-  sensorGroup.add(recvCyl);
-
-  const recvMesh = new THREE.Mesh(meshFaceGeo, meshFaceMat);
-  recvMesh.rotation.x = Math.PI / 2;
-  recvMesh.position.set(2.5, 0, 2.6);
-  sensorGroup.add(recvMesh);
-
-  // 3. Crystal Oscillator (Silver component between barrels)
-  const oscGeo = new THREE.BoxGeometry(0.8, 1.6, 0.4);
-  const oscMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.85, roughness: 0.3 });
-  const osc = new THREE.Mesh(oscGeo, oscMat);
-  osc.position.set(0, 0, 0.3);
-  sensorGroup.add(osc);
-
-  // 4. Gold Connector Header Pins (VCC, TRIG, ECHO, GND)
-  const pinGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.4, 8);
-  const pinMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95, roughness: 0.1 });
-  for (let i = 0; i < 4; i++) {
-    const pin = new THREE.Mesh(pinGeo, pinMat);
-    pin.position.set(-1.2 + i * 0.8, -2.4, 0);
-    sensorGroup.add(pin);
-  }
-
-  scene.add(sensorGroup);
-}
-
-function buildObstacleTarget() {
-  obstacleGroup = new THREE.Group();
-
-  // Frosted Titanium Obstacle Surface (Represents your hand or detected object)
-  const plateGeo = new THREE.BoxGeometry(8.0, 5.5, 0.3);
-  const plateMat = new THREE.MeshStandardMaterial({
-    color: 0x38bdf8,
-    metalness: 0.8,
-    roughness: 0.25,
-    transparent: true,
-    opacity: 0.85
-  });
-  const plate = new THREE.Mesh(plateGeo, plateMat);
-  obstacleGroup.add(plate);
-
-  // Glowing Edge Rim on Obstacle
-  const edgeGeo = new THREE.EdgesGeometry(plateGeo);
-  const edgeMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
-  const edge = new THREE.LineSegments(edgeGeo, edgeMat);
-  obstacleGroup.add(edge);
-
-  // Initial Z Position
-  obstacleGroup.position.set(0, 0, 15);
-  scene.add(obstacleGroup);
-}
-
-function buildAcousticWaves() {
-  wavesGroup = new THREE.Group();
-  const ringGeo = new THREE.TorusGeometry(1.6, 0.05, 12, 48);
-
-  for (let i = 0; i < 6; i++) {
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.6
-    });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    ring.position.set(-2.5, 0, 2.8 + i * 2.0); // Originating from Transmitter 'T'
-    wavesGroup.add(ring);
-    waveRings.push(ring);
-  }
-  scene.add(wavesGroup);
-}
-
-function onWindowResize() {
-  const container = $("threeCanvasContainer");
-  if (!container) return;
-  const w = container.clientWidth;
-  const h = container.clientHeight;
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
-}
-
-// 60 FPS Render Loop
-function animate3D() {
-  requestAnimationFrame(animate3D);
-
-  // Smooth LERP obstacle along Z-axis in 3D space
-  // Mapping: 10cm -> z=5, 150cm -> z=26
-  const targetDist = (state.rawDistance != null && state.rawDistance > 0) ? state.rawDistance : 80;
-  state.smoothDistance += (targetDist - state.smoothDistance) * 0.085;
-
-  const targetZ = 4.0 + (Math.min(Math.max(state.smoothDistance, 4), 160) / 160) * 22;
-  obstacleGroup.position.z = targetZ;
-
-  // Obstacle Dynamic Material Colors based on Proximity
-  let rHex = 0x38bdf8;
-  if (state.smoothDistance < 18) {
-    rHex = 0xf43f5e; // Crimson
-  } else if (state.smoothDistance < state.threshold) {
-    rHex = 0xfbbf24; // Amber
-  }
-  obstacleGroup.children[0].material.color.setHex(rHex);
-  obstacleGroup.children[1].material.color.setHex(rHex);
-
-  // Acoustic Wave Propagation Animation
-  const maxZ = obstacleGroup.position.z;
-  waveRings.forEach((ring, idx) => {
-    ring.position.z += 0.16;
-    if (ring.position.z >= maxZ) {
-      ring.position.z = 2.8; // reset to transmitter mouth
-    }
-    const progress = (ring.position.z - 2.8) / (maxZ - 2.8 + 0.1);
-    ring.scale.set(1.0 + progress * 0.8, 1.0 + progress * 0.8, 1.0);
-    ring.material.opacity = Math.max(0, 0.75 * (1.0 - progress));
-    ring.material.color.setHex(rHex);
-  });
-
-  // Auto-Orbit idle rotation
-  if (state.autoRotate) {
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.8;
-  } else {
-    controls.autoRotate = false;
-  }
-
-  controls.update();
-  renderer.render(scene, camera);
-}
-
-// --- Audio Synthesizer (Studio Park Assist) ---
+// --- Fluid Dramatic Acoustic Engine ---
 let audioCtx = null;
 let nextBeepTime = 0;
 
-function ensureAudio() {
+function initAudioSystem() {
   if (!audioCtx) {
-    const C = window.AudioContext || window.webkitAudioContext;
-    if (C) audioCtx = new C();
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) audioCtx = new AudioContextClass();
   }
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
 }
 
-function playBeep(freq = 640) {
+function playDramaticPulse(dist) {
   if (!state.acoustic || !audioCtx) return;
   try {
+    const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
+    const subOsc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
-    osc.connect(gain);
+    const filter = audioCtx.createBiquadFilter();
+
+    const norm = Math.min(Math.max((dist - 5) / 100, 0), 1);
+    const freq = 1280 - norm * 860;
+
+    osc.type = dist < 18 ? 'sawtooth' : 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(600 + (1.0 - norm) * 3200, now);
+    filter.Q.setValueAtTime(dist < 18 ? 8 : 2, now);
+
+    if (dist < 20) {
+      subOsc.type = 'sine';
+      subOsc.frequency.setValueAtTime(75, now);
+      subOsc.frequency.exponentialRampToValueAtTime(35, now + 0.08);
+      subOsc.connect(gain);
+      subOsc.start(now);
+      subOsc.stop(now + 0.08);
+    }
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(dist < 15 ? 0.22 : 0.14, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + (dist < 15 ? 0.08 : 0.05));
+
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.05);
+
+    osc.start(now);
+    osc.stop(now + (dist < 15 ? 0.08 : 0.05));
   } catch (e) {}
 }
 
-function handleSound(d) {
+function updateAcousticScheduler(d) {
   if (!state.acoustic || d == null || d <= 0) return;
   const now = performance.now();
-  if (d <= 15) {
+  if (d <= 14) {
     if (now >= nextBeepTime) {
-      playBeep(880);
-      nextBeepTime = now + 85;
+      playDramaticPulse(d);
+      nextBeepTime = now + 75;
     }
   } else if (d < state.threshold) {
-    const interval = Math.max(90, (d / state.threshold) * 450);
+    const interval = Math.max(80, (d / state.threshold) * 440);
     if (now >= nextBeepTime) {
-      playBeep(580 + (state.threshold - d) * 8);
+      playDramaticPulse(d);
       nextBeepTime = now + interval;
     }
   }
+}
+
+// =========================================================================
+// 1. SENSOR PLAYGROUND 3D ENGINE (RED BOX: ONLY HC-SR04 SENSOR & WAVES)
+// =========================================================================
+let sScene, sCamera, sRenderer, sControls;
+let sensorModel, obstaclePlate, dimensionLine;
+const sWaveRings = [];
+
+function initSensorPlayground() {
+  const container = $("sensorCanvasContainer");
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+
+  sScene = new THREE.Scene();
+  sScene.fog = new THREE.FogExp2(0x05070a, 0.024);
+
+  sCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 120);
+  sCamera.position.set(0, 10, 26);
+
+  sRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  sRenderer.setSize(w, h);
+  sRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  sRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  sRenderer.toneMappingExposure = 1.3;
+  container.appendChild(sRenderer.domElement);
+
+  sControls = new THREE.OrbitControls(sCamera, sRenderer.domElement);
+  sControls.enableDamping = true;
+  sControls.dampingFactor = 0.05;
+  sControls.maxPolarAngle = Math.PI / 2 + 0.15;
+  sControls.minDistance = 8;
+  sControls.maxDistance = 55;
+  sControls.target.set(0, 0, 7);
+
+  // Studio Lighting
+  const amb = new THREE.AmbientLight(0x1e293b, 1.4);
+  sScene.add(amb);
+
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+  keyLight.position.set(12, 18, 14);
+  sScene.add(keyLight);
+
+  const rimLight = new THREE.DirectionalLight(0x38bdf8, 3.4);
+  rimLight.position.set(-16, -4, -12);
+  sScene.add(rimLight);
+
+  const warmSpot = new THREE.PointLight(0xfbbf24, 1.6, 25);
+  warmSpot.position.set(0, 8, 10);
+  sScene.add(warmSpot);
+
+  // Floor Grid
+  const grid = new THREE.GridHelper(45, 22, 0x1e293b, 0x0f172a);
+  grid.position.y = -2.8;
+  grid.position.z = 10;
+  sScene.add(grid);
+
+  // Build HC-SR04 Model (Centered, Enormous, Photorealistic)
+  buildSoloHCSR04();
+  build3DObstacle();
+  build3DWaves();
+  build3DRuler();
+}
+
+function buildSoloHCSR04() {
+  sensorModel = new THREE.Group();
+
+  // Dark Blue PCB
+  const pcbGeo = new THREE.BoxGeometry(9.6, 4.4, 0.4);
+  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x0c2544, roughness: 0.45, metalness: 0.2 });
+  const pcb = new THREE.Mesh(pcbGeo, pcbMat);
+  sensorModel.add(pcb);
+
+  // Gold Mounting Vias
+  const viaGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.5, 16);
+  const viaMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.95, roughness: 0.15 });
+  [[-4.2, 1.7], [4.2, 1.7], [-4.2, -1.7], [4.2, -1.7]].forEach(([x, y]) => {
+    const v = new THREE.Mesh(viaGeo, viaMat);
+    v.rotation.x = Math.PI / 2;
+    v.position.set(x, y, 0);
+    sensorModel.add(v);
+  });
+
+  // Brushed Aluminum Barrels
+  const cylGeo = new THREE.CylinderGeometry(1.75, 1.75, 2.8, 40);
+  const alumMat = new THREE.MeshStandardMaterial({ color: 0xdde6ed, metalness: 0.95, roughness: 0.16 });
+  const meshFaceGeo = new THREE.CylinderGeometry(1.6, 1.6, 0.1, 40);
+  const meshFaceMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.85, roughness: 0.5 });
+
+  // Transmitter 'T' (Left)
+  const transCyl = new THREE.Mesh(cylGeo, alumMat);
+  transCyl.rotation.x = Math.PI / 2;
+  transCyl.position.set(-2.6, 0, 1.4);
+  sensorModel.add(transCyl);
+
+  const transMesh = new THREE.Mesh(meshFaceGeo, meshFaceMat);
+  transMesh.rotation.x = Math.PI / 2;
+  transMesh.position.set(-2.6, 0, 2.8);
+  sensorModel.add(transMesh);
+
+  // Receiver 'R' (Right)
+  const recvCyl = new THREE.Mesh(cylGeo, alumMat);
+  recvCyl.rotation.x = Math.PI / 2;
+  recvCyl.position.set(2.6, 0, 1.4);
+  sensorModel.add(recvCyl);
+
+  const recvMesh = new THREE.Mesh(meshFaceGeo, meshFaceMat);
+  recvMesh.rotation.x = Math.PI / 2;
+  recvMesh.position.set(2.6, 0, 2.8);
+  sensorModel.add(recvMesh);
+
+  // Crystal Oscillator
+  const oscGeo = new THREE.BoxGeometry(0.8, 1.5, 0.4);
+  const oscMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
+  const osc = new THREE.Mesh(oscGeo, oscMat);
+  osc.position.set(0, 0, 0.28);
+  sensorModel.add(osc);
+
+  // Gold Header Pins
+  const pinGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.3, 8);
+  const pinMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95, roughness: 0.1 });
+  for (let i = 0; i < 4; i++) {
+    const pin = new THREE.Mesh(pinGeo, pinMat);
+    pin.position.set(-1.2 + i * 0.8, -2.4, 0);
+    sensorModel.add(pin);
+  }
+
+  sensorModel.position.set(0, 0, 2.0);
+  sScene.add(sensorModel);
+}
+
+function build3DObstacle() {
+  obstaclePlate = new THREE.Group();
+
+  const plateGeo = new THREE.BoxGeometry(9.0, 6.2, 0.4);
+  const plateMat = new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    metalness: 0.9,
+    roughness: 0.2,
+    transparent: true,
+    opacity: 0.85
+  });
+  const plate = new THREE.Mesh(plateGeo, plateMat);
+  obstaclePlate.add(plate);
+
+  const edgeGeo = new THREE.EdgesGeometry(plateGeo);
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
+  obstaclePlate.add(new THREE.LineSegments(edgeGeo, edgeMat));
+
+  const impactRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.5, 0.7, 32),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+  );
+  impactRing.position.set(0, 0, -0.22);
+  obstaclePlate.add(impactRing);
+
+  obstaclePlate.position.set(0, 0, 16);
+  sScene.add(obstaclePlate);
+}
+
+function build3DWaves() {
+  const ringGeo = new THREE.TorusGeometry(1.7, 0.06, 12, 48);
+  for (let i = 0; i < 7; i++) {
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.6 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.position.set(-2.6, 0, 3.8 + i * 2.2);
+    sScene.add(ring);
+    sWaveRings.push(ring);
+  }
+}
+
+function build3DRuler() {
+  const lineMat = new THREE.LineDashedMaterial({ color: 0x38bdf8, dashSize: 0.5, gapSize: 0.3 });
+  const points = [new THREE.Vector3(0, 3.2, 3.5), new THREE.Vector3(0, 3.2, 16.0)];
+  dimensionLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), lineMat);
+  dimensionLine.computeLineDistances();
+  sScene.add(dimensionLine);
+}
+
+// =========================================================================
+// 2. ARDUINO UNO MOTHERBOARD STAGE (YELLOW REGION: 3D UNO + RAYCASTING)
+// =========================================================================
+let uScene, uCamera, uRenderer, uControls;
+let unoModel, unoPins = [];
+let raycaster = new THREE.Raycaster();
+let mouse = new THREE.Vector2();
+
+function initUnoStage() {
+  const container = $("unoCanvasContainer");
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+
+  uScene = new THREE.Scene();
+  uCamera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
+  uCamera.position.set(0, 14, 18);
+
+  uRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  uRenderer.setSize(w, h);
+  uRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  uRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  uRenderer.toneMappingExposure = 1.25;
+  container.appendChild(uRenderer.domElement);
+
+  uControls = new THREE.OrbitControls(uCamera, uRenderer.domElement);
+  uControls.enableDamping = true;
+  uControls.dampingFactor = 0.06;
+  uControls.maxPolarAngle = Math.PI / 2 + 0.1;
+  uControls.minDistance = 8;
+  uControls.maxDistance = 35;
+  uControls.target.set(0, 0, 0);
+
+  // Lighting
+  uScene.add(new THREE.AmbientLight(0x1e293b, 1.5));
+  const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
+  dirLight.position.set(10, 16, 12);
+  uScene.add(dirLight);
+
+  const cyanRim = new THREE.DirectionalLight(0x38bdf8, 2.8);
+  cyanRim.position.set(-12, -4, -10);
+  uScene.add(cyanRim);
+
+  // Build Dedicated 3D Arduino Uno Model with Raycastable Pin Geometries
+  buildRaycastableUno();
+
+  // Mouse / Touch Event Listeners for Raycasting
+  container.addEventListener('mousemove', onUnoMouseMove);
+  container.addEventListener('touchstart', onUnoTouch);
+}
+
+function buildRaycastableUno() {
+  unoModel = new THREE.Group();
+
+  // Arduino PCB (Teal)
+  const pcbGeo = new THREE.BoxGeometry(11.2, 0.4, 8.0);
+  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x008184, roughness: 0.45, metalness: 0.2 });
+  unoModel.add(new THREE.Mesh(pcbGeo, pcbMat));
+
+  // USB Port
+  const usbGeo = new THREE.BoxGeometry(2.0, 1.6, 2.0);
+  const usbMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.95, roughness: 0.15 });
+  const usb = new THREE.Mesh(usbGeo, usbMat);
+  usb.position.set(-4.8, 1.0, -1.8);
+  unoModel.add(usb);
+
+  // DC Barrel Jack
+  const dcGeo = new THREE.CylinderGeometry(1.2, 1.2, 2.0, 24);
+  const dcMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.8 });
+  const dc = new THREE.Mesh(dcGeo, dcMat);
+  dc.rotation.z = Math.PI / 2;
+  dc.position.set(-4.8, 0.9, 2.2);
+  unoModel.add(dc);
+
+  // ATmega328P DIP-28
+  const icGeo = new THREE.BoxGeometry(4.6, 0.6, 1.4);
+  const icMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 });
+  const ic = new THREE.Mesh(icGeo, icMat);
+  ic.position.set(1.4, 0.5, 1.4);
+  unoModel.add(ic);
+
+  // Female Header Strip Base
+  const headerGeo = new THREE.BoxGeometry(5.2, 0.9, 0.55);
+  const headerMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.8 });
+
+  const digHeader = new THREE.Mesh(headerGeo, headerMat);
+  digHeader.position.set(1.8, 0.6, -3.4);
+  unoModel.add(digHeader);
+
+  const pwrHeader = new THREE.Mesh(headerGeo, headerMat);
+  pwrHeader.position.set(1.8, 0.6, 3.4);
+  unoModel.add(pwrHeader);
+
+  // Create Individual Interactive Raycastable Pin Nodes
+  function createPinNode(pinId, x, z, isActive = false) {
+    const pinNodeGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.45, 12);
+    const pinNodeMat = new THREE.MeshStandardMaterial({
+      color: isActive ? 0x38bdf8 : 0x475569,
+      metalness: 0.9,
+      roughness: 0.2,
+      emissive: isActive ? 0x0284c7 : 0x000000,
+      emissiveIntensity: isActive ? 0.6 : 0.0
+    });
+    const pinMesh = new THREE.Mesh(pinNodeGeo, pinNodeMat);
+    pinMesh.position.set(x, 1.1, z);
+    pinMesh.userData = { pinId: pinId };
+    unoModel.add(pinMesh);
+    unoPins.push(pinMesh);
+  }
+
+  // Digital Pins (D9, D10, D11, D12, D2, D3)
+  createPinNode("D12", 2.9, -3.4, true);
+  createPinNode("D11", 2.5, -3.4, true);
+  createPinNode("D10", 2.1, -3.4, true);
+  createPinNode("D9",  1.7, -3.4, true);
+  createPinNode("D3",  0.5, -3.4, false);
+  createPinNode("D2",  0.1, -3.4, false);
+
+  // Power & Analog Pins (5V, 3V3, GND, A0)
+  createPinNode("5V",  1.3, 3.4, true);
+  createPinNode("3V3", 0.9, 3.4, true);
+  createPinNode("GND", 1.7, 3.4, true);
+  createPinNode("A0",  2.7, 3.4, false);
+
+  uScene.add(unoModel);
+}
+
+// Raycasting Interaction over Uno
+function updatePinRaycast(clientX, clientY) {
+  const container = $("unoCanvasContainer");
+  const rect = container.getBoundingClientRect();
+  mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
+  mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, uCamera);
+  const intersects = raycaster.intersectObjects(unoPins);
+
+  if (intersects.length > 0) {
+    const hitPin = intersects[0].object;
+    const pinId = hitPin.userData.pinId;
+    const info = PIN_DATA[pinId];
+    if (info) {
+      $("inspPinName").textContent = info.name;
+      $("inspPinRole").textContent = info.role;
+      $("inspPinVolt").textContent = info.volt;
+      $("inspPinState").textContent = info.state;
+      $("inspPinLoad").textContent = info.load;
+      $("inspPinDot").style.background = info.color;
+      $("pinInspectorHUD").style.opacity = "1";
+      $("pinInspectorHUD").style.borderColor = info.color;
+    }
+  }
+}
+
+function onUnoMouseMove(e) {
+  updatePinRaycast(e.clientX, e.clientY);
+}
+
+function onUnoTouch(e) {
+  if (e.touches.length > 0) {
+    updatePinRaycast(e.touches[0].clientX, e.touches[0].clientY);
+  }
+}
+
+// Resize handlers
+function onResizeAll() {
+  // Sensor Canvas
+  const sCont = $("sensorCanvasContainer");
+  if (sCont) {
+    sCamera.aspect = sCont.clientWidth / sCont.clientHeight;
+    sCamera.updateProjectionMatrix();
+    sRenderer.setSize(sCont.clientWidth, sCont.clientHeight);
+  }
+
+  // Uno Canvas
+  const uCont = $("unoCanvasContainer");
+  if (uCont) {
+    uCamera.aspect = uCont.clientWidth / uCont.clientHeight;
+    uCamera.updateProjectionMatrix();
+    uRenderer.setSize(uCont.clientWidth, uCont.clientHeight);
+  }
+}
+window.addEventListener('resize', onResizeAll);
+
+// Combined 60 FPS Animation Loop
+function main3DLoop() {
+  requestAnimationFrame(main3DLoop);
+
+  // --- SENSOR PLAYGROUND PHYSICS ---
+  const targetDist = (state.rawDistance != null && state.rawDistance > 0) ? state.rawDistance : 80;
+  state.smoothDistance += (targetDist - state.smoothDistance) * 0.085;
+
+  const targetZ = 5.2 + (Math.min(Math.max(state.smoothDistance, 5), 150) / 150) * 24.0;
+  obstaclePlate.position.z = targetZ;
+
+  let rHex = 0x38bdf8;
+  if (state.smoothDistance < 18) rHex = 0xf43f5e;
+  else if (state.smoothDistance < state.threshold) rHex = 0xfbbf24;
+
+  obstaclePlate.children[0].material.color.setHex(rHex);
+  obstaclePlate.children[1].material.color.setHex(rHex);
+
+  const maxZ = obstaclePlate.position.z;
+  sWaveRings.forEach(ring => {
+    ring.position.z += 0.22;
+    if (ring.position.z >= maxZ) ring.position.z = 3.8;
+    const p = (ring.position.z - 3.8) / (maxZ - 3.8 + 0.1);
+    ring.scale.set(1.0 + p * 0.9, 1.0 + p * 0.9, 1.0);
+    ring.material.opacity = Math.max(0, 0.75 * (1.0 - p));
+    ring.material.color.setHex(rHex);
+  });
+
+  const rPos = dimensionLine.geometry.attributes.position.array;
+  rPos[5] = targetZ;
+  dimensionLine.geometry.attributes.position.needsUpdate = true;
+  dimensionLine.computeLineDistances();
+  dimensionLine.material.color.setHex(rHex);
+
+  if (state.autoRotate) {
+    sControls.autoRotate = true;
+    sControls.autoRotateSpeed = 0.65;
+  } else {
+    sControls.autoRotate = false;
+  }
+
+  sControls.update();
+  sRenderer.render(sScene, sCamera);
+
+  // --- ARDUINO UNO CONTROLLER STAGE ---
+  uControls.update();
+  uRenderer.render(uScene, uCamera);
 }
 
 // --- Live Waveform Chart ---
@@ -946,7 +1448,6 @@ function drawWaveform() {
   const h = chartCanvas.height;
   cCtx.clearRect(0, 0, w, h);
 
-  // Grid guides
   cCtx.strokeStyle = "rgba(255, 255, 255, 0.03)";
   cCtx.lineWidth = 1;
   [0.25, 0.5, 0.75].forEach(r => {
@@ -965,7 +1466,6 @@ function drawWaveform() {
     return { x, y };
   });
 
-  // Gradient fill
   cCtx.beginPath();
   cCtx.moveTo(pts[0].x, h);
   for (let i = 0; i < pts.length - 1; i++) {
@@ -982,7 +1482,6 @@ function drawWaveform() {
   cCtx.fillStyle = areaGrad;
   cCtx.fill();
 
-  // Spline line
   cCtx.beginPath();
   cCtx.moveTo(pts[0].x, pts[0].y);
   for (let i = 0; i < pts.length - 1; i++) {
@@ -998,7 +1497,6 @@ function drawWaveform() {
   cCtx.stroke();
   cCtx.restore();
 
-  // Cursor head
   const last = pts[pts.length - 1];
   cCtx.beginPath();
   cCtx.arc(last.x, last.y, 3 * window.devicePixelRatio, 0, 2 * Math.PI);
@@ -1012,7 +1510,7 @@ function chartLoop() {
 }
 requestAnimationFrame(chartLoop);
 
-// --- Formatters ---
+// --- Formatters & Telemetry ---
 function formatDist(d) {
   if (d == null) return '--';
   return state.unit === 'in' ? (d * 0.3937).toFixed(1) : Number(d).toFixed(1);
@@ -1036,7 +1534,6 @@ function renderEvents() {
   });
 }
 
-// --- Telemetry Processor ---
 function processTelemetry(data) {
   state.connected = !!data.connected;
 
@@ -1051,7 +1548,6 @@ function processTelemetry(data) {
     label.textContent = "Offline";
   }
 
-  // Rate
   state.packetCount++;
   const now = performance.now();
   if (now - state.rateTimer >= 1000) {
@@ -1065,7 +1561,6 @@ function processTelemetry(data) {
     const d = Number(data.distance);
     state.rawDistance = d;
 
-    // Velocity
     if (state.prevDistance !== null) {
       const dt = (now - state.prevTimestamp) / 1000.0;
       if (dt > 0.05 && dt < 1.0) {
@@ -1085,11 +1580,9 @@ function processTelemetry(data) {
       $("statVelocity").textContent = `+${velAbs.toFixed(1)} cm/s`;
     }
 
-    // Number readout
     $("distanceNumber").textContent = formatDist(d);
     $("distanceUnit").textContent = state.unit === 'in' ? 'inches' : 'centimeters';
 
-    // Min / Max
     if (state.minDist === null || d < state.minDist) {
       state.minDist = d;
       $("statClosest").textContent = `${formatDist(d)} ${state.unit}`;
@@ -1099,7 +1592,6 @@ function processTelemetry(data) {
       $("statFurthest").textContent = `${formatDist(d)} ${state.unit}`;
     }
 
-    // Zone Badge & Sound
     const badge = $("zoneBadge");
     let zone = "safe";
     if (d < 18) {
@@ -1121,7 +1613,7 @@ function processTelemetry(data) {
       badge.style.borderColor = "var(--surface-border)";
     }
 
-    handleSound(d);
+    updateAcousticScheduler(d);
 
     if (zone !== state.lastZone) {
       if (zone === "danger") logEvent(`Critical proximity: ${formatDist(d)} ${state.unit}`, "danger");
@@ -1148,7 +1640,7 @@ function startWS() {
   const ws = new WebSocket(url);
 
   ws.onopen = () => {
-    logEvent("3D Digital Twin telemetry connected", "normal");
+    logEvent("3D Digital Hardware Workstation connected", "normal");
   };
 
   ws.onmessage = e => {
@@ -1165,26 +1657,26 @@ function startWS() {
 
 // --- UI Controls ---
 
-// Camera Angle Presets
+// Camera Presets on Sensor Playground
 document.querySelectorAll(".view-btn").forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     const v = btn.dataset.view;
     if (v === 'iso') {
-      camera.position.set(0, 12, 28);
-      controls.target.set(0, 0, 5);
+      sCamera.position.set(0, 10, 26);
+      sControls.target.set(0, 0, 7);
     } else if (v === 'top') {
-      camera.position.set(0, 32, 5);
-      controls.target.set(0, 0, 5);
+      sCamera.position.set(0, 32, 7);
+      sControls.target.set(0, 0, 7);
     } else if (v === 'front') {
-      camera.position.set(0, 0, 30);
-      controls.target.set(0, 0, 5);
+      sCamera.position.set(0, 0, 26);
+      sControls.target.set(0, 0, 7);
     }
   };
 });
 
-// Auto Rotate Toggle
+// Auto Rotate
 $("btnAutoRotate").onclick = () => {
   state.autoRotate = !state.autoRotate;
   $("btnAutoRotate").classList.toggle("active", state.autoRotate);
@@ -1192,11 +1684,11 @@ $("btnAutoRotate").onclick = () => {
 
 // Acoustic Toggle
 $("btnAcoustic").onclick = () => {
-  ensureAudio();
+  initAudioSystem();
   state.acoustic = !state.acoustic;
   $("btnAcoustic").classList.toggle("active", state.acoustic);
-  $("soundLabel").textContent = state.acoustic ? "Acoustic: ON" : "Acoustic Assist";
-  if (state.acoustic) playBeep(700);
+  $("soundLabel").textContent = state.acoustic ? "Cinematic Sonar: ON" : "Cinematic Sonar: OFF";
+  if (state.acoustic) playDramaticPulse(40);
 };
 
 // Unit Switch
@@ -1221,10 +1713,10 @@ $("btnClearFeed").onclick = () => {
   renderEvents();
 };
 
-// Boot
 window.onload = () => {
-  init3D();
-  animate3D();
+  initSensorPlayground();
+  initUnoStage();
+  main3DLoop();
   startWS();
 };
 </script>
