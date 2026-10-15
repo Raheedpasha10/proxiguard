@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ProxiGuard — 3D Spatial Digital Twin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Three.js 3D Engine & Orbit Controls -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<style>
+:root {
+  --bg: #07080c;
+  --surface: rgba(15, 18, 28, 0.75);
+  --surface-border: rgba(255, 255, 255, 0.07);
+  --surface-border-subtle: rgba(255, 255, 255, 0.03);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #475569;
+  
+  --accent-cyan: #38bdf8;
+  --accent-amber: #fbbf24;
+  --accent-crimson: #f43f5e;
+  
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.06) 0%, transparent 60%),
+    radial-gradient(circle at 80% 90%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  padding: 16px 14px;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-wrapper {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Glass Panel */
+.glass-panel {
+  background: var(--surface);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55);
+}
+
+/* Nav Header */
+header.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(99, 102, 241, 0.15));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-badge svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--accent-cyan);
+}
+
+.brand-titles h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.brand-titles .sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--surface-border);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #64748b;
+  transition: all 0.4s ease;
+}
+
+.status-dot.active {
+  background: #34d399;
+  box-shadow: 0 0 12px #34d399;
+}
+
+.status-dot.warn {
+  background: var(--accent-amber);
+  box-shadow: 0 0 12px var(--accent-amber);
+}
+
+.status-dot.danger {
+  background: var(--accent-crimson);
+  box-shadow: 0 0 14px var(--accent-crimson);
+}
+
+/* 3D VIEWPORT CONTAINER */
+.viewport-card {
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewport-toolbar {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.view-modes {
+  display: flex;
+  gap: 4px;
+  background: rgba(15, 18, 28, 0.85);
+  backdrop-filter: blur(16px);
+  padding: 4px;
+  border-radius: 20px;
+  border: 1px solid var(--surface-border);
+  pointer-events: auto;
+}
+
+.view-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.orbit-hint {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  background: rgba(15, 18, 28, 0.7);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--surface-border-subtle);
+  pointer-events: auto;
+}
+
+#threeCanvasContainer {
+  width: 100%;
+  height: 340px;
+  position: relative;
+  cursor: grab;
+}
+
+#threeCanvasContainer:active {
+  cursor: grabbing;
+}
+
+/* HUD Overlay on 3D Viewport */
+.hud-telemetry {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hud-readout {
+  display: flex;
+  flex-direction: column;
+}
+
+.hud-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -2px;
+  color: #ffffff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+.hud-unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.hud-badge-zone {
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(15, 18, 28, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+
+/* Controls Strip */
+.controls-cluster {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ctrl-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.ctrl-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.ctrl-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+}
+
+/* Metrics Quad */
+.metrics-quad {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 480px) {
+  .metrics-quad {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.quad-tile {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quad-tile .tag {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quad-tile .val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Waveform Spline */
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-header .title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.chart-stage {
+  width: 100%;
+  height: 120px;
+  position: relative;
+}
+
+#chartCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Threshold slider */
+.tuning-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.slider-labels span.val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+/* Activity Log */
+.event-feed {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 130px;
+  overflow-y: auto;
+}
+
+.event-feed::-webkit-scrollbar {
+  width: 3px;
+}
+.event-feed::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.event-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.015);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  border-left: 2px solid var(--surface-border);
+}
+
+.event-entry.danger {
+  border-left-color: var(--accent-crimson);
+}
+.event-entry.warn {
+  border-left-color: var(--accent-amber);
+}
+
+.entry-time {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+footer.footer-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  padding: 8px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- Nav Header -->
+  <header class="glass-panel nav-header">
+    <div class="brand-section">
+      <div class="brand-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v5l3 3"></path>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <h1>ProxiGuard 3D</h1>
+        <div class="sub">Hardware Digital Twin</div>
+      </div>
+    </div>
+    
+    <div class="status-pill">
+      <div id="statusDot" class="status-dot"></div>
+      <span id="statusLabel">Scanning</span>
+    </div>
+  </header>
+
+  <!-- 3D Hardware Viewport -->
+  <section class="glass-panel viewport-card">
+    <div class="viewport-toolbar">
+      <div class="view-modes">
+        <button class="view-btn active" data-view="iso">Isometric</button>
+        <button class="view-btn" data-view="top">Top View</button>
+        <button class="view-btn" data-view="front">Frontal</button>
+      </div>
+      <span class="orbit-hint">Touch &amp; Drag to Rotate 3D</span>
+    </div>
+
+    <!-- WebGL Three.js Canvas Container -->
+    <div id="threeCanvasContainer"></div>
+
+    <!-- HUD Overlay on 3D Viewport -->
+    <div class="hud-telemetry">
+      <div class="hud-readout">
+        <div id="distanceNumber" class="hud-num">--</div>
+        <div id="distanceUnit" class="hud-unit">centimeters</div>
+      </div>
+      <div id="zoneBadge" class="hud-badge-zone">STANDBY</div>
+    </div>
+  </section>
+
+  <!-- Control Cluster -->
+  <div class="controls-cluster">
+    <button id="btnAcoustic" class="ctrl-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+      <span id="soundLabel">Acoustic Assist</span>
+    </button>
+    <button id="btnAutoRotate" class="ctrl-btn active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 1 9 9h-3"></path></svg>
+      <span>Auto-Orbit</span>
+    </button>
+    <button id="btnUnit" class="ctrl-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+      <span id="unitText">Unit: CM</span>
+    </button>
+  </div>
+
+  <!-- Telemetry Metrics Quad -->
+  <section class="metrics-quad">
+    <div class="quad-tile">
+      <span class="tag">Closest</span>
+      <span id="statClosest" class="val">--</span>
+    </div>
+    <div class="quad-tile">
+      <span class="tag">Furthest</span>
+      <span id="statFurthest" class="val">--</span>
+    </div>
+    <div class="quad-tile">
+      <span class="tag">Throughput</span>
+      <span id="statHz" class="val">0.0 Hz</span>
+    </div>
+    <div class="quad-tile">
+      <span class="tag">Velocity</span>
+      <span id="statVelocity" class="val">0 cm/s</span>
+    </div>
+  </section>
+
+  <!-- Live Waveform Spline -->
+  <section class="glass-panel chart-panel">
+    <div class="chart-header">
+      <span class="title">Continuous Waveform</span>
+      <span id="sourceTag" style="font-size:11px; color:var(--text-tertiary);">Wi-Fi Stream</span>
+    </div>
+    <div class="chart-stage">
+      <canvas id="chartCanvas"></canvas>
+    </div>
+  </section>
+
+  <!-- Threshold Slider -->
+  <section class="glass-panel tuning-panel">
+    <div class="slider-row">
+      <div class="slider-labels">
+        <span>Alert Threshold</span>
+        <span class="val"><span id="threshDisplay">30</span> cm</span>
+      </div>
+      <input type="range" id="threshSlider" min="10" max="150" value="30" step="5">
+    </div>
+  </section>
+
+  <!-- Event Feed -->
+  <section class="glass-panel tuning-panel">
+    <div class="chart-header">
+      <span class="title">Telemetry Events</span>
+      <button id="btnClearFeed" style="background:none; border:none; color:var(--text-tertiary); font-size:11px; cursor:pointer;">Clear</button>
+    </div>
+    <ul id="eventFeed" class="event-feed">
+      <li class="event-entry">
+        <span>3D Digital Twin engine initialized</span>
+        <span class="entry-time">Ready</span>
+      </li>
+    </ul>
+  </section>
+
+  <footer class="footer-note">
+    ProxiGuard 3D Interactive Telemetry System
+  </footer>
+
+</div>
+
+<script>
+// --- State ---
+const state = {
+  connected: false,
+  rawDistance: null,
+  smoothDistance: 80, // Lerp target for 3D obstacle translation
+  prevDistance: null,
+  prevTimestamp: performance.now(),
+  velocity: 0,
+  unit: 'cm',
+  threshold: 30,
+  acoustic: false,
+  autoRotate: true,
+  minDist: null,
+  maxDist: null,
+  history: [],
+  events: [],
+  lastZone: null,
+  packetCount: 0,
+  rateTimer: performance.now(),
+  sampleRate: 0
+};
+
+const $ = id => document.getElementById(id);
+
+// --- 3D Three.js Digital Twin Engine ---
+let scene, camera, renderer, controls;
+let sensorGroup, obstacleGroup, wavesGroup;
+const waveRings = [];
+
+function init3D() {
+  const container = $("threeCanvasContainer");
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+
+  // Scene
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x07080c, 0.035);
+
+  // Camera
+  camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+  camera.position.set(0, 12, 28);
+
+  // Renderer with Antialiasing
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  container.appendChild(renderer.domElement);
+
+  // OrbitControls
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.maxPolarAngle = Math.PI / 2 + 0.15;
+  controls.minDistance = 8;
+  controls.maxDistance = 50;
+  controls.target.set(0, 0, 5);
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0x1e293b, 1.2);
+  scene.add(ambientLight);
+
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+  keyLight.position.set(10, 16, 14);
+  scene.add(keyLight);
+
+  const rimLight = new THREE.DirectionalLight(0x38bdf8, 2.8);
+  rimLight.position.set(-14, -4, -10);
+  scene.add(rimLight);
+
+  const fillLight = new THREE.DirectionalLight(0x818cf8, 1.0);
+  fillLight.position.set(0, -10, 10);
+  scene.add(fillLight);
+
+  // Build Procedural 3D HC-SR04 Hardware Model
+  buildHCSR04Model();
+
+  // Build 3D Obstacle Target Surface
+  buildObstacleTarget();
+
+  // Build 3D Acoustic Wave Array
+  buildAcousticWaves();
+
+  // Grid Plane Reference
+  const gridHelper = new THREE.GridHelper(40, 20, 0x1e293b, 0x0f172a);
+  gridHelper.position.y = -2.2;
+  gridHelper.position.z = 10;
+  scene.add(gridHelper);
+
+  // Resize handler
+  window.addEventListener('resize', onWindowResize);
+}
+
+function buildHCSR04Model() {
+  sensorGroup = new THREE.Group();
+
+  // 1. PCB Baseboard (Dark Blue Fiberglass)
+  const pcbGeo = new THREE.BoxGeometry(9.0, 4.2, 0.4);
+  const pcbMat = new THREE.MeshStandardMaterial({
+    color: 0x0c2444, // Classic HC-SR04 dark blue
+    roughness: 0.55,
+    metalness: 0.15
+  });
+  const pcb = new THREE.Mesh(pcbGeo, pcbMat);
+  sensorGroup.add(pcb);
+
+  // PCB Corner Mounting Holes
+  const holeGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.5, 16);
+  const holeMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 }); // Gold plated ring
+  const holeOffsets = [
+    [-4.0, 1.6], [4.0, 1.6],
+    [-4.0, -1.6], [4.0, -1.6]
+  ];
+  holeOffsets.forEach(([x, y]) => {
+    const hMesh = new THREE.Mesh(holeGeo, holeMat);
+    hMesh.rotation.x = Math.PI / 2;
+    hMesh.position.set(x, y, 0);
+    sensorGroup.add(hMesh);
+  });
+
+  // 2. Dual Aluminum Ultrasonic Transducers (The iconic "Eyes")
+  const cylGeo = new THREE.CylinderGeometry(1.6, 1.6, 2.6, 32);
+  const alumMat = new THREE.MeshStandardMaterial({
+    color: 0xd8e2ec, // Brushed aluminum
+    metalness: 0.92,
+    roughness: 0.22
+  });
+
+  const meshFaceGeo = new THREE.CylinderGeometry(1.45, 1.45, 0.1, 32);
+  const meshFaceMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b, // Dark acoustic mesh grill
+    metalness: 0.8,
+    roughness: 0.6
+  });
+
+  // Transmitter Cylinder 'T' (Left)
+  const transCyl = new THREE.Mesh(cylGeo, alumMat);
+  transCyl.rotation.x = Math.PI / 2;
+  transCyl.position.set(-2.5, 0, 1.3);
+  sensorGroup.add(transCyl);
+
+  const transMesh = new THREE.Mesh(meshFaceGeo, meshFaceMat);
+  transMesh.rotation.x = Math.PI / 2;
+  transMesh.position.set(-2.5, 0, 2.6);
+  sensorGroup.add(transMesh);
+
+  // Receiver Cylinder 'R' (Right)
+  const recvCyl = new THREE.Mesh(cylGeo, alumMat);
+  recvCyl.rotation.x = Math.PI / 2;
+  recvCyl.position.set(2.5, 0, 1.3);
+  sensorGroup.add(recvCyl);
+
+  const recvMesh = new THREE.Mesh(meshFaceGeo, meshFaceMat);
+  recvMesh.rotation.x = Math.PI / 2;
+  recvMesh.position.set(2.5, 0, 2.6);
+  sensorGroup.add(recvMesh);
+
+  // 3. Crystal Oscillator (Silver component between barrels)
+  const oscGeo = new THREE.BoxGeometry(0.8, 1.6, 0.4);
+  const oscMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.85, roughness: 0.3 });
+  const osc = new THREE.Mesh(oscGeo, oscMat);
+  osc.position.set(0, 0, 0.3);
+  sensorGroup.add(osc);
+
+  // 4. Gold Connector Header Pins (VCC, TRIG, ECHO, GND)
+  const pinGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.4, 8);
+  const pinMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95, roughness: 0.1 });
+  for (let i = 0; i < 4; i++) {
+    const pin = new THREE.Mesh(pinGeo, pinMat);
+    pin.position.set(-1.2 + i * 0.8, -2.4, 0);
+    sensorGroup.add(pin);
+  }
+
+  scene.add(sensorGroup);
+}
+
+function buildObstacleTarget() {
+  obstacleGroup = new THREE.Group();
+
+  // Frosted Titanium Obstacle Surface (Represents your hand or detected object)
+  const plateGeo = new THREE.BoxGeometry(8.0, 5.5, 0.3);
+  const plateMat = new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    metalness: 0.8,
+    roughness: 0.25,
+    transparent: true,
+    opacity: 0.85
+  });
+  const plate = new THREE.Mesh(plateGeo, plateMat);
+  obstacleGroup.add(plate);
+
+  // Glowing Edge Rim on Obstacle
+  const edgeGeo = new THREE.EdgesGeometry(plateGeo);
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
+  const edge = new THREE.LineSegments(edgeGeo, edgeMat);
+  obstacleGroup.add(edge);
+
+  // Initial Z Position
+  obstacleGroup.position.set(0, 0, 15);
+  scene.add(obstacleGroup);
+}
+
+function buildAcousticWaves() {
+  wavesGroup = new THREE.Group();
+  const ringGeo = new THREE.TorusGeometry(1.6, 0.05, 12, 48);
+
+  for (let i = 0; i < 6; i++) {
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.6
+    });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.position.set(-2.5, 0, 2.8 + i * 2.0); // Originating from Transmitter 'T'
+    wavesGroup.add(ring);
+    waveRings.push(ring);
+  }
+  scene.add(wavesGroup);
+}
+
+function onWindowResize() {
+  const container = $("threeCanvasContainer");
+  if (!container) return;
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+
+// 60 FPS Render Loop
+function animate3D() {
+  requestAnimationFrame(animate3D);
+
+  // Smooth LERP obstacle along Z-axis in 3D space
+  // Mapping: 10cm -> z=5, 150cm -> z=26
+  const targetDist = (state.rawDistance != null && state.rawDistance > 0) ? state.rawDistance : 80;
+  state.smoothDistance += (targetDist - state.smoothDistance) * 0.085;
+
+  const targetZ = 4.0 + (Math.min(Math.max(state.smoothDistance, 4), 160) / 160) * 22;
+  obstacleGroup.position.z = targetZ;
+
+  // Obstacle Dynamic Material Colors based on Proximity
+  let rHex = 0x38bdf8;
+  if (state.smoothDistance < 18) {
+    rHex = 0xf43f5e; // Crimson
+  } else if (state.smoothDistance < state.threshold) {
+    rHex = 0xfbbf24; // Amber
+  }
+  obstacleGroup.children[0].material.color.setHex(rHex);
+  obstacleGroup.children[1].material.color.setHex(rHex);
+
+  // Acoustic Wave Propagation Animation
+  const maxZ = obstacleGroup.position.z;
+  waveRings.forEach((ring, idx) => {
+    ring.position.z += 0.16;
+    if (ring.position.z >= maxZ) {
+      ring.position.z = 2.8; // reset to transmitter mouth
+    }
+    const progress = (ring.position.z - 2.8) / (maxZ - 2.8 + 0.1);
+    ring.scale.set(1.0 + progress * 0.8, 1.0 + progress * 0.8, 1.0);
+    ring.material.opacity = Math.max(0, 0.75 * (1.0 - progress));
+    ring.material.color.setHex(rHex);
+  });
+
+  // Auto-Orbit idle rotation
+  if (state.autoRotate) {
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.8;
+  } else {
+    controls.autoRotate = false;
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// --- Audio Synthesizer (Studio Park Assist) ---
+let audioCtx = null;
+let nextBeepTime = 0;
+
+function ensureAudio() {
+  if (!audioCtx) {
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (C) audioCtx = new C();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function playBeep(freq = 640) {
+  if (!state.acoustic || !audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) {}
+}
+
+function handleSound(d) {
+  if (!state.acoustic || d == null || d <= 0) return;
+  const now = performance.now();
+  if (d <= 15) {
+    if (now >= nextBeepTime) {
+      playBeep(880);
+      nextBeepTime = now + 85;
+    }
+  } else if (d < state.threshold) {
+    const interval = Math.max(90, (d / state.threshold) * 450);
+    if (now >= nextBeepTime) {
+      playBeep(580 + (state.threshold - d) * 8);
+      nextBeepTime = now + interval;
+    }
+  }
+}
+
+// --- Live Waveform Chart ---
+const chartCanvas = $("chartCanvas");
+const cCtx = chartCanvas.getContext("2d");
+
+function resizeChart() {
+  const rect = chartCanvas.parentElement.getBoundingClientRect();
+  chartCanvas.width = rect.width * window.devicePixelRatio;
+  chartCanvas.height = rect.height * window.devicePixelRatio;
+}
+window.addEventListener("resize", resizeChart);
+resizeChart();
+
+function drawWaveform() {
+  const w = chartCanvas.width;
+  const h = chartCanvas.height;
+  cCtx.clearRect(0, 0, w, h);
+
+  // Grid guides
+  cCtx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+  cCtx.lineWidth = 1;
+  [0.25, 0.5, 0.75].forEach(r => {
+    const y = h * r;
+    cCtx.beginPath();
+    cCtx.moveTo(0, y);
+    cCtx.lineTo(w, y);
+    cCtx.stroke();
+  });
+
+  if (state.history.length < 2) return;
+
+  const pts = state.history.map((val, idx) => {
+    const x = (idx * w) / (state.history.length - 1);
+    const y = h - (Math.min(val, 160) / 160) * h;
+    return { x, y };
+  });
+
+  // Gradient fill
+  cCtx.beginPath();
+  cCtx.moveTo(pts[0].x, h);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const mx = (pts[i].x + pts[i + 1].x) / 2;
+    const my = (pts[i].y + pts[i + 1].y) / 2;
+    cCtx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+  }
+  cCtx.lineTo(pts[pts.length - 1].x, h);
+  cCtx.closePath();
+
+  const areaGrad = cCtx.createLinearGradient(0, 0, 0, h);
+  areaGrad.addColorStop(0, "rgba(56, 189, 248, 0.16)");
+  areaGrad.addColorStop(1, "rgba(56, 189, 248, 0.0)");
+  cCtx.fillStyle = areaGrad;
+  cCtx.fill();
+
+  // Spline line
+  cCtx.beginPath();
+  cCtx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const mx = (pts[i].x + pts[i + 1].x) / 2;
+    const my = (pts[i].y + pts[i + 1].y) / 2;
+    cCtx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+  }
+  cCtx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+
+  cCtx.save();
+  cCtx.strokeStyle = "#38bdf8";
+  cCtx.lineWidth = 2 * window.devicePixelRatio;
+  cCtx.stroke();
+  cCtx.restore();
+
+  // Cursor head
+  const last = pts[pts.length - 1];
+  cCtx.beginPath();
+  cCtx.arc(last.x, last.y, 3 * window.devicePixelRatio, 0, 2 * Math.PI);
+  cCtx.fillStyle = "#ffffff";
+  cCtx.fill();
+}
+
+function chartLoop() {
+  drawWaveform();
+  requestAnimationFrame(chartLoop);
+}
+requestAnimationFrame(chartLoop);
+
+// --- Formatters ---
+function formatDist(d) {
+  if (d == null) return '--';
+  return state.unit === 'in' ? (d * 0.3937).toFixed(1) : Number(d).toFixed(1);
+}
+
+function logEvent(msg, type = 'normal') {
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  state.events.unshift({ msg, type, time });
+  state.events = state.events.slice(0, 25);
+  renderEvents();
+}
+
+function renderEvents() {
+  const list = $("eventFeed");
+  list.replaceChildren();
+  state.events.forEach(item => {
+    const li = document.createElement("li");
+    li.className = `event-entry ${item.type}`;
+    li.innerHTML = `<span>${item.msg}</span><span class="entry-time">${item.time}</span>`;
+    list.appendChild(li);
+  });
+}
+
+// --- Telemetry Processor ---
+function processTelemetry(data) {
+  state.connected = !!data.connected;
+
+  const dot = $("statusDot");
+  const label = $("statusLabel");
+  if (state.connected) {
+    dot.className = "status-dot active";
+    label.textContent = data.source ? data.source.replace("10.13.44.103", "").trim() : "Live Stream";
+    $("sourceTag").textContent = data.source || "Active Link";
+  } else {
+    dot.className = "status-dot";
+    label.textContent = "Offline";
+  }
+
+  // Rate
+  state.packetCount++;
+  const now = performance.now();
+  if (now - state.rateTimer >= 1000) {
+    state.sampleRate = (state.packetCount / ((now - state.rateTimer) / 1000)).toFixed(1);
+    $("statHz").textContent = `${state.sampleRate} Hz`;
+    state.packetCount = 0;
+    state.rateTimer = now;
+  }
+
+  if (data.distance != null) {
+    const d = Number(data.distance);
+    state.rawDistance = d;
+
+    // Velocity
+    if (state.prevDistance !== null) {
+      const dt = (now - state.prevTimestamp) / 1000.0;
+      if (dt > 0.05 && dt < 1.0) {
+        const rawVel = (d - state.prevDistance) / dt;
+        state.velocity += (rawVel - state.velocity) * 0.35;
+      }
+    }
+    state.prevDistance = d;
+    state.prevTimestamp = now;
+
+    const velAbs = Math.abs(state.velocity);
+    if (velAbs < 1.5) {
+      $("statVelocity").textContent = "0 cm/s";
+    } else if (state.velocity < 0) {
+      $("statVelocity").textContent = `-${velAbs.toFixed(1)} cm/s`;
+    } else {
+      $("statVelocity").textContent = `+${velAbs.toFixed(1)} cm/s`;
+    }
+
+    // Number readout
+    $("distanceNumber").textContent = formatDist(d);
+    $("distanceUnit").textContent = state.unit === 'in' ? 'inches' : 'centimeters';
+
+    // Min / Max
+    if (state.minDist === null || d < state.minDist) {
+      state.minDist = d;
+      $("statClosest").textContent = `${formatDist(d)} ${state.unit}`;
+    }
+    if (state.maxDist === null || d > state.maxDist) {
+      state.maxDist = d;
+      $("statFurthest").textContent = `${formatDist(d)} ${state.unit}`;
+    }
+
+    // Zone Badge & Sound
+    const badge = $("zoneBadge");
+    let zone = "safe";
+    if (d < 18) {
+      zone = "danger";
+      badge.textContent = "CRITICAL PROXIMITY";
+      badge.style.color = "#f43f5e";
+      badge.style.borderColor = "rgba(244, 63, 94, 0.4)";
+      dot.className = "status-dot danger";
+    } else if (d < state.threshold) {
+      zone = "warn";
+      badge.textContent = "OBJECT DETECTED";
+      badge.style.color = "#fbbf24";
+      badge.style.borderColor = "rgba(251, 191, 36, 0.35)";
+      dot.className = "status-dot warn";
+    } else {
+      zone = "safe";
+      badge.textContent = "CLEAR FIELD";
+      badge.style.color = "var(--text-secondary)";
+      badge.style.borderColor = "var(--surface-border)";
+    }
+
+    handleSound(d);
+
+    if (zone !== state.lastZone) {
+      if (zone === "danger") logEvent(`Critical proximity: ${formatDist(d)} ${state.unit}`, "danger");
+      else if (zone === "warn") logEvent(`Object approaching: ${formatDist(d)} ${state.unit}`, "warn");
+      else if (state.lastZone === "warn" || state.lastZone === "danger") logEvent(`Detection field cleared`, "normal");
+      state.lastZone = zone;
+    }
+
+    state.history.push(d);
+    if (state.history.length > 60) state.history.shift();
+
+  } else {
+    state.rawDistance = null;
+    $("distanceNumber").textContent = "--";
+    const badge = $("zoneBadge");
+    badge.textContent = data.error === "NO_ECHO" ? "OUT OF RANGE" : "AWAITING ECHO";
+    badge.style.color = "var(--text-tertiary)";
+  }
+}
+
+// --- WebSocket Connection ---
+function startWS() {
+  const url = `${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/ws`;
+  const ws = new WebSocket(url);
+
+  ws.onopen = () => {
+    logEvent("3D Digital Twin telemetry connected", "normal");
+  };
+
+  ws.onmessage = e => {
+    try { processTelemetry(JSON.parse(e.data)); } catch (err) {}
+  };
+
+  ws.onclose = () => {
+    processTelemetry({ connected: false, distance: null });
+    setTimeout(startWS, 1500);
+  };
+
+  ws.onerror = () => ws.close();
+}
+
+// --- UI Controls ---
+
+// Camera Angle Presets
+document.querySelectorAll(".view-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const v = btn.dataset.view;
+    if (v === 'iso') {
+      camera.position.set(0, 12, 28);
+      controls.target.set(0, 0, 5);
+    } else if (v === 'top') {
+      camera.position.set(0, 32, 5);
+      controls.target.set(0, 0, 5);
+    } else if (v === 'front') {
+      camera.position.set(0, 0, 30);
+      controls.target.set(0, 0, 5);
+    }
+  };
+});
+
+// Auto Rotate Toggle
+$("btnAutoRotate").onclick = () => {
+  state.autoRotate = !state.autoRotate;
+  $("btnAutoRotate").classList.toggle("active", state.autoRotate);
+};
+
+// Acoustic Toggle
+$("btnAcoustic").onclick = () => {
+  ensureAudio();
+  state.acoustic = !state.acoustic;
+  $("btnAcoustic").classList.toggle("active", state.acoustic);
+  $("soundLabel").textContent = state.acoustic ? "Acoustic: ON" : "Acoustic Assist";
+  if (state.acoustic) playBeep(700);
+};
+
+// Unit Switch
+$("btnUnit").onclick = () => {
+  state.unit = state.unit === "cm" ? "in" : "cm";
+  $("unitText").textContent = `Unit: ${state.unit.toUpperCase()}`;
+  $("distanceUnit").textContent = state.unit === 'in' ? 'inches' : 'centimeters';
+  if (state.rawDistance != null) $("distanceNumber").textContent = formatDist(state.rawDistance);
+  if (state.minDist != null) $("statClosest").textContent = `${formatDist(state.minDist)} ${state.unit}`;
+  if (state.maxDist != null) $("statFurthest").textContent = `${formatDist(state.maxDist)} ${state.unit}`;
+};
+
+// Threshold slider
+$("threshSlider").oninput = e => {
+  state.threshold = Number(e.target.value);
+  $("threshDisplay").textContent = state.threshold;
+};
+
+// Clear Feed
+$("btnClearFeed").onclick = () => {
+  state.events = [];
+  renderEvents();
+};
+
+// Boot
+window.onload = () => {
+  init3D();
+  animate3D();
+  startWS();
+};
+</script>
+</body>
+</html>

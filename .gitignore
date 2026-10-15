@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+venv/
+ENV/
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# Arduino Build Artefacts
+build/
+*.hex
+*.elf
+
+# Logs
+*.log
