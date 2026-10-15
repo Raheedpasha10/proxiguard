@@ -255,9 +255,17 @@ async def cleanup(app):
     except Exception:
         pass
 
+async def static_file(request):
+    filename = request.match_info["filename"]
+    safe_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+    if os.path.isfile(safe_path):
+        return web.FileResponse(safe_path)
+    return web.Response(status=404, text="Not Found")
+
 app = web.Application()
 app.router.add_get("/", index)
 app.router.add_get("/ws", websocket_handler)
+app.router.add_get("/{filename:.*\\.(?:glb|gltf|bin|png|jpg|svg|json|ico|css|js)}", static_file)
 
 app.on_startup.append(start_background)
 app.on_cleanup.append(cleanup)

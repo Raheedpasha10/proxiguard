@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ProxiGuard — Modular Hardware Digital Twin & Spatial Telemetry</title>
+<title>ProxiGuard — Spatial Telemetry & Hardware Digital Twin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- Three.js 3D Engine & Orbit Controls -->
+<!-- Three.js 3D Engine & Orbit Controls & GLTF Loader -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <style>
 :root {
@@ -88,6 +89,7 @@ header.nav-header {
   justify-content: space-between;
   align-items: center;
   padding: 14px 18px;
+  gap: 8px;
 }
 
 .brand-section {
@@ -123,6 +125,35 @@ header.nav-header {
   font-size: 11px;
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Board Status Navbar Button */
+.btn-board-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(0, 129, 132, 0.2);
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  font-size: 12px;
+  font-weight: 600;
+  color: #2dd4bf;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.btn-board-status:hover {
+  background: rgba(0, 129, 132, 0.35);
+  border-color: #2dd4bf;
+  box-shadow: 0 0 16px rgba(45, 212, 191, 0.3);
 }
 
 .status-pill {
@@ -210,7 +241,7 @@ header.nav-header {
   background: currentColor;
 }
 
-/* RED BOX: THE SENSOR PLAYGROUND CARD */
+/* MAIN SENSOR PLAYGROUND CARD */
 .sensor-playground-card {
   padding: 0;
   overflow: hidden;
@@ -271,7 +302,7 @@ header.nav-header {
 
 #sensorCanvasContainer {
   width: 100%;
-  height: 380px;
+  height: 400px;
   position: relative;
   cursor: grab;
 }
@@ -300,12 +331,12 @@ header.nav-header {
 
 .hud-num {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 58px;
+  font-size: 64px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -2px;
   color: #ffffff;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.95);
 }
 
 .hud-unit {
@@ -328,101 +359,7 @@ header.nav-header {
   transition: all 0.3s ease;
 }
 
-/* ARDUINO UNO MOTHERBOARD & LIVE PIN INSPECTOR STAGE */
-.motherboard-stage-card {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: relative;
-}
-
-.stage-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.stage-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-secondary);
-}
-
-.stage-title .board-tag {
-  background: rgba(0, 129, 132, 0.25);
-  color: #2dd4bf;
-  border: 1px solid rgba(45, 212, 191, 0.3);
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-}
-
-#unoCanvasContainer {
-  width: 100%;
-  height: 280px;
-  position: relative;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--surface-border-subtle);
-  background: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.6) 0%, rgba(5, 7, 10, 0.95) 100%);
-  cursor: grab;
-}
-
-#unoCanvasContainer:active {
-  cursor: grabbing;
-}
-
-/* Floating 3D Circuit Diagnostic Inspector Tooltip */
-#pinInspectorHUD {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: rgba(15, 20, 32, 0.94);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-width: 260px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 20;
-}
-
-.inspector-pin-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.inspector-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--text-secondary);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  padding: 2px 0;
-}
-
-.inspector-row span.val {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-/* LIVE HARDWARE PIN & ELECTRICAL STATUS BAR */
+/* LIVE HARDWARE ELECTRICAL STATUS BAR */
 .hardware-strip {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -684,18 +621,310 @@ input[type=range]::-webkit-slider-thumb {
   border-left: 2px solid var(--surface-border);
 }
 
-.event-entry.danger {
-  border-left-color: var(--accent-crimson);
-}
-.event-entry.warn {
-  border-left-color: var(--accent-amber);
-}
+.event-entry.danger { border-left-color: var(--accent-crimson); }
+.event-entry.warn { border-left-color: var(--accent-amber); }
 
 .entry-time {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 11px;
   color: var(--text-tertiary);
 }
+
+/* ========================================================================= */
+/* DEDICATED SLIDE-OVER MODAL: ARDUINO UNO HARDWARE PINOUT INSPECTOR         */
+/* ========================================================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 5, 8, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.board-modal-card {
+  width: 100%;
+  max-width: 640px;
+  background: rgba(15, 18, 28, 0.95);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-overlay.open .board-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+/* Modal 3D Hardware Model Viewport */
+.modal-3d-stage {
+  width: 100%;
+  height: 250px;
+  background: radial-gradient(circle at 50% 45%, rgba(30, 41, 59, 0.45) 0%, rgba(4, 7, 13, 0.95) 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border-subtle);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+#modalUnoCanvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+#modalUnoCanvas:active {
+  cursor: grabbing;
+}
+
+.modal-3d-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 11, 20, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.modal-3d-loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-3d-loading .loader-spinner {
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(45, 212, 191, 0.2);
+  border-top-color: #2dd4bf;
+  border-radius: 50%;
+  animation: modalSpin 0.8s linear infinite;
+}
+
+@keyframes modalSpin {
+  to { transform: rotate(360deg); }
+}
+
+.modal-stage-controls {
+  position: absolute;
+  bottom: 8px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.modal-stage-controls .badge-tag {
+  font-size: 10px;
+  color: #2dd4bf;
+  background: rgba(45, 212, 191, 0.12);
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.modal-stage-controls .hint-tag {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* Interactive Circuit Pinout Matrix */
+.pinout-interactive-board {
+  background: rgba(5, 8, 14, 0.8);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pin-bank-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  letter-spacing: 0.8px;
+}
+
+.pin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 480px) {
+  .pin-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pin-cell {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pin-cell:hover, .pin-cell.active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.pin-cell.active-pin {
+  border-left: 3px solid var(--accent-cyan);
+}
+
+.pin-cell.power-pin {
+  border-left: 3px solid #10b981;
+}
+
+.pin-cell.uart-pin {
+  border-left: 3px solid var(--accent-amber);
+}
+
+.pin-cell.free-pin {
+  border-left: 3px solid #64748b;
+  opacity: 0.65;
+}
+
+.cell-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cell-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cell-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.cell-badge.trig { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+.cell-badge.echo { background: rgba(129, 140, 248, 0.2); color: #818cf8; }
+.cell-badge.uart { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+.cell-badge.pwr  { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.cell-badge.free { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+
+.cell-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* Detail Display Box */
+.pin-detail-box {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.detail-specs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  font-size: 12px;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spec-item span.k { font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; }
+.spec-item span.v { font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: var(--text-primary); }
 
 footer.footer-note {
   text-align: center;
@@ -720,13 +949,21 @@ footer.footer-note {
       </div>
       <div class="brand-titles">
         <h1>ProxiGuard 3D</h1>
-        <div class="sub">Modular Hardware Digital Twin</div>
+        <div class="sub">Spatial Telemetry Workstation</div>
       </div>
     </div>
     
-    <div class="status-pill">
-      <div id="statusDot" class="status-dot"></div>
-      <span id="statusLabel">Scanning</span>
+    <div class="header-actions">
+      <!-- Board Status Navbar Button -->
+      <button id="btnOpenBoardModal" class="btn-board-status">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line><line x1="9" y1="15" x2="9.01" y2="15"></line><line x1="15" y1="15" x2="15.01" y2="15"></line></svg>
+        <span>Board Status</span>
+      </button>
+
+      <div class="status-pill">
+        <div id="statusDot" class="status-dot"></div>
+        <span id="statusLabel">Scanning</span>
+      </div>
     </div>
   </header>
 
@@ -746,7 +983,7 @@ footer.footer-note {
     </button>
   </nav>
 
-  <!-- RED BOX: DEDICATED SENSOR PLAYGROUND -->
+  <!-- DEDICATED SENSOR PLAYGROUND CARD -->
   <section class="glass-panel sensor-playground-card">
     <div class="playground-toolbar">
       <div class="view-presets">
@@ -757,7 +994,7 @@ footer.footer-note {
       <span class="orbit-badge">Rotate &amp; Zoom 3D</span>
     </div>
 
-    <!-- WebGL Three.js Sensor Stage -->
+    <!-- WebGL Three.js Sensor Viewport (Centered, Huge & Photorealistic) -->
     <div id="sensorCanvasContainer"></div>
 
     <!-- Live Telemetry HUD -->
@@ -767,44 +1004,6 @@ footer.footer-note {
         <div id="distanceUnit" class="hud-unit">centimeters</div>
       </div>
       <div id="zoneBadge" class="hud-badge-zone">STANDBY</div>
-    </div>
-  </section>
-
-  <!-- YELLOW REGION: ARDUINO UNO MOTHERBOARD & LIVE PIN INSPECTOR STAGE -->
-  <section class="glass-panel motherboard-stage-card">
-    <div class="stage-header">
-      <div class="stage-title">
-        <span>Arduino Uno R3 Hardware Controller</span>
-        <span class="board-tag">ATmega328P</span>
-      </div>
-      <span style="font-size:11px; color:var(--text-tertiary);">Hover / Tap Any Pin</span>
-    </div>
-
-    <!-- 3D Motherboard Container -->
-    <div id="unoCanvasContainer">
-      <!-- Dynamic Floating Circuit Diagnostic Tooltip -->
-      <div id="pinInspectorHUD">
-        <div class="inspector-pin-title">
-          <span id="inspPinDot" class="micro-dot" style="background:#10b981;"></span>
-          <span id="inspPinName">PIN D9 [TRIG]</span>
-        </div>
-        <div class="inspector-row">
-          <span>Function</span>
-          <span id="inspPinRole" class="val">Ultrasonic Trigger</span>
-        </div>
-        <div class="inspector-row">
-          <span>Signal Level</span>
-          <span id="inspPinVolt" class="val">5.0V Active High</span>
-        </div>
-        <div class="inspector-row">
-          <span>State / Pulse</span>
-          <span id="inspPinState" class="val">10µs Burst @ 6.8 Hz</span>
-        </div>
-        <div class="inspector-row">
-          <span>Current Draw</span>
-          <span id="inspPinLoad" class="val">~15 mA Peak</span>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -898,16 +1097,144 @@ footer.footer-note {
     </div>
     <ul id="eventFeed" class="event-feed">
       <li class="event-entry">
-        <span>Arduino Uno Controller &amp; HC-SR04 Sensor Digital Twins ready</span>
+        <span>3D Spatial Telemetry Workstation ready</span>
         <span class="entry-time">Online</span>
       </li>
     </ul>
   </section>
 
   <footer class="footer-note">
-    ProxiGuard Complete Modular Hardware Digital Twin
+    ProxiGuard Spatial Telemetry &amp; Hardware Digital Twin
   </footer>
 
+</div>
+
+<!-- ========================================================================= -->
+<!-- DEDICATED SLIDE-OVER MODAL: ARDUINO UNO HARDWARE PINOUT INSPECTOR         -->
+<!-- ========================================================================= -->
+<div id="boardModal" class="modal-overlay">
+  <div class="board-modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><circle cx="9" cy="9" r="1"></circle><circle cx="15" cy="9" r="1"></circle><circle cx="9" cy="15" r="1"></circle><circle cx="15" cy="15" r="1"></circle></svg>
+        <span>Arduino Uno R3 • Hardware Pinout Inspector</span>
+      </h2>
+      <button id="btnCloseModal" class="modal-close-btn">&times;</button>
+    </div>
+
+    <!-- Realistic 3D Community Model Stage -->
+    <div class="modal-3d-stage">
+      <div id="modalUnoCanvas"></div>
+      <div id="modalUnoLoader" class="modal-3d-loading">
+        <div class="loader-spinner"></div>
+        <span>Loading Realistic 3D Arduino Uno...</span>
+      </div>
+      <div class="modal-stage-controls">
+        <span class="badge-tag">Community 3D Model • Realistic GLB</span>
+        <span class="hint-tag">Drag to rotate • Pinch / Scroll to zoom</span>
+      </div>
+    </div>
+
+    <!-- Active Pin Matrix -->
+    <div class="pinout-interactive-board">
+      <div class="pin-bank-title">Active Digital &amp; Communication Channels</div>
+      <div class="pin-grid">
+        <div class="pin-cell active-pin active" data-pin="D9">
+          <div class="cell-header">
+            <span class="cell-name">Pin D9</span>
+            <span class="cell-badge trig">TRIG</span>
+          </div>
+          <span class="cell-desc">Ultrasonic Pulse</span>
+        </div>
+        <div class="pin-cell active-pin" data-pin="D10">
+          <div class="cell-header">
+            <span class="cell-name">Pin D10</span>
+            <span class="cell-badge echo">ECHO</span>
+          </div>
+          <span class="cell-desc">Echo Timing Read</span>
+        </div>
+        <div class="pin-cell uart-pin" data-pin="D11">
+          <div class="cell-header">
+            <span class="cell-name">Pin D11</span>
+            <span class="cell-badge uart">RX</span>
+          </div>
+          <span class="cell-desc">ESP-01 Ingestion</span>
+        </div>
+        <div class="pin-cell uart-pin" data-pin="D12">
+          <div class="cell-header">
+            <span class="cell-name">Pin D12</span>
+            <span class="cell-badge uart">TX</span>
+          </div>
+          <span class="cell-desc">ESP-01 Command</span>
+        </div>
+        <div class="pin-cell power-pin" data-pin="5V">
+          <div class="cell-header">
+            <span class="cell-name">5V Rail</span>
+            <span class="cell-badge pwr">5.04V</span>
+          </div>
+          <span class="cell-desc">VCC Power Supply</span>
+        </div>
+        <div class="pin-cell power-pin" data-pin="3V3">
+          <div class="cell-header">
+            <span class="cell-name">3.3V Rail</span>
+            <span class="cell-badge pwr">3.31V</span>
+          </div>
+          <span class="cell-desc">ESP-01 Power</span>
+        </div>
+      </div>
+
+      <div class="pin-bank-title" style="margin-top:8px;">Available Expansion Channels (Future Components)</div>
+      <div class="pin-grid">
+        <div class="pin-cell free-pin" data-pin="D2">
+          <div class="cell-header">
+            <span class="cell-name">Pin D2</span>
+            <span class="cell-badge free">FREE</span>
+          </div>
+          <span class="cell-desc">Slot 2 GPIO</span>
+        </div>
+        <div class="pin-cell free-pin" data-pin="D3">
+          <div class="cell-header">
+            <span class="cell-name">Pin D3</span>
+            <span class="cell-badge free">PWM</span>
+          </div>
+          <span class="cell-desc">Slot 3 PWM</span>
+        </div>
+        <div class="pin-cell free-pin" data-pin="A0">
+          <div class="cell-header">
+            <span class="cell-name">Analog A0</span>
+            <span class="cell-badge free">10-BIT</span>
+          </div>
+          <span class="cell-desc">Analog Sensor Slot</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected Pin Live Circuit Telemetry Box -->
+    <div class="pin-detail-box">
+      <div class="detail-header">
+        <span id="modalPinTitle">PIN D9 [PWM / OUTPUT]</span>
+        <span id="modalPinBadge" class="cell-badge trig">ACTIVE TRIGGER</span>
+      </div>
+      <div class="detail-specs">
+        <div class="spec-item">
+          <span class="k">Hardware Role</span>
+          <span id="modalPinRole" class="v">HC-SR04 Trigger (TRIG)</span>
+        </div>
+        <div class="spec-item">
+          <span class="k">Electrical Logic</span>
+          <span id="modalPinVolt" class="v">5.0V Active High</span>
+        </div>
+        <div class="spec-item">
+          <span class="k">State / Timing</span>
+          <span id="modalPinState" class="v">10 µs Pulse Burst @ ~7 Hz</span>
+        </div>
+        <div class="spec-item">
+          <span class="k">Current Draw</span>
+          <span id="modalPinLoad" class="v">~15 mA (Burst)</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -930,24 +1257,22 @@ const state = {
   lastZone: null,
   packetCount: 0,
   rateTimer: performance.now(),
-  sampleRate: 0,
-  ledTxRxPulse: 0
+  sampleRate: 0
 };
 
 const $ = id => document.getElementById(id);
 
-// --- Pinout Database for 3D Raycasting Inspector ---
-const PIN_DATA = {
-  "D9": { name: "PIN D9 [PWM/OUTPUT]", role: "HC-SR04 Trigger (TRIG)", volt: "5.0V Active High", state: "10 µs Pulse Burst @ ~7Hz", load: "~15 mA (Burst)", color: "#38bdf8" },
-  "D10": { name: "PIN D10 [INPUT]", role: "HC-SR04 Echo (ECHO)", volt: "5.0V Logic (High-Z)", state: "Pulse-Width Timing Input", load: "< 1 mA", color: "#818cf8" },
-  "D11": { name: "PIN D11 [RX]", role: "ESP8266 UTXD (SoftwareSerial)", volt: "3.3V Logic Input", state: "9600 Baud Data Ingestion", load: "< 1 mA", color: "#fbbf24" },
-  "D12": { name: "PIN D12 [TX]", role: "ESP8266 URXD (SoftwareSerial)", volt: "5.0V Logic Output", state: "9600 Baud Command Stream", load: "~2 mA", color: "#f59e0b" },
-  "5V": { name: "5V POWER RAIL", role: "Sensor Operating VCC", volt: "5.04 V DC Regulated", state: "Continuous Active", load: "~15 mA (HC-SR04)", color: "#10b981" },
-  "3V3": { name: "3.3V POWER RAIL", role: "ESP8266 Wi-Fi Rail", volt: "3.31 V DC External", state: "Continuous Active", load: "~80-140 mA (ESP-01)", color: "#2dd4bf" },
-  "GND": { name: "COMMON GROUND", role: "System Ground Reference", volt: "0.0 V (GND)", state: "Return Current Path", load: "Common Ground", color: "#64748b" },
-  "D2": { name: "PIN D2 [GPIO]", role: "Unassigned Expansion Slot", volt: "0.0V (High-Z)", state: "Available for Component Slot 2", load: "0 mA", color: "#94a3b8" },
-  "D3": { name: "PIN D3 [PWM]", role: "Unassigned Expansion Slot", volt: "0.0V (High-Z)", state: "Available for Component Slot 3", load: "0 mA", color: "#94a3b8" },
-  "A0": { name: "ANALOG A0", role: "Analog Input Channel", volt: "10-bit ADC Available", state: "Available for Sensor Reading", load: "0 mA", color: "#94a3b8" }
+// --- Pinout Database for Hardware Modal ---
+const PIN_SPECS = {
+  "D9": { title: "PIN D9 [PWM / DIGITAL OUTPUT]", badge: "TRIG", badgeClass: "trig", role: "HC-SR04 Ultrasonic Trigger", volt: "5.0V Active High", state: "10 µs Pulse Burst @ ~7 Hz", load: "~15 mA (Peak)" },
+  "D10": { title: "PIN D10 [DIGITAL INPUT]", badge: "ECHO", badgeClass: "echo", role: "HC-SR04 Acoustic Echo Receiver", volt: "5.0V Logic (High-Z)", state: "Pulse-Width Timing Input", load: "< 1 mA" },
+  "D11": { title: "PIN D11 [SOFTWARE SERIAL RX]", badge: "RX", badgeClass: "uart", role: "ESP8266 UTXD Telemetry Ingestion", volt: "3.3V Logic Input", state: "9600 Baud Data Stream", load: "< 1 mA" },
+  "D12": { title: "PIN D12 [SOFTWARE SERIAL TX]", badge: "TX", badgeClass: "uart", role: "ESP8266 URXD Command Interface", volt: "5.0V Logic Output", state: "9600 Baud AT Command Link", load: "~2 mA" },
+  "5V": { title: "5V POWER DISTRIBUTION RAIL", badge: "5.04V", badgeClass: "pwr", role: "Arduino 5V Regulated Bus", volt: "5.04 V DC Regulated", state: "Continuous Sensor Power", load: "~15 mA (HC-SR04)" },
+  "3V3": { title: "3.3V EXTERNAL POWER RAIL", badge: "3.31V", badgeClass: "pwr", role: "ESP8266 Wi-Fi Module Supply", volt: "3.31 V DC External", state: "Continuous Active Wi-Fi Rail", load: "~80 - 140 mA (ESP-01)" },
+  "D2": { title: "PIN D2 [GPIO / INTERRUPT]", badge: "FREE", badgeClass: "free", role: "Available for Expansion Component", volt: "0.0V (High-Z Standby)", state: "Ready for Sensor Slot 2", load: "0 mA" },
+  "D3": { title: "PIN D3 [PWM / INTERRUPT]", badge: "FREE", badgeClass: "free", role: "Available for Expansion Component", volt: "0.0V (High-Z Standby)", state: "Ready for Sensor Slot 3", load: "0 mA" },
+  "A0": { title: "ANALOG PIN A0 [10-BIT ADC]", badge: "FREE", badgeClass: "free", role: "Analog Voltage Measurement", volt: "0.0V - 5.0V Range", state: "Ready for Analog Sensor", load: "0 mA" }
 };
 
 // --- Fluid Dramatic Acoustic Engine ---
@@ -1023,7 +1348,7 @@ function updateAcousticScheduler(d) {
 }
 
 // =========================================================================
-// 1. SENSOR PLAYGROUND 3D ENGINE (RED BOX: ONLY HC-SR04 SENSOR & WAVES)
+// SENSOR PLAYGROUND 3D ENGINE (RED BOX: ONLY HC-SR04 SENSOR & WAVES)
 // =========================================================================
 let sScene, sCamera, sRenderer, sControls;
 let sensorModel, obstaclePlate, dimensionLine;
@@ -1077,7 +1402,7 @@ function initSensorPlayground() {
   grid.position.z = 10;
   sScene.add(grid);
 
-  // Build HC-SR04 Model (Centered, Enormous, Photorealistic)
+  // Build HC-SR04 Model (Centered, Photorealistic, High-Specular)
   buildSoloHCSR04();
   build3DObstacle();
   build3DWaves();
@@ -1199,194 +1524,20 @@ function build3DRuler() {
   sScene.add(dimensionLine);
 }
 
-// =========================================================================
-// 2. ARDUINO UNO MOTHERBOARD STAGE (YELLOW REGION: 3D UNO + RAYCASTING)
-// =========================================================================
-let uScene, uCamera, uRenderer, uControls;
-let unoModel, unoPins = [];
-let raycaster = new THREE.Raycaster();
-let mouse = new THREE.Vector2();
-
-function initUnoStage() {
-  const container = $("unoCanvasContainer");
-  const w = container.clientWidth;
-  const h = container.clientHeight;
-
-  uScene = new THREE.Scene();
-  uCamera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
-  uCamera.position.set(0, 14, 18);
-
-  uRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  uRenderer.setSize(w, h);
-  uRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  uRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-  uRenderer.toneMappingExposure = 1.25;
-  container.appendChild(uRenderer.domElement);
-
-  uControls = new THREE.OrbitControls(uCamera, uRenderer.domElement);
-  uControls.enableDamping = true;
-  uControls.dampingFactor = 0.06;
-  uControls.maxPolarAngle = Math.PI / 2 + 0.1;
-  uControls.minDistance = 8;
-  uControls.maxDistance = 35;
-  uControls.target.set(0, 0, 0);
-
-  // Lighting
-  uScene.add(new THREE.AmbientLight(0x1e293b, 1.5));
-  const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
-  dirLight.position.set(10, 16, 12);
-  uScene.add(dirLight);
-
-  const cyanRim = new THREE.DirectionalLight(0x38bdf8, 2.8);
-  cyanRim.position.set(-12, -4, -10);
-  uScene.add(cyanRim);
-
-  // Build Dedicated 3D Arduino Uno Model with Raycastable Pin Geometries
-  buildRaycastableUno();
-
-  // Mouse / Touch Event Listeners for Raycasting
-  container.addEventListener('mousemove', onUnoMouseMove);
-  container.addEventListener('touchstart', onUnoTouch);
-}
-
-function buildRaycastableUno() {
-  unoModel = new THREE.Group();
-
-  // Arduino PCB (Teal)
-  const pcbGeo = new THREE.BoxGeometry(11.2, 0.4, 8.0);
-  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x008184, roughness: 0.45, metalness: 0.2 });
-  unoModel.add(new THREE.Mesh(pcbGeo, pcbMat));
-
-  // USB Port
-  const usbGeo = new THREE.BoxGeometry(2.0, 1.6, 2.0);
-  const usbMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.95, roughness: 0.15 });
-  const usb = new THREE.Mesh(usbGeo, usbMat);
-  usb.position.set(-4.8, 1.0, -1.8);
-  unoModel.add(usb);
-
-  // DC Barrel Jack
-  const dcGeo = new THREE.CylinderGeometry(1.2, 1.2, 2.0, 24);
-  const dcMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.8 });
-  const dc = new THREE.Mesh(dcGeo, dcMat);
-  dc.rotation.z = Math.PI / 2;
-  dc.position.set(-4.8, 0.9, 2.2);
-  unoModel.add(dc);
-
-  // ATmega328P DIP-28
-  const icGeo = new THREE.BoxGeometry(4.6, 0.6, 1.4);
-  const icMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 });
-  const ic = new THREE.Mesh(icGeo, icMat);
-  ic.position.set(1.4, 0.5, 1.4);
-  unoModel.add(ic);
-
-  // Female Header Strip Base
-  const headerGeo = new THREE.BoxGeometry(5.2, 0.9, 0.55);
-  const headerMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.8 });
-
-  const digHeader = new THREE.Mesh(headerGeo, headerMat);
-  digHeader.position.set(1.8, 0.6, -3.4);
-  unoModel.add(digHeader);
-
-  const pwrHeader = new THREE.Mesh(headerGeo, headerMat);
-  pwrHeader.position.set(1.8, 0.6, 3.4);
-  unoModel.add(pwrHeader);
-
-  // Create Individual Interactive Raycastable Pin Nodes
-  function createPinNode(pinId, x, z, isActive = false) {
-    const pinNodeGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.45, 12);
-    const pinNodeMat = new THREE.MeshStandardMaterial({
-      color: isActive ? 0x38bdf8 : 0x475569,
-      metalness: 0.9,
-      roughness: 0.2,
-      emissive: isActive ? 0x0284c7 : 0x000000,
-      emissiveIntensity: isActive ? 0.6 : 0.0
-    });
-    const pinMesh = new THREE.Mesh(pinNodeGeo, pinNodeMat);
-    pinMesh.position.set(x, 1.1, z);
-    pinMesh.userData = { pinId: pinId };
-    unoModel.add(pinMesh);
-    unoPins.push(pinMesh);
-  }
-
-  // Digital Pins (D9, D10, D11, D12, D2, D3)
-  createPinNode("D12", 2.9, -3.4, true);
-  createPinNode("D11", 2.5, -3.4, true);
-  createPinNode("D10", 2.1, -3.4, true);
-  createPinNode("D9",  1.7, -3.4, true);
-  createPinNode("D3",  0.5, -3.4, false);
-  createPinNode("D2",  0.1, -3.4, false);
-
-  // Power & Analog Pins (5V, 3V3, GND, A0)
-  createPinNode("5V",  1.3, 3.4, true);
-  createPinNode("3V3", 0.9, 3.4, true);
-  createPinNode("GND", 1.7, 3.4, true);
-  createPinNode("A0",  2.7, 3.4, false);
-
-  uScene.add(unoModel);
-}
-
-// Raycasting Interaction over Uno
-function updatePinRaycast(clientX, clientY) {
-  const container = $("unoCanvasContainer");
-  const rect = container.getBoundingClientRect();
-  mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
-  mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
-
-  raycaster.setFromCamera(mouse, uCamera);
-  const intersects = raycaster.intersectObjects(unoPins);
-
-  if (intersects.length > 0) {
-    const hitPin = intersects[0].object;
-    const pinId = hitPin.userData.pinId;
-    const info = PIN_DATA[pinId];
-    if (info) {
-      $("inspPinName").textContent = info.name;
-      $("inspPinRole").textContent = info.role;
-      $("inspPinVolt").textContent = info.volt;
-      $("inspPinState").textContent = info.state;
-      $("inspPinLoad").textContent = info.load;
-      $("inspPinDot").style.background = info.color;
-      $("pinInspectorHUD").style.opacity = "1";
-      $("pinInspectorHUD").style.borderColor = info.color;
-    }
-  }
-}
-
-function onUnoMouseMove(e) {
-  updatePinRaycast(e.clientX, e.clientY);
-}
-
-function onUnoTouch(e) {
-  if (e.touches.length > 0) {
-    updatePinRaycast(e.touches[0].clientX, e.touches[0].clientY);
-  }
-}
-
-// Resize handlers
-function onResizeAll() {
-  // Sensor Canvas
+function onResize() {
   const sCont = $("sensorCanvasContainer");
   if (sCont) {
     sCamera.aspect = sCont.clientWidth / sCont.clientHeight;
     sCamera.updateProjectionMatrix();
     sRenderer.setSize(sCont.clientWidth, sCont.clientHeight);
   }
-
-  // Uno Canvas
-  const uCont = $("unoCanvasContainer");
-  if (uCont) {
-    uCamera.aspect = uCont.clientWidth / uCont.clientHeight;
-    uCamera.updateProjectionMatrix();
-    uRenderer.setSize(uCont.clientWidth, uCont.clientHeight);
-  }
 }
-window.addEventListener('resize', onResizeAll);
+window.addEventListener('resize', onResize);
 
-// Combined 60 FPS Animation Loop
-function main3DLoop() {
-  requestAnimationFrame(main3DLoop);
+// Sensor 3D Animation Loop
+function animateSensorPlayground() {
+  requestAnimationFrame(animateSensorPlayground);
 
-  // --- SENSOR PLAYGROUND PHYSICS ---
   const targetDist = (state.rawDistance != null && state.rawDistance > 0) ? state.rawDistance : 80;
   state.smoothDistance += (targetDist - state.smoothDistance) * 0.085;
 
@@ -1425,10 +1576,6 @@ function main3DLoop() {
 
   sControls.update();
   sRenderer.render(sScene, sCamera);
-
-  // --- ARDUINO UNO CONTROLLER STAGE ---
-  uControls.update();
-  uRenderer.render(uScene, uCamera);
 }
 
 // --- Live Waveform Chart ---
@@ -1640,7 +1787,7 @@ function startWS() {
   const ws = new WebSocket(url);
 
   ws.onopen = () => {
-    logEvent("3D Digital Hardware Workstation connected", "normal");
+    logEvent("3D Spatial Telemetry connected", "normal");
   };
 
   ws.onmessage = e => {
@@ -1655,7 +1802,7 @@ function startWS() {
   ws.onerror = () => ws.close();
 }
 
-// --- UI Controls ---
+// --- UI Controls & Modal Wiring ---
 
 // Camera Presets on Sensor Playground
 document.querySelectorAll(".view-btn").forEach(btn => {
@@ -1713,10 +1860,276 @@ $("btnClearFeed").onclick = () => {
   renderEvents();
 };
 
+// --- Modal Open / Close & Realistic 3D Arduino Uno Inspector ---
+const modal = $("boardModal");
+let mScene, mCamera, mRenderer, mControls;
+let mUnoModel = null;
+let mPinBeacons = [];
+let modalUnoInitialized = false;
+let modalUnoRunning = false;
+let selectedPinId = "D9";
+const mRaycaster = new THREE.Raycaster();
+const mMouse = new THREE.Vector2();
+
+function selectPin(pinId) {
+  selectedPinId = pinId;
+  
+  // Highlight cell in HTML matrix
+  document.querySelectorAll(".pin-cell").forEach(c => {
+    c.classList.toggle("active", c.dataset.pin === pinId);
+  });
+
+  // Update Telemetry Detail Card
+  const data = PIN_SPECS[pinId];
+  if (data) {
+    $("modalPinTitle").textContent = data.title;
+    $("modalPinBadge").textContent = data.badge;
+    $("modalPinBadge").className = `cell-badge ${data.badgeClass}`;
+    $("modalPinRole").textContent = data.role;
+    $("modalPinVolt").textContent = data.volt;
+    $("modalPinState").textContent = data.state;
+    $("modalPinLoad").textContent = data.load;
+  }
+
+  // Update 3D Beacons
+  mPinBeacons.forEach(b => {
+    const isSelected = b.userData.pinId === pinId;
+    b.material.emissiveIntensity = isSelected ? 1.6 : 0.4;
+    b.scale.setScalar(isSelected ? 1.35 : 1.0);
+  });
+}
+
+function initModalUnoStage() {
+  const container = $("modalUnoCanvas");
+  if (!container) return;
+
+  if (modalUnoInitialized) {
+    onResizeModalUno();
+    if (!modalUnoRunning) {
+      modalUnoRunning = true;
+      animateModalUno();
+    }
+    return;
+  }
+  modalUnoInitialized = true;
+
+  mScene = new THREE.Scene();
+  mCamera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
+  mCamera.position.set(0, 12, 14);
+
+  mRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+  mRenderer.setSize(container.clientWidth, container.clientHeight);
+  mRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  mRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  mRenderer.toneMappingExposure = 1.3;
+  mRenderer.outputEncoding = THREE.sRGBEncoding;
+  container.appendChild(mRenderer.domElement);
+
+  mControls = new THREE.OrbitControls(mCamera, mRenderer.domElement);
+  mControls.enableDamping = true;
+  mControls.dampingFactor = 0.08;
+  mControls.maxPolarAngle = Math.PI / 2 + 0.15;
+  mControls.minDistance = 6;
+  mControls.maxDistance = 30;
+  mControls.target.set(0, 0, 0);
+
+  // Studio Lighting
+  mScene.add(new THREE.AmbientLight(0xffffff, 1.3));
+  const mainLight = new THREE.DirectionalLight(0xffffff, 2.2);
+  mainLight.position.set(12, 18, 14);
+  mScene.add(mainLight);
+
+  const cyanRim = new THREE.DirectionalLight(0x2dd4bf, 2.5);
+  cyanRim.position.set(-14, -6, -10);
+  mScene.add(cyanRim);
+
+  const warmRim = new THREE.DirectionalLight(0xfef08a, 1.0);
+  warmRim.position.set(10, -5, -8);
+  mScene.add(warmRim);
+
+  // Load Community GLB Model
+  const loader = new THREE.GLTFLoader();
+  loader.load(
+    'arduino_uno.glb',
+    (gltf) => {
+      mUnoModel = gltf.scene;
+
+      // Auto-compute bounding box to center & scale
+      const box = new THREE.Box3().setFromObject(mUnoModel);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const targetDim = 11.0;
+      const scale = targetDim / maxDim;
+
+      mUnoModel.scale.set(scale, scale, scale);
+      mUnoModel.position.x = -center.x * scale;
+      mUnoModel.position.y = -center.y * scale;
+      mUnoModel.position.z = -center.z * scale;
+
+      mUnoModel.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+
+      mScene.add(mUnoModel);
+      buildPinBeacons();
+
+      const loaderEl = $("modalUnoLoader");
+      if (loaderEl) loaderEl.classList.add("hidden");
+
+      modalUnoRunning = true;
+      animateModalUno();
+    },
+    undefined,
+    (err) => {
+      console.warn("GLTF direct load notice, using procedural digital twin:", err);
+      const loaderEl = $("modalUnoLoader");
+      if (loaderEl) loaderEl.classList.add("hidden");
+      buildProceduralDigitalTwin();
+      buildPinBeacons();
+      modalUnoRunning = true;
+      animateModalUno();
+    }
+  );
+
+  // Raycasting on 3D board
+  container.addEventListener('pointerdown', (e) => {
+    const rect = container.getBoundingClientRect();
+    mMouse.x = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
+    mMouse.y = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
+    mRaycaster.setFromCamera(mMouse, mCamera);
+    const hits = mRaycaster.intersectObjects(mPinBeacons);
+    if (hits.length > 0) {
+      const pinId = hits[0].object.userData.pinId;
+      if (pinId) selectPin(pinId);
+    }
+  });
+
+  window.addEventListener('resize', onResizeModalUno);
+}
+
+function buildProceduralDigitalTwin() {
+  mUnoModel = new THREE.Group();
+  const pcb = new THREE.Mesh(
+    new THREE.BoxGeometry(11.2, 0.35, 7.8),
+    new THREE.MeshStandardMaterial({ color: 0x008184, roughness: 0.3, metalness: 0.2 })
+  );
+  mUnoModel.add(pcb);
+
+  const usb = new THREE.Mesh(
+    new THREE.BoxGeometry(2.0, 1.4, 1.8),
+    new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.9, roughness: 0.15 })
+  );
+  usb.position.set(-4.8, 0.9, -1.8);
+  mUnoModel.add(usb);
+
+  const dc = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.0, 1.0, 1.8, 24),
+    new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 })
+  );
+  dc.rotation.z = Math.PI / 2;
+  dc.position.set(-4.8, 0.75, 2.2);
+  mUnoModel.add(dc);
+
+  const ic = new THREE.Mesh(
+    new THREE.BoxGeometry(4.4, 0.5, 1.2),
+    new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 })
+  );
+  ic.position.set(1.4, 0.45, 1.4);
+  mUnoModel.add(ic);
+
+  mScene.add(mUnoModel);
+}
+
+function buildPinBeacons() {
+  mPinBeacons = [];
+  const beaconGeo = new THREE.SphereGeometry(0.24, 16, 16);
+
+  const pinDefs = [
+    { pinId: "D12", x: 2.8,  y: 1.2, z: -3.3, color: 0xfbbf24 },
+    { pinId: "D11", x: 2.3,  y: 1.2, z: -3.3, color: 0xfbbf24 },
+    { pinId: "D10", x: 1.8,  y: 1.2, z: -3.3, color: 0x818cf8 },
+    { pinId: "D9",  x: 1.3,  y: 1.2, z: -3.3, color: 0x38bdf8 },
+    { pinId: "D3",  x: 0.1,  y: 1.2, z: -3.3, color: 0x94a3b8 },
+    { pinId: "D2",  x: -0.4, y: 1.2, z: -3.3, color: 0x94a3b8 },
+    { pinId: "5V",  x: 1.2,  y: 1.2, z: 3.3,  color: 0x34d399 },
+    { pinId: "3V3", x: 0.7,  y: 1.2, z: 3.3,  color: 0x34d399 },
+    { pinId: "A0",  x: 2.6,  y: 1.2, z: 3.3,  color: 0x94a3b8 }
+  ];
+
+  pinDefs.forEach((p, i) => {
+    const mat = new THREE.MeshStandardMaterial({
+      color: p.color,
+      emissive: p.color,
+      emissiveIntensity: p.pinId === selectedPinId ? 1.6 : 0.4,
+      roughness: 0.2,
+      metalness: 0.8
+    });
+    const beacon = new THREE.Mesh(beaconGeo, mat);
+    beacon.position.set(p.x, p.y, p.z);
+    beacon.userData = { pinId: p.pinId, baseY: p.y, offset: i * 0.4 };
+    mScene.add(beacon);
+    mPinBeacons.push(beacon);
+  });
+}
+
+function onResizeModalUno() {
+  const container = $("modalUnoCanvas");
+  if (!container || !mRenderer || !mCamera) return;
+  mCamera.aspect = container.clientWidth / container.clientHeight;
+  mCamera.updateProjectionMatrix();
+  mRenderer.setSize(container.clientWidth, container.clientHeight);
+}
+
+function animateModalUno() {
+  if (!modal.classList.contains("open")) {
+    modalUnoRunning = false;
+    return;
+  }
+  requestAnimationFrame(animateModalUno);
+  if (mControls) mControls.update();
+
+  const t = performance.now() * 0.003;
+  mPinBeacons.forEach(b => {
+    b.position.y = b.userData.baseY + Math.sin(t + b.userData.offset) * 0.08;
+    if (b.userData.pinId === selectedPinId) {
+      b.material.emissiveIntensity = 1.2 + Math.sin(t * 3.5) * 0.5;
+    }
+  });
+
+  if (mRenderer && mScene && mCamera) {
+    mRenderer.render(mScene, mCamera);
+  }
+}
+
+// Modal Toggle Wiring
+$("btnOpenBoardModal").onclick = () => {
+  modal.classList.add("open");
+  setTimeout(initModalUnoStage, 50);
+};
+
+$("btnCloseModal").onclick = () => {
+  modal.classList.remove("open");
+};
+
+modal.onclick = (e) => {
+  if (e.target === modal) modal.classList.remove("open");
+};
+
+// Pinout Matrix Interactive Click
+document.querySelectorAll(".pin-cell").forEach(cell => {
+  cell.onclick = () => {
+    const pin = cell.dataset.pin;
+    if (pin) selectPin(pin);
+  };
+});
+
 window.onload = () => {
   initSensorPlayground();
-  initUnoStage();
-  main3DLoop();
+  animateSensorPlayground();
   startWS();
 };
 </script>
