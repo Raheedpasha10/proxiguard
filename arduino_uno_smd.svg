@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 685 533" width="100%" height="100%" class="uno-smd-svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 686 533" width="100%" height="100%" class="uno-smd-svg">
 <defs>
-  <!-- Solder Mask Gradient -->
-  <linearGradient id="pcbMask" x1="0%" y1="0%" x2="100%" y2="100%">
-    <stop offset="0%" stop-color="#006d70"/>
-    <stop offset="60%" stop-color="#005052"/>
-    <stop offset="100%" stop-color="#003e40"/>
+  <!-- Authentic Royal Blue Solder Mask Gradient (Exact user board color) -->
+  <linearGradient id="pcbBlueMask" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#143c74"/>
+    <stop offset="50%" stop-color="#0f2b54"/>
+    <stop offset="100%" stop-color="#091b36"/>
   </linearGradient>
 
   <!-- Metal Shield Gradient -->
   <linearGradient id="metalShield" x1="0%" y1="0%" x2="100%" y2="100%">
-    <stop offset="0%" stop-color="#f1f5f9"/>
+    <stop offset="0%" stop-color="#f8fafc"/>
     <stop offset="40%" stop-color="#cbd5e1"/>
     <stop offset="80%" stop-color="#94a3b8"/>
     <stop offset="100%" stop-color="#64748b"/>
@@ -22,23 +22,19 @@
     <stop offset="100%" stop-color="#0f131a"/>
   </linearGradient>
 
-  <!-- Gold/Tin Pad -->
-  <linearGradient id="goldPad" x1="0%" y1="0%" x2="100%" y2="100%">
-    <stop offset="0%" stop-color="#fef08a"/>
-    <stop offset="100%" stop-color="#d97706"/>
-  </linearGradient>
-
   <!-- Drop Shadows -->
   <filter id="partShadow" x="-10%" y="-10%" width="130%" height="130%">
-    <feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="#000000" flood-opacity="0.55"/>
+    <feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="#000000" flood-opacity="0.6"/>
   </filter>
   <filter id="chipShadow" x="-15%" y="-15%" width="130%" height="130%">
-    <feDropShadow dx="1" dy="1.5" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.6"/>
+    <feDropShadow dx="1" dy="1.5" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.65"/>
   </filter>
 </defs>
-<!-- 1. PCB SUBSTRATE -->
-<path d="M 10.0 0.0 L 645.2 0.0 L 660.4 15.2 L 660.4 129.5 L 685.8 154.9 L 685.8 482.6 L 660.4 508.0 L 660.4 523.4 L 650.4 533.4 L 10.0 533.4 L 0.0 523.4 L 0.0 10.0 Z" fill="url(#pcbMask)" stroke="#008184" stroke-width="2" filter="url(#partShadow)"/>
-<!-- MOUNTING HOLES -->
+
+<!-- 1. PCB SUBSTRATE (ROYAL BLUE ARDUINO UNO SMD CH340) -->
+<path d="M 10.0 0.0 L 645.2 0.0 L 660.4 15.2 L 660.4 129.5 L 685.8 154.9 L 685.8 482.6 L 660.4 508.0 L 660.4 523.4 L 650.4 533.4 L 10.0 533.4 L 0.0 523.4 L 0.0 10.0 Z" fill="url(#pcbBlueMask)" stroke="#2563eb" stroke-width="2" filter="url(#partShadow)"/>
+
+<!-- MOUNTING HOLES (3.2mm) -->
 <circle cx="152.4" cy="25.4" r="32" fill="none" stroke="#e2e8f0" stroke-width="4" stroke-opacity="0.35"/>
 <circle cx="152.4" cy="25.4" r="16" fill="#030712"/>
 <circle cx="660.4" cy="177.8" r="32" fill="none" stroke="#e2e8f0" stroke-width="4" stroke-opacity="0.35"/>
@@ -47,415 +43,387 @@
 <circle cx="139.7" cy="508.0" r="16" fill="#030712"/>
 <circle cx="660.4" cy="457.2" r="32" fill="none" stroke="#e2e8f0" stroke-width="4" stroke-opacity="0.35"/>
 <circle cx="660.4" cy="457.2" r="16" fill="#030712"/>
+
 <!-- USB-B CONNECTOR -->
 <g filter="url(#partShadow)">
-  <rect x="8.1" y="92.4" width="120" height="120" rx="4" fill="url(#metalShield)" stroke="#475569" stroke-width="1.5"/>
-  <rect x="18.1" y="107.4" width="90" height="90" rx="2" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <rect x="38.1" y="127.4" width="50" height="50" rx="2" fill="#cbd5e1"/>
-  <rect x="48.1" y="137.4" width="30" height="30" rx="1" fill="#1e293b"/>
+  <rect x="0" y="90" width="125" height="120" rx="4" fill="url(#metalShield)" stroke="#475569" stroke-width="1.5"/>
+  <rect x="15" y="105" width="95" height="90" rx="2" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <rect x="35" y="125" width="55" height="50" rx="2" fill="#cbd5e1"/>
+  <rect x="45" y="135" width="35" height="30" rx="1" fill="#1e293b"/>
 </g>
+
 <!-- DC BARREL JACK -->
 <g filter="url(#partShadow)">
-  <rect x="13.3" y="404.6" width="145" height="90" rx="4" fill="#090d14" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="18.3" y="414.6" width="40" height="70" rx="2" fill="#1e293b"/>
-  <circle cx="38.3" cy="449.6" r="18" fill="#030712"/>
-  <circle cx="38.3" cy="449.6" r="7" fill="#cbd5e1"/>
+  <rect x="0" y="390" width="145" height="95" rx="4" fill="#090d14" stroke="#1e293b" stroke-width="1.5"/>
+  <rect x="10" y="402" width="45" height="70" rx="2" fill="#1e293b"/>
+  <circle cx="32" cy="437" r="18" fill="#030712"/>
+  <circle cx="32" cy="437" r="7" fill="#cbd5e1"/>
 </g>
+
 <!-- RESET BUTTON -->
 <g filter="url(#partShadow)">
-  <rect x="58.2" y="20.1" width="36" height="36" rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
-  <circle cx="76.2" cy="38.1" r="10" fill="#e11d48"/>
+  <rect x="58" y="20" width="36" height="36" rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+  <circle cx="76" cy="38" r="11" fill="#dc2626"/>
 </g>
-<!-- 16MHz CRYSTAL -->
-<rect x="206.3" y="334.4" width="70" height="28" rx="12" fill="url(#metalShield)" stroke="#64748b" stroke-width="1" filter="url(#partShadow)"/>
-<text x="241.3" y="352.4" font-family="Space Grotesk, sans-serif" font-size="8" fill="#334155" text-anchor="middle" font-weight="700">16.000</text>
-<!-- TRUE ATMEGA328P-MU QFN-32 SURFACE-MOUNT MCU (SMD) -->
-<g filter="url(#chipShadow)">
-  <!-- 32 Perimeter SMD Solder Pads -->
-  <rect x="405.8" y="343.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="405.8" y="397.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="394.5" y="355.0" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="448.5" y="355.0" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="411.0" y="343.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="411.0" y="397.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="394.5" y="360.2" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="448.5" y="360.2" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="416.2" y="343.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="416.2" y="397.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="394.5" y="365.4" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="448.5" y="365.4" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="421.4" y="343.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="421.4" y="397.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="394.5" y="370.6" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="448.5" y="370.6" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="426.6" y="343.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="426.6" y="397.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="394.5" y="375.8" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="448.5" y="375.8" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="431.8" y="343.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="431.8" y="397.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="394.5" y="381.0" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="448.5" y="381.0" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="437.0" y="343.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="437.0" y="397.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="394.5" y="386.2" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="448.5" y="386.2" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="442.2" y="343.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="442.2" y="397.7" width="3.0" height="8.0" fill="#e2e8f0"/>
-  <rect x="394.5" y="391.4" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <rect x="448.5" y="391.4" width="8.0" height="3.0" fill="#e2e8f0"/>
-  <!-- QFN-32 Chip Resin Package -->
-  <rect x="400.5" y="349.7" width="50.0" height="50.0" rx="2" fill="url(#icBody)" stroke="#374151" stroke-width="1"/>
-  <!-- Pin 1 Dot Marker -->
-  <circle cx="407.5" cy="356.7" r="3" fill="#111827" stroke="#4b5563" stroke-width="0.8"/>
-  <!-- Laser Etching Text -->
-  <text x="425.5" y="370.7" font-family="Space Grotesk, sans-serif" font-size="6" fill="#94a3b8" text-anchor="middle" font-weight="700">ATMEL</text>
-  <text x="425.5" y="379.7" font-family="Space Grotesk, sans-serif" font-size="5.5" fill="#cbd5e1" text-anchor="middle" font-weight="600">MEGA328P</text>
-  <text x="425.5" y="387.7" font-family="Space Grotesk, sans-serif" font-size="4.5" fill="#64748b" text-anchor="middle">-MU SMD</text>
+
+<!-- 16.000 MHz HC-49S CRYSTAL FOR ATMEGA328P -->
+<g filter="url(#partShadow)">
+  <rect x="215" y="335" width="60" height="28" rx="12" fill="url(#metalShield)" stroke="#64748b" stroke-width="1"/>
+  <text x="245" y="353" font-family="'Space Grotesk', sans-serif" font-size="7.5" fill="#1e293b" text-anchor="middle" font-weight="700">16.000</text>
 </g>
-<!-- 16U2 / CH340 CONTROLLER CHIP -->
+
+<!-- 12.000 MHz CRYSTAL FOR CH340G -->
+<rect x="155" y="165" width="42" height="18" rx="8" fill="url(#metalShield)" stroke="#64748b" stroke-width="0.8"/>
+
+<!-- CH340G USB INTERFACE CONTROLLER (SOP-16 PACKAGE - EXACT USER HARDWARE) -->
 <g filter="url(#chipShadow)">
-  <rect x="179.4" y="166.7" width="40.0" height="40.0" rx="2" fill="url(#icBody)" stroke="#374151" stroke-width="0.8"/>
-  <circle cx="184.4" cy="171.7" r="2" fill="#111827"/>
-  <text x="199.4" y="188.7" font-family="Space Grotesk, sans-serif" font-size="5" fill="#94a3b8" text-anchor="middle" font-weight="600">MEGA16U2</text>
+  <!-- 16 Gull-wing Leads -->
+  <rect x="169.0" y="116.0" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="213.0" y="116.0" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="169.0" y="121.2" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="213.0" y="121.2" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="169.0" y="126.4" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="213.0" y="126.4" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="169.0" y="131.6" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="213.0" y="131.6" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="169.0" y="136.8" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="213.0" y="136.8" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="169.0" y="142.0" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="213.0" y="142.0" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="169.0" y="147.2" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="213.0" y="147.2" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="169.0" y="152.4" width="8" height="2.5" fill="#e2e8f0"/>
+  <rect x="213.0" y="152.4" width="8" height="2.5" fill="#e2e8f0"/>
+  <!-- CH340G Body -->
+  <rect x="175.0" y="110.0" width="40" height="52" rx="2" fill="url(#icBody)" stroke="#374151" stroke-width="0.8"/>
+  <circle cx="181.0" cy="116.0" r="2" fill="#111827"/>
+  <text x="195.0" y="136.0" font-family="'Space Grotesk', sans-serif" font-size="5.5" fill="#94a3b8" text-anchor="middle" font-weight="700">WCH</text>
+  <text x="195.0" y="145.0" font-family="'Space Grotesk', sans-serif" font-size="5" fill="#cbd5e1" text-anchor="middle" font-weight="600">CH340G</text>
+</g>
+<!-- TRUE ATMEGA328P TQFP-32 SURFACE MOUNT MCU -->
+<g filter="url(#chipShadow)">
+  <!-- 32 Perimeter Solder Leads -->
+  <rect x="404.6" y="342.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="404.6" y="400.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="392.0" y="354.6" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="450.0" y="354.6" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="410.0" y="342.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="410.0" y="400.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="392.0" y="360.0" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="450.0" y="360.0" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="415.4" y="342.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="415.4" y="400.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="392.0" y="365.4" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="450.0" y="365.4" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="420.8" y="342.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="420.8" y="400.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="392.0" y="370.8" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="450.0" y="370.8" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="426.2" y="342.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="426.2" y="400.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="392.0" y="376.2" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="450.0" y="376.2" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="431.6" y="342.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="431.6" y="400.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="392.0" y="381.6" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="450.0" y="381.6" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="437.0" y="342.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="437.0" y="400.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="392.0" y="387.0" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="450.0" y="387.0" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="442.4" y="342.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="442.4" y="400.0" width="3" height="8" fill="#e2e8f0"/>
+  <rect x="392.0" y="392.4" width="8" height="3" fill="#e2e8f0"/>
+  <rect x="450.0" y="392.4" width="8" height="3" fill="#e2e8f0"/>
+  <!-- TQFP Body -->
+  <rect x="399.0" y="349.0" width="52.0" height="52.0" rx="2" fill="url(#icBody)" stroke="#374151" stroke-width="1"/>
+  <circle cx="406.0" cy="356.0" r="3" fill="#111827" stroke="#4b5563" stroke-width="0.8"/>
+  <text x="425.0" y="370.0" font-family="'Space Grotesk', sans-serif" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="700">MEGA328P</text>
+  <text x="425.0" y="380.0" font-family="'Space Grotesk', sans-serif" font-size="5.5" fill="#cbd5e1" text-anchor="middle" font-weight="600">AU TQFP-32</text>
+  <text x="425.0" y="389.0" font-family="'Space Grotesk', sans-serif" font-size="4.5" fill="#64748b" text-anchor="middle">SMD EDITION</text>
+</g>
+<!-- ICSP HEADER -->
+<g filter="url(#partShadow)">
+  <rect x="635" y="240" width="22" height="36" rx="2" fill="#090d16" stroke="#334155" stroke-width="1"/>
+  <circle cx="641" cy="248" r="3.5" fill="#fbbf24"/>
+  <circle cx="651" cy="248" r="3.5" fill="#fbbf24"/>
+  <circle cx="641" cy="258" r="3.5" fill="#fbbf24"/>
+  <circle cx="651" cy="258" r="3.5" fill="#fbbf24"/>
+  <circle cx="641" cy="268" r="3.5" fill="#fbbf24"/>
+  <circle cx="651" cy="268" r="3.5" fill="#fbbf24"/>
+  <text x="646" y="286" font-family="'Space Grotesk', sans-serif" font-size="6" fill="#94a3b8" text-anchor="middle" font-weight="700">ISCP</text>
+</g>
+<!-- SPECIAL ON-BOARD EXPANSION PIN HEADERS (USER BOARD FEATURE) -->
+<g class="user-expansion-matrix" font-family="'Space Grotesk', sans-serif">
+  <!-- Silkscreen labels above expansion pads -->
+  <text x="350" y="165" font-size="6.5" fill="#94a3b8" font-weight="600">RX  TX  5V  GND</text>
+  <text x="350" y="185" font-size="6.5" fill="#94a3b8" font-weight="600">SCL SDA 5V  GND</text>
+  <text x="350" y="205" font-size="6.5" fill="#94a3b8" font-weight="600">3.3V 3.3V GND GND</text>
+
+  <!-- 3x4 Through-Hole Gold Solder Pads -->
+  <g class="smd-pin-node" data-pin="RX_EXP" data-role="UART RX Channel" data-volt="5.0V TTL Input" data-load="< 1 mA" data-target="Serial Comm" style="cursor:pointer;">
+    <circle cx="356" cy="172" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="356" cy="172" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="TX_EXP" data-role="UART TX Channel" data-volt="5.0V TTL Output" data-load="~2 mA" data-target="Serial Comm" style="cursor:pointer;">
+    <circle cx="368" cy="172" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="368" cy="172" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="5V_EXP1" data-role="Expansion 5V Rail" data-volt="5.04V DC Regulated" data-load="Supply" data-target="Sensor VCC" style="cursor:pointer;">
+    <circle cx="380" cy="172" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="380" cy="172" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="GND_EXP1" data-role="Expansion Ground Rail" data-volt="0.0V DC Common" data-load="Return" data-target="Common GND" style="cursor:pointer;">
+    <circle cx="395" cy="172" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="395" cy="172" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="SCL_EXP" data-role="I2C SCL Clock Bus" data-volt="5.0V I2C Clock" data-load="< 1 mA" data-target="I2C LCD SCL" style="cursor:pointer;">
+    <circle cx="356" cy="192" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="356" cy="192" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="SDA_EXP" data-role="I2C SDA Data Bus" data-volt="5.0V I2C Data" data-load="< 1 mA" data-target="I2C LCD SDA" style="cursor:pointer;">
+    <circle cx="368" cy="192" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="368" cy="192" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="5V_EXP2" data-role="Expansion 5V Rail" data-volt="5.04V DC Regulated" data-load="Supply" data-target="Sensor VCC" style="cursor:pointer;">
+    <circle cx="380" cy="192" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="380" cy="192" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="GND_EXP2" data-role="Expansion Ground Rail" data-volt="0.0V DC Common" data-load="Return" data-target="Common GND" style="cursor:pointer;">
+    <circle cx="395" cy="192" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="395" cy="192" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="3V3_EXP1" data-role="Dedicated 3.3V Rail 1" data-volt="3.31V DC Regulated" data-load="ESP VCC" data-target="ESP-01 VCC" style="cursor:pointer;">
+    <circle cx="356" cy="212" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="356" cy="212" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="3V3_EXP2" data-role="Dedicated 3.3V Rail 2" data-volt="3.31V DC Regulated" data-load="ESP CH_PD" data-target="ESP-01 CH_PD" style="cursor:pointer;">
+    <circle cx="368" cy="212" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="368" cy="212" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="GND_EXP3" data-role="Expansion Ground Rail" data-volt="0.0V DC Common" data-load="Return" data-target="Common GND" style="cursor:pointer;">
+    <circle cx="380" cy="212" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="380" cy="212" r="2.2" fill="#030712"/>
+  </g>
+  <g class="smd-pin-node" data-pin="GND_EXP4" data-role="Expansion Ground Rail" data-volt="0.0V DC Common" data-load="Return" data-target="Common GND" style="cursor:pointer;">
+    <circle cx="395" cy="212" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+    <circle cx="395" cy="212" r="2.2" fill="#030712"/>
+  </g>
+</g>
+<!-- ANALOG DUAL ROW PADS -->
+<g class="analog-expansion-pads">
+  <circle cx="508.0" cy="475" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+  <circle cx="508.0" cy="475" r="2.2" fill="#030712"/>
+  <circle cx="533.4" cy="475" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+  <circle cx="533.4" cy="475" r="2.2" fill="#030712"/>
+  <circle cx="558.8" cy="475" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+  <circle cx="558.8" cy="475" r="2.2" fill="#030712"/>
+  <circle cx="584.2" cy="475" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+  <circle cx="584.2" cy="475" r="2.2" fill="#030712"/>
+  <circle cx="609.6" cy="475" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+  <circle cx="609.6" cy="475" r="2.2" fill="#030712"/>
+  <circle cx="635.0" cy="475" r="4.5" fill="#090d16" stroke="#fbbf24" stroke-width="1.2"/>
+  <circle cx="635.0" cy="475" r="2.2" fill="#030712"/>
 </g>
 <!-- SILKSCREEN LABELS -->
 <g fill="#f8fafc" font-family="'Space Grotesk', sans-serif">
-  <!-- Arduino Infinity Logo -->
-  <g transform="translate(420, 210) scale(0.65)" stroke="#f8fafc" stroke-width="4" fill="none">
-    <circle cx="-16" cy="0" r="16"/>
-    <circle cx="16" cy="0" r="16"/>
-    <line x1="-20" y1="0" x2="-12" y2="0" stroke-width="3"/>
-    <line x1="-16" y1="-4" x2="-16" y2="4" stroke-width="3"/>
-    <line x1="12" y1="0" x2="20" y2="0" stroke-width="3"/>
-  </g>
-  <text x="420" y="245" font-size="19" font-weight="800" text-anchor="middle" letter-spacing="1">ARDUINO</text>
-  <text x="420" y="270" font-size="14" font-weight="700" text-anchor="middle" fill="#93c5fd" letter-spacing="3">UNO SMD</text>
-
-  <!-- Digital Header Silkscreen Labels -->
+  <text x="420" y="255" font-size="28" font-weight="800" text-anchor="middle" fill="#ffffff" letter-spacing="3">UNO</text>
+  <text x="420" y="278" font-size="12" font-weight="700" text-anchor="middle" fill="#93c5fd" letter-spacing="2">SMD CH340</text>
   <text x="430" y="55" font-size="9" font-weight="700" letter-spacing="0.5">DIGITAL (PWM ~)</text>
-  
-  <!-- Lower Header Silkscreen Labels -->
-  <text x="375" y="480" font-size="8.5" font-weight="700">POWER</text>
-  <text x="545" y="480" font-size="8.5" font-weight="700">ANALOG IN</text>
+  <text x="365" y="455" font-size="8.5" font-weight="700">POWER</text>
+  <text x="545" y="455" font-size="8.5" font-weight="700">ANALOG IN</text>
 </g>
-<!-- UPPER DIGITAL HEADER HOUSING (J2) -->
-<rect x="262.2" y="12.4" width="480.0" height="26" rx="3" fill="#090d16" stroke="#1e293b" stroke-width="1.2" filter="url(#partShadow)"/>
-<!-- DIGITAL PINS J2 -->
+<!-- UPPER DIGITAL HEADER HOUSING -->
+<rect x="260" y="12" width="385" height="26" rx="3" fill="#090d16" stroke="#1e293b" stroke-width="1.2" filter="url(#partShadow)"/>
 <g class="pins-layer">
-  <g class="smd-pin-node " data-pin="SCL" data-role="I2C Clock Line" data-volt="Open Drain (Pullup)" data-load="< 1 mA" data-target="Expansion" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node " data-pin="SCL" data-role="I2C Clock Line" data-volt="Open Drain (Pullup)" data-load="< 1 mA" data-target="I2C LCD" style="cursor:pointer;">
     <text x="723.9" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">SCL</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="714.9" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="719.9" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
-  <g class="smd-pin-node " data-pin="SDA" data-role="I2C Data Line" data-volt="Open Drain (Pullup)" data-load="< 1 mA" data-target="Expansion" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node " data-pin="SDA" data-role="I2C Data Line" data-volt="Open Drain (Pullup)" data-load="< 1 mA" data-target="I2C LCD" style="cursor:pointer;">
     <text x="698.5" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">SA</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="689.5" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="694.5" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
   <g class="smd-pin-node " data-pin="AREF" data-role="ADC Reference" data-volt="0-5V Input" data-load="< 1 mA" data-target="Expansion" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
     <text x="673.1" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">AREF</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="664.1" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="669.1" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
-  <g class="smd-pin-node " data-pin="GND_D" data-role="Digital Ground" data-volt="0.0V Return" data-load="Return" data-target="Common" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node " data-pin="GND_D" data-role="Digital Ground" data-volt="0.0V Return" data-load="Return" data-target="Common GND" style="cursor:pointer;">
     <text x="647.7" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">GN</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="638.7" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="643.7" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
   <g class="smd-pin-node " data-pin="D13" data-role="Built-in LED / SCK" data-volt="5.0V Logic Output" data-load="~5 mA" data-target="SPI SCK" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
     <text x="622.3" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">13</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="613.3" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="618.3" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
-  <g class="smd-pin-node active-pin" data-pin="D12" data-role="Software Serial TX" data-volt="5.0V Logic Output" data-load="~2 mA" data-target="ESP8266 URXD" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node active-pin" data-pin="D12" data-role="Software Serial TX" data-volt="5.0V Logic Output" data-load="~2 mA" data-target="ESP-01 URXD" style="cursor:pointer;">
     <text x="596.9" y="51.4" font-size="7.5" fill="#38bdf8" font-weight="700" text-anchor="middle">12</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="587.9" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="592.9" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
-    <circle cx="596.9" cy="25.4" r="6" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="2 1"/>
+    <circle cx="596.9" cy="25.4" r="5.5" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
   </g>
-  <g class="smd-pin-node active-pin" data-pin="D11" data-role="Software Serial RX" data-volt="3.3V Logic Input" data-load="< 1 mA" data-target="ESP8266 UTXD" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node active-pin" data-pin="D11" data-role="Software Serial RX" data-volt="3.3V Logic Input" data-load="< 1 mA" data-target="ESP-01 UTXD" style="cursor:pointer;">
     <text x="571.5" y="51.4" font-size="7.5" fill="#38bdf8" font-weight="700" text-anchor="middle">~11</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="562.5" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="567.5" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
-    <circle cx="571.5" cy="25.4" r="6" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="2 1"/>
+    <circle cx="571.5" cy="25.4" r="5.5" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
   </g>
   <g class="smd-pin-node active-pin" data-pin="D10" data-role="HC-SR04 Echo Timing" data-volt="5.0V Logic (High-Z)" data-load="< 1 mA" data-target="HC-SR04 ECHO" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
     <text x="546.1" y="51.4" font-size="7.5" fill="#38bdf8" font-weight="700" text-anchor="middle">~10</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="537.1" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="542.1" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
-    <circle cx="546.1" cy="25.4" r="6" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="2 1"/>
+    <circle cx="546.1" cy="25.4" r="5.5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
   </g>
-  <g class="smd-pin-node active-pin" data-pin="D9" data-role="HC-SR04 Trigger Pulse" data-volt="5.0V Active High (10µs Burst)" data-load="~15 mA" data-target="HC-SR04 TRIG" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node active-pin" data-pin="D9" data-role="HC-SR04 Trigger Pulse" data-volt="5.0V Active Burst" data-load="~15 mA" data-target="HC-SR04 TRIG" style="cursor:pointer;">
     <text x="520.7" y="51.4" font-size="7.5" fill="#38bdf8" font-weight="700" text-anchor="middle">~9</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="511.7" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="516.7" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
-    <circle cx="520.7" cy="25.4" r="6" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="2 1"/>
+    <circle cx="520.7" cy="25.4" r="5.5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
   </g>
-  <g class="smd-pin-node " data-pin="D8" data-role="GPIO D8" data-volt="0.0V (High-Z Standby)" data-load="0 mA" data-target="Unassigned" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
-    <text x="495.3" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">8</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="486.3" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
+  <g class="smd-pin-node active-pin" data-pin="D8" data-role="GPIO D8 / Green LED" data-volt="5.0V Output Rail" data-load="~12 mA" data-target="Green LED" style="cursor:pointer;">
+    <text x="495.3" y="51.4" font-size="7.5" fill="#38bdf8" font-weight="700" text-anchor="middle">8</text>
+    <rect x="486.3" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
     <rect x="491.3" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
-    
+    <circle cx="495.3" cy="25.4" r="5.5" fill="none" stroke="#34d399" stroke-width="1.5"/>
   </g>
   <g class="smd-pin-node " data-pin="D7" data-role="GPIO D7" data-volt="0.0V (High-Z Standby)" data-load="0 mA" data-target="Unassigned" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
     <text x="457.2" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">7</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="448.2" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="453.2" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
   <g class="smd-pin-node " data-pin="D6" data-role="GPIO D6 [PWM]" data-volt="0.0V (High-Z Standby)" data-load="0 mA" data-target="Unassigned" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
     <text x="431.8" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">~6</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="422.8" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="427.8" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
   <g class="smd-pin-node " data-pin="D5" data-role="GPIO D5 [PWM]" data-volt="0.0V (High-Z Standby)" data-load="0 mA" data-target="Unassigned" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
     <text x="406.4" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">~5</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="397.4" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="402.4" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
   <g class="smd-pin-node " data-pin="D4" data-role="GPIO D4" data-volt="0.0V (High-Z Standby)" data-load="0 mA" data-target="Unassigned" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
     <text x="381.0" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">4</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="372.0" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="377.0" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
-  <g class="smd-pin-node " data-pin="D3" data-role="Expansion Slot 3 [PWM]" data-volt="0.0V (High-Z Standby)" data-load="0 mA" data-target="Expansion" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node " data-pin="D3" data-role="SW-420 Shock Sensor" data-volt="5.0V Digital Input" data-load="< 1 mA" data-target="Vibration Guard" style="cursor:pointer;">
     <text x="355.6" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">~3</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="346.6" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="351.6" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
-  <g class="smd-pin-node " data-pin="D2" data-role="Expansion Slot 2 [GPIO]" data-volt="0.0V (High-Z Standby)" data-load="0 mA" data-target="Expansion" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node " data-pin="D2" data-role="HW-201 IR Sensor" data-volt="5.0V Digital Input" data-load="< 1 mA" data-target="Optical Tripwire" style="cursor:pointer;">
     <text x="330.2" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">2</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="321.2" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="326.2" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
-  <g class="smd-pin-node " data-pin="D1" data-role="Hardware TX / USB" data-volt="5.0V TTL Output" data-load="~2 mA" data-target="USB Serial" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node " data-pin="D1" data-role="Hardware TX / CH340" data-volt="5.0V TTL Output" data-load="~2 mA" data-target="CH340 Serial" style="cursor:pointer;">
     <text x="304.8" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">1</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="295.8" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="300.8" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
-  <g class="smd-pin-node " data-pin="D0" data-role="Hardware RX / USB" data-volt="5.0V TTL Input" data-load="< 1 mA" data-target="USB Serial" style="cursor:pointer;">
-    <!-- Silkscreen Pin Number -->
+  <g class="smd-pin-node " data-pin="D0" data-role="Hardware RX / CH340" data-volt="5.0V TTL Input" data-load="< 1 mA" data-target="CH340 Serial" style="cursor:pointer;">
     <text x="279.4" y="51.4" font-size="7.5" fill="#94a3b8" font-weight="700" text-anchor="middle">0</text>
-    <!-- Outer Plastic Socket Well -->
     <rect x="270.4" y="16.4" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Phosphor Bronze Receptacle Hole -->
     <rect x="275.4" y="21.4" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic, No Floating Balls) -->
     
   </g>
 </g>
-<!-- LOWER POWER & ANALOG HEADER HOUSING (J1) -->
-<rect x="262.2" y="495.0" width="390.0" height="26" rx="3" fill="#090d16" stroke="#1e293b" stroke-width="1.2" filter="url(#partShadow)"/>
-<!-- POWER & ANALOG PINS J1 -->
+<!-- LOWER POWER & ANALOG HEADER HOUSING -->
+<rect x="280" y="495" width="365" height="26" rx="3" fill="#090d16" stroke="#1e293b" stroke-width="1.2" filter="url(#partShadow)"/>
 <g class="pins-layer">
-  <g class="smd-pin-node " data-pin="IOREF" data-role="IO Reference Voltage" data-volt="5.04V Logic Level" data-load="0 mA" data-target="Power" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="279.4" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">IOREF</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="270.4" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="275.4" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node " data-pin="5V_AUX" data-role="Secondary 5V Rail (Aux)" data-volt="5.04V DC Regulated" data-load="Supply" data-target="Auxiliary 5V Rail" style="cursor:pointer;">
+    <text x="284.0" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">5V</text>
+    <rect x="275.0" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#34d399" stroke-width="0.8"/>
+    <rect x="280.0" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
-  <g class="smd-pin-node " data-pin="RESET" data-role="MCU Hardware Reset" data-volt="5.0V Active Low" data-load="< 1 mA" data-target="Power" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="304.8" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">RESET</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="295.8" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="300.8" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node " data-pin="RES" data-role="Hardware MCU Reset" data-volt="5.0V Active Low" data-load="< 1 mA" data-target="Reset Switch" style="cursor:pointer;">
+    <text x="309.4" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">RES</text>
+    <rect x="300.4" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+    <rect x="305.4" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
-  <g class="smd-pin-node active-pin" data-pin="3V3" data-role="3.3V External Power Rail" data-volt="3.31V DC Regulated" data-load="~80-140 mA" data-target="ESP-01 VCC" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="355.6" y="490.0" font-size="7" fill="#34d399" font-weight="700" text-anchor="middle">3V3</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="346.6" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="351.6" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
-    <circle cx="355.6" cy="508.0" r="6" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="2 1"/>
+  <g class="smd-pin-node active-pin" data-pin="3V3" data-role="3.3V Power Rail" data-volt="3.31V DC Regulated" data-load="~80-140 mA" data-target="ESP-01 VCC & CH_PD" style="cursor:pointer;">
+    <text x="334.8" y="490.0" font-size="7" fill="#34d399" font-weight="700" text-anchor="middle">3V3</text>
+    <rect x="325.8" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+    <rect x="330.8" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
+    <circle cx="334.8" cy="508.0" r="5.5" fill="none" stroke="#34d399" stroke-width="1.5"/>
   </g>
-  <g class="smd-pin-node active-pin" data-pin="5V" data-role="5V Regulated Power Rail" data-volt="5.04V DC Regulated" data-load="~15 mA" data-target="HC-SR04 VCC" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="381.0" y="490.0" font-size="7" fill="#34d399" font-weight="700" text-anchor="middle">5V</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="372.0" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="377.0" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
-    <circle cx="381.0" cy="508.0" r="6" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="2 1"/>
+  <g class="smd-pin-node active-pin" data-pin="5V" data-role="Primary 5V Power Rail" data-volt="5.04V DC Regulated" data-load="~15 mA" data-target="HC-SR04 Sensor VCC" style="cursor:pointer;">
+    <text x="360.2" y="490.0" font-size="7" fill="#34d399" font-weight="700" text-anchor="middle">5V</text>
+    <rect x="351.2" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+    <rect x="356.2" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
+    <circle cx="360.2" cy="508.0" r="5.5" fill="none" stroke="#34d399" stroke-width="1.5"/>
   </g>
-  <g class="smd-pin-node " data-pin="GND" data-role="Power Ground Return" data-volt="0.0V DC Return" data-load="Return" data-target="Common" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="406.4" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">GND</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="397.4" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="402.4" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node active-pin" data-pin="GND_1" data-role="Ground Rail 1" data-volt="0.0V Common Ground" data-load="Return" data-target="Sensor GND" style="cursor:pointer;">
+    <text x="385.6" y="490.0" font-size="7" fill="#34d399" font-weight="700" text-anchor="middle">GND</text>
+    <rect x="376.6" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="381.6" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
+    <circle cx="385.6" cy="508.0" r="5.5" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  </g>
+  <g class="smd-pin-node active-pin" data-pin="GND_2" data-role="Ground Rail 2" data-volt="0.0V Common Ground" data-load="Return" data-target="Wi-Fi Module GND" style="cursor:pointer;">
+    <text x="411.0" y="490.0" font-size="7" fill="#34d399" font-weight="700" text-anchor="middle">GND</text>
+    <rect x="402.0" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="407.0" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
+    <circle cx="411.0" cy="508.0" r="5.5" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  </g>
+  <g class="smd-pin-node " data-pin="VIN" data-role="External DC Input" data-volt="7.0V - 12.0V DC" data-load="Input" data-target="DC Barrel Jack" style="cursor:pointer;">
+    <text x="436.4" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">VIN</text>
+    <rect x="427.4" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+    <rect x="432.4" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
-  <g class="smd-pin-node " data-pin="GND" data-role="Power Ground Return" data-volt="0.0V DC Return" data-load="Return" data-target="Common" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="431.8" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">GND</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="422.8" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="427.8" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node " data-pin="A0" data-role="Analog Pin 0 [10-Bit ADC]" data-volt="0.0V - 5.0V Range" data-load="0 mA" data-target="Analog Input" style="cursor:pointer;">
+    <text x="512.6" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A0</text>
+    <rect x="503.6" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+    <rect x="508.6" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
-  <g class="smd-pin-node " data-pin="VIN" data-role="External DC Input Rail" data-volt="7.0V - 12.0V DC" data-load="Input" data-target="Power" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="457.2" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">VIN</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="448.2" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="453.2" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node " data-pin="A1" data-role="Analog Pin 1 [10-Bit ADC]" data-volt="0.0V - 5.0V Range" data-load="0 mA" data-target="Analog Input" style="cursor:pointer;">
+    <text x="538.0" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A1</text>
+    <rect x="529.0" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+    <rect x="534.0" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
-  <g class="smd-pin-node " data-pin="A0" data-role="Analog Channel 0 [10-Bit ADC]" data-volt="0.0V - 5.0V (Ready)" data-load="0 mA" data-target="Analog In" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="508.0" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A0</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="499.0" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="504.0" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node " data-pin="A2" data-role="Analog Pin 2 [10-Bit ADC]" data-volt="0.0V - 5.0V Range" data-load="0 mA" data-target="Analog Input" style="cursor:pointer;">
+    <text x="563.4" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A2</text>
+    <rect x="554.4" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+    <rect x="559.4" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
-  <g class="smd-pin-node " data-pin="A1" data-role="Analog Channel 1 [10-Bit ADC]" data-volt="0.0V - 5.0V (Ready)" data-load="0 mA" data-target="Analog In" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="533.4" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A1</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="524.4" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="529.4" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node " data-pin="A3" data-role="Analog Pin 3 [10-Bit ADC]" data-volt="0.0V - 5.0V Range" data-load="0 mA" data-target="Analog Input" style="cursor:pointer;">
+    <text x="588.8" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A3</text>
+    <rect x="579.8" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+    <rect x="584.8" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
-  <g class="smd-pin-node " data-pin="A2" data-role="Analog Channel 2 [10-Bit ADC]" data-volt="0.0V - 5.0V (Ready)" data-load="0 mA" data-target="Analog In" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="558.8" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A2</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="549.8" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="554.8" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node " data-pin="A4" data-role="Analog Pin 4 / I2C SDA" data-volt="5.0V I2C Data Line" data-load="< 1 mA" data-target="I2C LCD SDA" style="cursor:pointer;">
+    <text x="614.2" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A4</text>
+    <rect x="605.2" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+    <rect x="610.2" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
-  <g class="smd-pin-node " data-pin="A3" data-role="Analog Channel 3 [10-Bit ADC]" data-volt="0.0V - 5.0V (Ready)" data-load="0 mA" data-target="Analog In" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="584.2" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A3</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="575.2" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="580.2" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
-    
-  </g>
-  <g class="smd-pin-node " data-pin="A4" data-role="Analog Channel 4 / SDA" data-volt="0.0V - 5.0V (Ready)" data-load="0 mA" data-target="Analog In" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="609.6" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A4</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="600.6" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="605.6" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
-    
-  </g>
-  <g class="smd-pin-node " data-pin="A5" data-role="Analog Channel 5 / SCL" data-volt="0.0V - 5.0V (Ready)" data-load="0 mA" data-target="Analog In" style="cursor:pointer;">
-    <!-- Silkscreen Pin Label -->
-    <text x="635.0" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A5</text>
-    <!-- Outer Plastic Socket Well -->
-    <rect x="626.0" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-    <!-- Gold / Bronze Receptacle Hole -->
-    <rect x="631.0" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
-    <!-- Active Status Ring (Realistic) -->
+  <g class="smd-pin-node " data-pin="A5" data-role="Analog Pin 5 / I2C SCL" data-volt="5.0V I2C Clock Line" data-load="< 1 mA" data-target="I2C LCD SCL" style="cursor:pointer;">
+    <text x="639.6" y="490.0" font-size="7" fill="#94a3b8" font-weight="700" text-anchor="middle">A5</text>
+    <rect x="630.6" y="499.0" width="18" height="18" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+    <rect x="635.6" y="504.0" width="8" height="8" rx="1" fill="#030712" stroke="#d97706" stroke-width="0.8"/>
     
   </g>
 </g>
