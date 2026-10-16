@@ -995,6 +995,289 @@ footer.footer-note {
   color: var(--text-tertiary);
   padding: 8px 0;
 }
+
+/* MULTI-PANE CAROUSEL SWITCHER */
+.carousel-pane {
+  display: none;
+  width: 100%;
+  animation: fadeInPane 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.carousel-pane.active-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes fadeInPane {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* CAROUSEL SWITCHER PILLS */
+.carousel-pill.active {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* SENSOR CARD QUICK POWER GATE */
+.card-quick-gate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--surface-border-subtle);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.card-quick-gate:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.gate-switch {
+  width: 28px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.gate-switch::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-quick-gate.active .gate-switch {
+  background: #10b981;
+}
+
+.card-quick-gate.active .gate-switch::after {
+  transform: translateX(12px);
+}
+
+.gate-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* IR SENSOR CARD STYLES */
+.ir-stage {
+  height: 290px;
+  position: relative;
+  background: radial-gradient(circle at 50% 50%, rgba(30, 15, 30, 0.5) 0%, rgba(5, 7, 12, 0.95) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ir-beam-graphic {
+  position: relative;
+  width: 220px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ir-emitter-led {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(244, 63, 94, 0.2);
+  border: 2px solid #f43f5e;
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.6);
+  position: absolute;
+  left: 20px;
+  animation: irPulse 1.5s infinite;
+}
+
+@keyframes irPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 30px rgba(244, 63, 94, 0.9); }
+}
+
+.ir-laser-beam {
+  position: absolute;
+  left: 44px;
+  right: 44px;
+  height: 3px;
+  background: linear-gradient(90deg, #f43f5e, rgba(244, 63, 94, 0.4), #f43f5e);
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.8);
+  transition: all 0.2s ease;
+}
+
+.ir-laser-beam.broken {
+  background: #64748b;
+  box-shadow: none;
+  opacity: 0.3;
+}
+
+.ir-detector-led {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0f172a;
+  border: 2px solid #94a3b8;
+  position: absolute;
+  right: 20px;
+}
+
+/* VIBRATION CARD STYLES */
+.vib-stage {
+  height: 290px;
+  position: relative;
+  background: radial-gradient(circle at 50% 50%, rgba(20, 30, 20, 0.4) 0%, rgba(5, 7, 12, 0.95) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+#vibCanvas {
+  width: 100%;
+  height: 140px;
+  display: block;
+}
+
+/* UNIVERSAL HARDWARE CONTROL DECK (IN BOARD MODAL) */
+.modal-controls-deck {
+  background: rgba(6, 9, 16, 0.85);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.deck-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quick-sentinel-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 480px) {
+  .quick-sentinel-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.sentinel-action-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.sentinel-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sentinel-action-btn.active {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: #10b981;
+}
+
+.sentinel-action-btn.active.led {
+  background: rgba(52, 211, 153, 0.15);
+  border-color: #34d399;
+  box-shadow: 0 0 16px rgba(52, 211, 153, 0.25);
+}
+
+.sentinel-action-btn .btn-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sentinel-action-btn .btn-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sentinel-action-btn .btn-sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+/* REAL-TIME CURRENT BUDGET GAUGE */
+.power-gauge-box {
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--surface-border-subtle);
+}
+
+.power-gauge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.power-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.power-bar-fill {
+  height: 100%;
+  width: 38%;
+  background: linear-gradient(90deg, #10b981, #38bdf8);
+  border-radius: 4px;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.power-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
 </style>
 </head>
 <body>
@@ -1032,42 +1315,100 @@ footer.footer-note {
 
   <!-- SAMSUNG-STYLE SENSOR CAROUSEL SWITCHER -->
   <nav class="sensor-carousel-bar">
-    <button class="carousel-pill active">
+    <button class="carousel-pill active" data-tab="paneUltrasonic">
       <span class="pill-indicator" style="background:var(--accent-cyan);"></span>
       <span>HC-SR04 Ultrasonic</span>
     </button>
-    <button class="carousel-pill disabled" title="Expansion Slot 2 (Future Component)">
-      <span class="pill-indicator" style="background:#64748b;"></span>
-      <span>Slot 2: Expansion</span>
+    <button class="carousel-pill" data-tab="paneIr">
+      <span class="pill-indicator" style="background:var(--accent-crimson);"></span>
+      <span>HW-201 Optical IR</span>
     </button>
-    <button class="carousel-pill disabled" title="Expansion Slot 3 (Future Component)">
-      <span class="pill-indicator" style="background:#64748b;"></span>
-      <span>Slot 3: Expansion</span>
+    <button class="carousel-pill" data-tab="paneVibration">
+      <span class="pill-indicator" style="background:var(--accent-amber);"></span>
+      <span>SW-420 Seismic Guard</span>
     </button>
   </nav>
 
   <!-- DEDICATED SENSOR PLAYGROUND CARD -->
   <section class="glass-panel sensor-playground-card">
-    <div class="playground-toolbar">
-      <div class="view-presets">
-        <button class="view-btn active" data-view="iso">Isometric 3D</button>
-        <button class="view-btn" data-view="top">Top View</button>
-        <button class="view-btn" data-view="front">Sensor Front</button>
+
+    <!-- PANE 1: HC-SR04 ULTRASONIC 3D PLAYGROUND -->
+    <div id="paneUltrasonic" class="carousel-pane active-pane">
+      <div class="playground-toolbar">
+        <div class="view-presets">
+          <button class="view-btn active" data-view="iso">Isometric 3D</button>
+          <button class="view-btn" data-view="top">Top View</button>
+          <button class="view-btn" data-view="front">Sensor Front</button>
+        </div>
+        <div id="gateHcsr04" class="card-quick-gate active" title="Toggle Ultrasonic Pulse Pinging">
+          <span class="gate-label">Module Power</span>
+          <div class="gate-switch"></div>
+        </div>
       </div>
-      <span class="orbit-badge">Rotate &amp; Zoom 3D</span>
+
+      <!-- WebGL Three.js Sensor Viewport -->
+      <div id="sensorCanvasContainer"></div>
+
+      <!-- Live Telemetry HUD -->
+      <div class="hud-telemetry">
+        <div class="hud-readout">
+          <div id="distanceNumber" class="hud-num">--</div>
+          <div id="distanceUnit" class="hud-unit">centimeters</div>
+        </div>
+        <div id="zoneBadge" class="hud-badge-zone">STANDBY</div>
+      </div>
     </div>
 
-    <!-- WebGL Three.js Sensor Viewport (Centered, Huge & Photorealistic) -->
-    <div id="sensorCanvasContainer"></div>
-
-    <!-- Live Telemetry HUD -->
-    <div class="hud-telemetry">
-      <div class="hud-readout">
-        <div id="distanceNumber" class="hud-num">--</div>
-        <div id="distanceUnit" class="hud-unit">centimeters</div>
+    <!-- PANE 2: HW-201 OPTICAL IR TRIPWIRE -->
+    <div id="paneIr" class="carousel-pane">
+      <div class="playground-toolbar">
+        <span class="orbit-badge" style="background:rgba(244,63,94,0.15);color:#f43f5e;border-color:rgba(244,63,94,0.3);">HW-201 Active IR Micro-Tripwire (Pin D2)</span>
+        <div id="gateIr" class="card-quick-gate active" title="Arm / Disarm Optical Beam">
+          <span class="gate-label">Optical Guard</span>
+          <div class="gate-switch"></div>
+        </div>
       </div>
-      <div id="zoneBadge" class="hud-badge-zone">STANDBY</div>
+
+      <div class="ir-stage">
+        <div class="ir-beam-graphic">
+          <div class="ir-emitter-led" title="940nm IR Emitter Diode"></div>
+          <div id="irLaserBeam" class="ir-laser-beam"></div>
+          <div class="ir-detector-led" title="Infrared Phototransistor Receiver"></div>
+        </div>
+      </div>
+
+      <div class="hud-telemetry">
+        <div class="hud-readout">
+          <div id="irStatusText" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#10b981;">SECURE</div>
+          <div class="hud-unit">Active Optical Beam • Sub-Millisecond Response</div>
+        </div>
+        <div id="irEventCountBadge" class="hud-badge-zone" style="background:rgba(244,63,94,0.15);color:#f43f5e;border-color:rgba(244,63,94,0.3);">0 BREACHES</div>
+      </div>
     </div>
+
+    <!-- PANE 3: SW-420 SEISMIC / VIBRATION GUARD -->
+    <div id="paneVibration" class="carousel-pane">
+      <div class="playground-toolbar">
+        <span class="orbit-badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);">SW-420 Seismic &amp; Tamper Guard (Pin D3)</span>
+        <div id="gateVib" class="card-quick-gate active" title="Arm / Disarm Shock Sensor">
+          <span class="gate-label">Vibration Guard</span>
+          <div class="gate-switch"></div>
+        </div>
+      </div>
+
+      <div class="vib-stage">
+        <canvas id="vibCanvas"></canvas>
+      </div>
+
+      <div class="hud-telemetry">
+        <div class="hud-readout">
+          <div id="vibStatusText" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#10b981;">CALM</div>
+          <div class="hud-unit">Seismic Shock Sensor • Anti-Tamper Contact Switch</div>
+        </div>
+        <div id="vibBadge" class="hud-badge-zone" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);">MONITORING</div>
+      </div>
+    </div>
+
   </section>
 
   <!-- Live Hardware Electrical Strip -->
@@ -1754,6 +2095,68 @@ footer.footer-note {
       </div>
     </div>
 
+    
+    <!-- UNIVERSAL HARDWARE CONTROL DECK (BIDIRECTIONAL CONTROLLER) -->
+    <div class="modal-controls-deck">
+      <div class="deck-section-title">
+        <span>Sentinel Quick-Switch Deck (Remote Control)</span>
+        <span style="color:#2dd4bf;font-size:10px;">Bi-directional Wi-Fi Link</span>
+      </div>
+
+      <div class="quick-sentinel-row">
+        <!-- Sentinel Green LED (Pin D8) -->
+        <div id="btnDeckLed" class="sentinel-action-btn led" title="Toggle Physical Green Sentinel LED">
+          <div class="btn-head">
+            <span class="btn-title">Sentinel LED</span>
+            <span id="deckLedBadge" class="cell-badge" style="background:rgba(52,211,153,0.2);color:#34d399;">OFF</span>
+          </div>
+          <span class="btn-sub">Pin D8 (Output)</span>
+        </div>
+
+        <!-- HC-SR04 Sonar Sleep Gate -->
+        <div id="btnDeckSonar" class="sentinel-action-btn active" title="Toggle Sonar Transducer Pulse Duty">
+          <div class="btn-head">
+            <span class="btn-title">HC-SR04 Sonar</span>
+            <span id="deckSonarBadge" class="cell-badge trig">ACTIVE</span>
+          </div>
+          <span class="btn-sub">Pins D9 / D10</span>
+        </div>
+
+        <!-- HW-201 IR Guard Gate -->
+        <div id="btnDeckIr" class="sentinel-action-btn active" title="Toggle Optical Beam Arming">
+          <div class="btn-head">
+            <span class="btn-title">IR Tripwire</span>
+            <span id="deckIrBadge" class="cell-badge echo">ARMED</span>
+          </div>
+          <span class="btn-sub">Pin D2 (Input)</span>
+        </div>
+
+        <!-- SW-420 Vibration Guard Gate -->
+        <div id="btnDeckVib" class="sentinel-action-btn active" title="Toggle Vibration Sensor Arming">
+          <div class="btn-head">
+            <span class="btn-title">Vibration Guard</span>
+            <span id="deckVibBadge" class="cell-badge uart">ARMED</span>
+          </div>
+          <span class="btn-sub">Pin D3 (Input)</span>
+        </div>
+      </div>
+
+      <!-- Real-Time Power Consumption & USB Headroom Meter -->
+      <div class="power-gauge-box">
+        <div class="power-gauge-header">
+          <span style="font-weight:700;color:#f8fafc;">Real-Time Power Budget &amp; Rail Headroom</span>
+          <span id="powerCurrentVal" style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#2dd4bf;">187 mA / 500 mA (USB)</span>
+        </div>
+        <div class="power-bar-track">
+          <div id="powerBarFill" class="power-bar-fill" style="width: 37.4%;"></div>
+        </div>
+        <div class="power-breakdown-row">
+          <span>Base Core: Uno (45mA) + ESP-01 (110mA)</span>
+          <span id="powerHeadroomText" style="color:#10b981;font-weight:600;">313 mA Safe Headroom (62.6%)</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Selected Pin Live Circuit Telemetry Box -->
     <div class="pin-detail-box">
       <div class="detail-header">
@@ -2340,6 +2743,7 @@ function processTelemetry(data) {
 function startWS() {
   const url = `${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/ws`;
   const ws = new WebSocket(url);
+  window.wsInstance = ws;
 
   ws.onopen = () => {
     logEvent("3D Spatial Telemetry connected", "normal");
@@ -2539,6 +2943,169 @@ modal.onclick = (e) => {
     tooltip.classList.remove("visible");
   }
 };
+
+
+// --- BI-DIRECTIONAL HARDWARE COMMAND ENGINE ---
+function sendHardwareCommand(cmdObj) {
+  if (window.wsInstance && window.wsInstance.readyState === WebSocket.OPEN) {
+    window.wsInstance.send(JSON.stringify(cmdObj));
+  }
+}
+
+// Module State Cache
+const modules = {
+  hcsr04: true,
+  ir: true,
+  vib: true,
+  led: false,
+  irBreachCount: 0
+};
+
+// Power Consumption Model (mA)
+function recalculatePowerBudget() {
+  let current = 45 + 110; // Uno core (45mA) + ESP-01 average (110mA)
+  if (modules.hcsr04) current += 15;
+  if (modules.ir) current += 15;
+  if (modules.vib) current += 5;
+  if (modules.led) current += 12;
+
+  const pct = Math.min((current / 500) * 100, 100);
+  const headroom = 500 - current;
+
+  $("powerCurrentVal").textContent = `${current} mA / 500 mA (USB)`;
+  $("powerBarFill").style.width = `${pct.toFixed(1)}%`;
+  $("powerHeadroomText").textContent = `${headroom} mA Safe Headroom (${((headroom/500)*100).toFixed(1)}%)`;
+}
+
+// Quick Toggle Gates
+function toggleHcsr04Power() {
+  modules.hcsr04 = !modules.hcsr04;
+  $("gateHcsr04").classList.toggle("active", modules.hcsr04);
+  $("btnDeckSonar").classList.toggle("active", modules.hcsr04);
+  $("deckSonarBadge").textContent = modules.hcsr04 ? "ACTIVE" : "SLEEP";
+  $("deckSonarBadge").className = `cell-badge ${modules.hcsr04 ? "trig" : "free"}`;
+  sendHardwareCommand({ cmd: "MOD_SET", module: "HCSR04", state: modules.hcsr04 ? 1 : 0 });
+  recalculatePowerBudget();
+  logEvent(`HC-SR04 Transducer ${modules.hcsr04 ? "Activated" : "Software Sleep"}`, modules.hcsr04 ? "normal" : "warn");
+}
+
+function toggleIrPower() {
+  modules.ir = !modules.ir;
+  $("gateIr").classList.toggle("active", modules.ir);
+  $("btnDeckIr").classList.toggle("active", modules.ir);
+  $("deckIrBadge").textContent = modules.ir ? "ARMED" : "DORMANT";
+  $("deckIrBadge").className = `cell-badge ${modules.ir ? "echo" : "free"}`;
+  sendHardwareCommand({ cmd: "MOD_SET", module: "IR", state: modules.ir ? 1 : 0 });
+  recalculatePowerBudget();
+  logEvent(`HW-201 Optical Guard ${modules.ir ? "Armed" : "Muted"}`, modules.ir ? "normal" : "warn");
+}
+
+function toggleVibPower() {
+  modules.vib = !modules.vib;
+  $("gateVib").classList.toggle("active", modules.vib);
+  $("btnDeckVib").classList.toggle("active", modules.vib);
+  $("deckVibBadge").textContent = modules.vib ? "ARMED" : "STANDBY";
+  $("deckVibBadge").className = `cell-badge ${modules.vib ? "uart" : "free"}`;
+  sendHardwareCommand({ cmd: "MOD_SET", module: "VIB", state: modules.vib ? 1 : 0 });
+  recalculatePowerBudget();
+  logEvent(`SW-420 Vibration Guard ${modules.vib ? "Armed" : "Standby"}`, modules.vib ? "normal" : "warn");
+}
+
+function toggleSentinelLed() {
+  modules.led = !modules.led;
+  $("btnDeckLed").classList.toggle("active", modules.led);
+  $("deckLedBadge").textContent = modules.led ? "ON" : "OFF";
+  $("deckLedBadge").style.color = modules.led ? "#34d399" : "#94a3b8";
+  sendHardwareCommand({ cmd: "PIN_SET", pin: 8, val: modules.led ? 1 : 0 });
+  recalculatePowerBudget();
+  logEvent(`Sentinel Green LED (Pin D8) ${modules.led ? "Illuminated" : "Extinguished"}`, "normal");
+}
+
+// Wire up Quick Gate clicks
+$("gateHcsr04").onclick = toggleHcsr04Power;
+$("gateIr").onclick = toggleIrPower;
+$("gateVib").onclick = toggleVibPower;
+$("btnDeckSonar").onclick = toggleHcsr04Power;
+$("btnDeckIr").onclick = toggleIrPower;
+$("btnDeckVib").onclick = toggleVibPower;
+$("btnDeckLed").onclick = toggleSentinelLed;
+
+// --- SAMSUNG CAROUSEL TAB SWITCHING ---
+document.querySelectorAll(".carousel-pill").forEach(pill => {
+  pill.onclick = () => {
+    document.querySelectorAll(".carousel-pill").forEach(p => p.classList.remove("active"));
+    pill.classList.add("active");
+    const targetPaneId = pill.dataset.tab;
+
+    document.querySelectorAll(".carousel-pane").forEach(pane => {
+      pane.classList.remove("active-pane");
+    });
+    const targetPane = $(targetPaneId);
+    if (targetPane) {
+      targetPane.classList.add("active-pane");
+      // Trigger canvas resize if switching back to 3D view
+      if (targetPaneId === "paneUltrasonic") onResize();
+    }
+  };
+});
+
+// --- SEISMOGRAPH WAVEFORM FOR SW-420 ---
+const vibCanvas = $("vibCanvas");
+const vibCtx = vibCanvas ? vibCanvas.getContext("2d") : null;
+const vibHistory = new Array(80).fill(0);
+let currentVibIntensity = 0;
+
+function drawSeismograph() {
+  if (!vibCanvas || !vibCtx) return;
+  vibCanvas.width = vibCanvas.clientWidth * (window.devicePixelRatio || 1);
+  vibCanvas.height = vibCanvas.clientHeight * (window.devicePixelRatio || 1);
+  const w = vibCanvas.width;
+  const h = vibCanvas.height;
+  const midY = h / 2;
+
+  vibCtx.clearRect(0, 0, w, h);
+
+  // Background Grid Lines
+  vibCtx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+  vibCtx.lineWidth = 1;
+  for (let y = 0; y < h; y += 20) {
+    vibCtx.beginPath();
+    vibCtx.moveTo(0, y);
+    vibCtx.lineTo(w, y);
+    vibCtx.stroke();
+  }
+
+  // Waveform Path
+  vibCtx.beginPath();
+  vibCtx.strokeStyle = currentVibIntensity > 0.3 ? "#ef4444" : "#fbbf24";
+  vibCtx.lineWidth = 2.5;
+  vibCtx.shadowColor = currentVibIntensity > 0.3 ? "#ef4444" : "#fbbf24";
+  vibCtx.shadowBlur = 8;
+
+  const step = w / (vibHistory.length - 1);
+  for (let i = 0; i < vibHistory.length; i++) {
+    const x = i * step;
+    const y = midY + vibHistory[i] * (h * 0.4);
+    if (i === 0) vibCtx.moveTo(x, y);
+    else vibCtx.lineTo(x, y);
+  }
+  vibCtx.stroke();
+  vibCtx.shadowBlur = 0;
+}
+
+function updateSeismographLoop() {
+  requestAnimationFrame(updateSeismographLoop);
+  // Decay vibration shock spike smoothly
+  currentVibIntensity *= 0.88;
+  const jitter = (Math.random() - 0.5) * currentVibIntensity;
+  vibHistory.push(jitter);
+  if (vibHistory.length > 80) vibHistory.shift();
+
+  if ($("paneVibration").classList.contains("active-pane")) {
+    drawSeismograph();
+  }
+}
+updateSeismographLoop();
 
 window.onload = () => {
   initSensorPlayground();

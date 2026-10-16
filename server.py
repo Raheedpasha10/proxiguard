@@ -17,14 +17,6 @@ UDP_PORT = int(os.getenv("UDP_PORT", "8888"))
 SERIAL_BAUD = 9600
 
 clients = set()
-latest = {
-    "connected": False,
-    "distance": None,
-    "message": "Connecting to ProxiGuard IoT telemetry...",
-    "source": None,
-    "last_seen": None,
-    "error": None
-}
 
 def discover_esp_ip():
     """Scans ip neigh (Android/Linux) or arp -a (macOS) for Espressif OUI"""
@@ -53,6 +45,49 @@ def discover_esp_ip():
 
     return DEFAULT_ESP_IP
 
+latest = {
+    "connected": False,
+    "distance": None,
+    "hcsr04_active": True,
+    "ir_active": True,
+    "ir_triggered": False,
+    "vib_active": True,
+    "vib_triggered": False,
+    "led_state": 0,
+    "pin_states": {},
+    "message": "Connecting to ProxiGuard IoT telemetry...",
+    "source": None,
+    "last_seen": None,
+    "error": None
+}
+
+async def send_hardware_command(app, cmd_str):
+    """Sends command string down active TCP Wi-Fi connection or local Serial"""
+    if not cmd_str.endswith("\n"):
+        cmd_str += "\n"
+    sent = False
+
+    writer = app.get("tcp_writer")
+    if writer and not writer.is_closing():
+        try:
+            writer.write(cmd_str.encode("utf-8"))
+            await writer.drain()
+            sent = True
+        except Exception as e:
+            print(f"[CMD ⚠️] TCP write error: {e}")
+
+    ser = app.get("serial_instance")
+    if ser and hasattr(ser, "is_open") and ser.is_open:
+        try:
+            ser.write(cmd_str.encode("utf-8"))
+            sent = True
+        except Exception as e:
+            print(f"[CMD ⚠️] Serial write error: {e}")
+
+    if sent:
+        print(f"[CMD ⚡] Dispatched: {cmd_str.strip()}")
+    return sent
+
 async def index(request):
     return web.FileResponse("index.html")
 
@@ -65,7 +100,29 @@ async def websocket_handler(request):
 
     try:
         async for msg in ws:
-            if msg.type == web.WSMsgType.ERROR:
+            if msg.type == web.WSMsgType.TEXT:
+                try:
+                    payload = json.loads(msg.data)
+                    cmd = payload.get("cmd")
+                    if cmd == "PIN_SET":
+                        pin = payload.get("pin")
+                        val = payload.get("val", 0)
+                        await send_hardware_command(request.app, f"CMD:PIN:{pin}:{val}")
+                    elif cmd == "PIN_PWM":
+                        pin = payload.get("pin")
+                        val = payload.get("val", 0)
+                        await send_hardware_command(request.app, f"CMD:PWM:{pin}:{val}")
+                    elif cmd == "MOD_SET":
+                        mod = payload.get("module")
+                        state = payload.get("state", 0)
+                        await send_hardware_command(request.app, f"CMD:MOD:{mod}:{state}")
+                    elif cmd == "LCD_TEXT":
+                        l1 = payload.get("line1", "")
+                        l2 = payload.get("line2", "")
+                        await send_hardware_command(request.app, f"CMD:LCD:{l1}|{l2}")
+                except Exception as e:
+                    print(f"[WS ⚠️] Parse error: {e}")
+            elif msg.type == web.WSMsgType.ERROR:
                 break
     finally:
         clients.discard(ws)
@@ -91,10 +148,57 @@ def process_reading(line, source="Wi-Fi"):
     now = time.time()
     upper = line.upper()
 
+    # Handle multi-sensor format: e.g. DIST:24.5,IR:1,VIB:0,LED:1
+    if "," in line and ":" in line:
+        data = {
+            "connected": True,
+            "source": source,
+            "last_seen": now,
+            "error": None
+        }
+        parts = line.split(",")
+        for part in parts:
+            if ":" in part:
+                k, v = part.split(":", 1)
+                k = k.strip().upper()
+                v = v.strip()
+                if k == "DIST":
+                    if v.upper() == "OFF":
+                        data["distance"] = "OFF"
+                        data["hcsr04_active"] = False
+                    elif v.upper() in ["NO_ECHO", "-1"]:
+                        data["distance"] = None
+                        data["hcsr04_active"] = True
+                    else:
+                        try:
+                            data["distance"] = round(float(v), 1)
+                            data["hcsr04_active"] = True
+                        except ValueError:
+                            data["distance"] = None
+                elif k == "IR":
+                    # HW-201 active LOW (0 = object detected / beam broken, 1 = clear)
+                    data["ir_active"] = True
+                    data["ir_triggered"] = (v == "0")
+                elif k == "VIB":
+                    # SW-420 active HIGH pulse on shock (1 = shock detected, 0 = still)
+                    data["vib_active"] = True
+                    data["vib_triggered"] = (v == "1")
+                elif k == "LED":
+                    data["led_state"] = int(v) if v.isdigit() else 0
+                elif k.startswith("P") and k[1:].isdigit():
+                    pin_num = k[1:]
+                    if "pin_states" not in data:
+                        data["pin_states"] = dict(latest.get("pin_states", {}))
+                    data["pin_states"][pin_num] = int(v) if v.isdigit() else 0
+
+        data["message"] = f"Live multi-sensor telemetry [{source}]"
+        return data
+
     if upper == "NO_ECHO":
         return {
             "connected": True,
             "distance": None,
+            "hcsr04_active": True,
             "message": f"Sensor echo timeout (out of range / obstructed) [{source}]",
             "source": source,
             "last_seen": now,
@@ -102,12 +206,24 @@ def process_reading(line, source="Wi-Fi"):
         }
 
     candidate = line.split(":", 1)[1].strip() if upper.startswith("DIST:") else line.strip()
+    if candidate.upper() == "OFF":
+        return {
+            "connected": True,
+            "distance": "OFF",
+            "hcsr04_active": False,
+            "message": f"HC-SR04 in software sleep mode [{source}]",
+            "source": source,
+            "last_seen": now,
+            "error": None
+        }
+
     try:
         val = float(candidate)
         if 0.0 < val <= 400.0:
             return {
                 "connected": True,
                 "distance": round(val, 1),
+                "hcsr04_active": True,
                 "message": f"Receiving live sensor stream [{source}]",
                 "source": source,
                 "last_seen": now,
@@ -117,6 +233,7 @@ def process_reading(line, source="Wi-Fi"):
             return {
                 "connected": True,
                 "distance": None,
+                "hcsr04_active": True,
                 "message": f"Measurement out of range ({val:.1f} cm) [{source}]",
                 "source": source,
                 "last_seen": now,
@@ -159,6 +276,7 @@ async def tcp_stream_reader(app):
                 timeout=1.5
             )
             print(f"[TCP 🔌] Connected to ProxiGuard stream at {target_ip}:{WIFI_PORT}!")
+            app["tcp_writer"] = writer
 
             while True:
                 line_bytes = await reader.readline()
@@ -169,13 +287,17 @@ async def tcp_stream_reader(app):
                 if processed:
                     await broadcast(processed)
 
+            app["tcp_writer"] = None
             writer.close()
             await writer.wait_closed()
         except (asyncio.TimeoutError, ConnectionRefusedError, OSError):
+            app["tcp_writer"] = None
             await asyncio.sleep(1.0)
         except asyncio.CancelledError:
+            app["tcp_writer"] = None
             break
         except Exception as e:
+            app["tcp_writer"] = None
             await asyncio.sleep(1.0)
 
 def find_serial_port():
@@ -197,6 +319,7 @@ async def serial_reader(app):
             port = find_serial_port()
             if serial and port and os.path.exists(port):
                 s = await asyncio.to_thread(serial.Serial, port, SERIAL_BAUD, timeout=1)
+                app["serial_instance"] = s
                 try:
                     while True:
                         raw = await asyncio.to_thread(s.readline)
@@ -207,6 +330,7 @@ async def serial_reader(app):
                                 await broadcast(processed)
                         await asyncio.sleep(0.01)
                 finally:
+                    app["serial_instance"] = None
                     await asyncio.to_thread(s.close)
             else:
                 await asyncio.sleep(3)
