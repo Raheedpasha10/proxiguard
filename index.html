@@ -258,8 +258,9 @@ header.nav-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 10;
+  z-index: 25;
   pointer-events: none;
+  gap: 8px;
 }
 
 .view-presets {
@@ -1025,18 +1026,32 @@ footer.footer-note {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 4px 10px;
+  background: rgba(13, 16, 26, 0.88);
+  backdrop-filter: blur(16px);
+  padding: 5px 12px;
   border-radius: 20px;
-  border: 1px solid var(--surface-border-subtle);
+  border: 1px solid var(--surface-border);
   cursor: pointer;
   user-select: none;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 30;
+  touch-action: manipulation;
 }
 
 .card-quick-gate:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.card-quick-gate:active {
+  transform: scale(0.96);
+}
+
+.card-quick-gate * {
+  pointer-events: none;
 }
 
 .gate-switch {
@@ -2671,7 +2686,16 @@ function processTelemetry(data) {
     state.rateTimer = now;
   }
 
-  if (data.distance != null) {
+  if (data.distance === "OFF" || data.hcsr04_active === false) {
+    state.rawDistance = null;
+    $("distanceNumber").textContent = "OFF";
+    $("distanceUnit").textContent = "software standby";
+    const badge = $("zoneBadge");
+    badge.textContent = "POWER SLEEP";
+    badge.style.color = "#94a3b8";
+    badge.style.borderColor = "rgba(255, 255, 255, 0.2)";
+    dot.className = "status-dot";
+  } else if (data.distance != null && !isNaN(Number(data.distance))) {
     const d = Number(data.distance);
     state.rawDistance = d;
 
@@ -2995,6 +3019,14 @@ function toggleHcsr04Power() {
   $("btnDeckSonar").classList.toggle("active", modules.hcsr04);
   $("deckSonarBadge").textContent = modules.hcsr04 ? "ACTIVE" : "SLEEP";
   $("deckSonarBadge").className = `cell-badge ${modules.hcsr04 ? "trig" : "free"}`;
+  if (!modules.hcsr04) {
+    $("distanceNumber").textContent = "OFF";
+    $("distanceUnit").textContent = "software standby";
+    const badge = $("zoneBadge");
+    badge.textContent = "POWER SLEEP";
+    badge.style.color = "#94a3b8";
+    badge.style.borderColor = "rgba(255, 255, 255, 0.2)";
+  }
   sendHardwareCommand({ cmd: "MOD_SET", module: "HCSR04", state: modules.hcsr04 ? 1 : 0 });
   recalculatePowerBudget();
   logEvent(`HC-SR04 Transducer ${modules.hcsr04 ? "Activated" : "Software Sleep"}`, modules.hcsr04 ? "normal" : "warn");
