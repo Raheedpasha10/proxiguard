@@ -1184,9 +1184,9 @@ footer.footer-note {
   gap: 8px;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 520px) {
   .quick-sentinel-row {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   }
 }
 
@@ -2139,6 +2139,15 @@ footer.footer-note {
           </div>
           <span class="btn-sub">Pin D3 (Input)</span>
         </div>
+
+        <!-- 16x2 I2C Character LCD Backlight Gate -->
+        <div id="btnDeckLcd" class="sentinel-action-btn active" title="Toggle 16x2 I2C LCD Display & Backlight">
+          <div class="btn-head">
+            <span class="btn-title">16x2 I2C LCD</span>
+            <span id="deckLcdBadge" class="cell-badge uart">LIT</span>
+          </div>
+          <span class="btn-sub">Pins A4 / A5 (I2C)</span>
+        </div>
       </div>
 
       <!-- Real-Time Power Consumption & USB Headroom Meter -->
@@ -2958,6 +2967,7 @@ const modules = {
   ir: true,
   vib: true,
   led: false,
+  lcd: true,
   irBreachCount: 0
 };
 
@@ -2968,6 +2978,7 @@ function recalculatePowerBudget() {
   if (modules.ir) current += 15;
   if (modules.vib) current += 5;
   if (modules.led) current += 12;
+  if (modules.lcd) current += 25; // 16x2 Character LCD with I2C backpack & LED backlight
 
   const pct = Math.min((current / 500) * 100, 100);
   const headroom = 500 - current;
@@ -3021,6 +3032,16 @@ function toggleSentinelLed() {
   logEvent(`Sentinel Green LED (Pin D8) ${modules.led ? "Illuminated" : "Extinguished"}`, "normal");
 }
 
+function toggleLcdPower() {
+  modules.lcd = !modules.lcd;
+  $("btnDeckLcd").classList.toggle("active", modules.lcd);
+  $("deckLcdBadge").textContent = modules.lcd ? "LIT" : "DARK";
+  $("deckLcdBadge").className = `cell-badge ${modules.lcd ? "uart" : "free"}`;
+  sendHardwareCommand({ cmd: "MOD_SET", module: "LCD", state: modules.lcd ? 1 : 0 });
+  recalculatePowerBudget();
+  logEvent(`16x2 I2C LCD Backlight ${modules.lcd ? "Illuminated" : "Dimmed/Standby"}`, "normal");
+}
+
 // Wire up Quick Gate clicks
 $("gateHcsr04").onclick = toggleHcsr04Power;
 $("gateIr").onclick = toggleIrPower;
@@ -3029,6 +3050,7 @@ $("btnDeckSonar").onclick = toggleHcsr04Power;
 $("btnDeckIr").onclick = toggleIrPower;
 $("btnDeckVib").onclick = toggleVibPower;
 $("btnDeckLed").onclick = toggleSentinelLed;
+$("btnDeckLcd").onclick = toggleLcdPower;
 
 // --- SAMSUNG CAROUSEL TAB SWITCHING ---
 document.querySelectorAll(".carousel-pill").forEach(pill => {
