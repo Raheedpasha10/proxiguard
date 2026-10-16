@@ -753,144 +753,183 @@ input[type=range]::-webkit-slider-thumb {
   width: 100%;
 }
 
-/* PHOTOREALISTIC CAD STUDIO STAGE */
-.cad-studio-stage {
+/* AUTHENTIC 3D ARDUINO UNO HARDWARE DIGITAL TWIN (THREE.JS + GLTF) */
+.b3d-stage {
+  position: relative;
   width: 100%;
-  background: radial-gradient(circle at 50% 40%, rgba(20, 32, 54, 0.7) 0%, rgba(5, 8, 16, 0.98) 100%);
+  height: 420px;
+  background: radial-gradient(circle at 50% 45%, #0e172a 0%, #030712 100%);
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-border-subtle);
-  position: relative;
   overflow: hidden;
-  box-shadow: inset 0 2px 24px rgba(0, 0, 0, 0.85);
+  box-shadow: inset 0 2px 28px rgba(0, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
 }
 
-.cad-studio-toolbar {
+.b3d-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 14px;
-  background: rgba(10, 14, 24, 0.75);
+  background: rgba(10, 15, 26, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--surface-border-subtle);
+  gap: 8px;
+  flex-wrap: wrap;
   z-index: 20;
 }
 
-.cad-render-viewport {
-  position: relative;
-  width: 100%;
-  height: 380px;
+.b3d-group {
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  gap: 6px;
 }
 
-.cad-hero-render {
-  max-width: 95%;
-  max-height: 92%;
-  object-fit: contain;
-  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.9));
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+.b3d-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(20, 30, 48, 0.6);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
 
-.cad-render-viewport.zoom-15 .cad-hero-render {
-  transform: scale(1.4);
+.b3d-btn:hover {
+  color: #ffffff;
+  background: rgba(30, 45, 72, 0.85);
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
 }
 
-.cad-render-viewport.zoom-20 .cad-hero-render {
-  transform: scale(1.85);
+.b3d-btn.active {
+  color: #38bdf8;
+  background: rgba(14, 165, 233, 0.18);
+  border-color: #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
 }
 
-.cad-hotspots-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
+.b3d-btn .dot-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  transition: all 0.2s ease;
+}
+
+.b3d-btn .dot-indicator.off {
+  background: #64748b;
+  box-shadow: none;
+}
+
+.b3d-canvas-container {
+  position: relative;
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
+  flex: 1;
+  min-height: 0;
+  cursor: grab;
 }
 
-.cad-hotspots-layer.hidden {
-  opacity: 0;
-  pointer-events: none !important;
+.b3d-canvas-container:active {
+  cursor: grabbing;
 }
 
-.cad-hotspot {
+.b3d-canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.b3d-loader-overlay {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  margin-left: -12px;
-  margin-top: -12px;
+  inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  pointer-events: auto;
-  cursor: pointer;
+  background: rgba(5, 8, 16, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 25;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
-.hotspot-dot {
-  width: 11px;
-  height: 11px;
+.b3d-loader-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.b3d-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(56, 189, 248, 0.2);
+  border-top-color: #38bdf8;
   border-radius: 50%;
-  background: #38bdf8;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 12px #38bdf8;
-  transition: transform 0.2s ease;
-  z-index: 2;
+  animation: b3dSpin 0.9s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
 }
 
-.hotspot-pulse {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(56, 189, 248, 0.4);
-  animation: hotspotPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+@keyframes b3dSpin {
+  to { transform: rotate(360deg); }
 }
 
-@keyframes hotspotPing {
-  75%, 100% {
-    transform: scale(2.2);
-    opacity: 0;
-  }
+.b3d-loader-title {
+  margin-top: 14px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #f8fafc;
+  letter-spacing: 0.02em;
 }
 
-.hotspot-dot.led-dot { background: #34d399; box-shadow: 0 0 14px #34d399; }
-.hotspot-dot.trig-dot { background: #38bdf8; box-shadow: 0 0 14px #38bdf8; }
-.hotspot-dot.echo-dot { background: #f43f5e; box-shadow: 0 0 14px #f43f5e; }
-.hotspot-dot.vib-dot { background: #fbbf24; box-shadow: 0 0 14px #fbbf24; }
-.hotspot-dot.i2c-dot { background: #a855f7; box-shadow: 0 0 14px #a855f7; }
-.hotspot-dot.pwr-dot { background: #ef4444; box-shadow: 0 0 14px #ef4444; }
-.hotspot-dot.usb-dot { background: #94a3b8; box-shadow: 0 0 14px #cbd5e1; }
-
-.cad-hotspot:hover .hotspot-dot {
-  transform: scale(1.4);
+.b3d-loader-sub {
+  margin-top: 4px;
+  font-size: 0.74rem;
+  color: #94a3b8;
 }
 
-.cad-studio-footer {
+.b3d-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 14px;
-  background: rgba(8, 11, 20, 0.85);
+  background: rgba(8, 12, 22, 0.85);
   border-top: 1px solid var(--surface-border-subtle);
   font-size: 11px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.studio-badge {
-  color: var(--text-tertiary);
+.b3d-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #94a3b8;
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 500;
 }
 
-.hotspot-tooltip-text {
-  color: #38bdf8;
-  font-weight: 600;
+.b3d-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.b3d-hint {
+  color: #64748b;
   font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
 }
 
 /* CAD GALLERY PANE */
@@ -1806,7 +1845,7 @@ footer.footer-note {
     <div class="board-view-tabs">
       <button class="board-tab-btn active" data-board-tab="pane3dBoard">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-        <span>Photorealistic CAD Studio</span>
+        <span>3D Digital Twin</span>
       </button>
       <button class="board-tab-btn" data-board-tab="pane2dSvg">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
@@ -1818,78 +1857,55 @@ footer.footer-note {
       </button>
     </div>
 
-    <!-- PANE 1: PHOTOREALISTIC CAD STUDIO STAGE -->
+    <!-- PANE 1: AUTHENTIC 3D ARDUINO UNO HARDWARE TWIN (GLTF 2.0 WEBGL) -->
     <div id="pane3dBoard" class="board-view-pane active-view">
-      <div class="cad-studio-stage">
-        <div class="cad-studio-toolbar">
-          <div class="b3d-presets">
-            <button class="cad-angle-btn active" data-cad-angle="iso">Ray-Traced 3D</button>
-            <button class="cad-angle-btn" data-cad-angle="top">Top Orthographic</button>
+      <div class="b3d-stage">
+        <!-- Modern Cyber Glass Toolbar -->
+        <div class="b3d-toolbar">
+          <div class="b3d-group">
+            <button class="b3d-btn active" data-b3d-view="iso">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              <span>Isometric 3D</span>
+            </button>
+            <button class="b3d-btn" data-b3d-view="top">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span>Top PCB</span>
+            </button>
+            <button class="b3d-btn" data-b3d-view="front">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              <span>Front Ports</span>
+            </button>
           </div>
-          <div class="b3d-presets">
-            <button id="btnCadHotspots" class="b3d-view-btn active">Hotspots: ON</button>
-            <button id="btnCadZoom" class="b3d-view-btn">Zoom: 1.0x</button>
-          </div>
-        </div>
 
-        <div class="cad-render-viewport" id="cadRenderViewport">
-          <img id="cadActiveImg" src="arduino-uno-r3-1.snapshot.5/uno1.jpg" alt="Photorealistic Arduino Uno CAD Render" class="cad-hero-render">
-          
-          <!-- Interactive Pin & Component Hotspots overlaid on the Ray-Traced CAD Image -->
-          <div id="cadHotspotsLayer" class="cad-hotspots-layer">
-            <!-- Pin D8: Sentinel Green LED -->
-            <div class="cad-hotspot" style="top: 24%; left: 54%;" data-pin="D8" data-title="Pin D8: Sentinel Green LED" data-desc="Output channel with 220R resistor to GND">
-              <span class="hotspot-pulse"></span>
-              <span class="hotspot-dot led-dot"></span>
-            </div>
-
-            <!-- Pins D9 / D10: HC-SR04 Ultrasonic Sonar -->
-            <div class="cad-hotspot" style="top: 25%; left: 49%;" data-pin="D9" data-title="Pins D9 / D10: HC-SR04 Ultrasonic" data-desc="D9 (Trigger Pulse) &bull; D10 (Echo Timing)">
-              <span class="hotspot-pulse"></span>
-              <span class="hotspot-dot trig-dot"></span>
-            </div>
-
-            <!-- Pin D2: HW-201 Active Optical IR -->
-            <div class="cad-hotspot" style="top: 26%; left: 70%;" data-pin="D2" data-title="Pin D2: HW-201 Active Optical IR" data-desc="Digital tripwire with active-low breach detection">
-              <span class="hotspot-pulse"></span>
-              <span class="hotspot-dot echo-dot"></span>
-            </div>
-
-            <!-- Pin D3: SW-420 Seismic Guard -->
-            <div class="cad-hotspot" style="top: 26%; left: 66%;" data-pin="D3" data-title="Pin D3: SW-420 Seismic Shock" data-desc="Vibration transducer with comparator interrupt">
-              <span class="hotspot-pulse"></span>
-              <span class="hotspot-dot vib-dot"></span>
-            </div>
-
-            <!-- Pins A4 / A5: 16x2 I2C Character LCD -->
-            <div class="cad-hotspot" style="top: 48%; left: 77%;" data-pin="A4" data-title="Pins A4 / A5: 16x2 I2C LCD" data-desc="Hardware I2C Bus (SDA / SCL) with timeout protection">
-              <span class="hotspot-pulse"></span>
-              <span class="hotspot-dot i2c-dot"></span>
-            </div>
-
-            <!-- 5V Aux & 5V Main Power Rails -->
-            <div class="cad-hotspot" style="top: 55%; left: 62%;" data-pin="5V" data-title="5V Regulated Power Rail" data-desc="5.04V DC powering sensors and LCD backpack">
-              <span class="hotspot-pulse"></span>
-              <span class="hotspot-dot pwr-dot"></span>
-            </div>
-
-            <!-- 3.3V Dedicated Wi-Fi Rail -->
-            <div class="cad-hotspot" style="top: 55%; left: 58%;" data-pin="3.3V" data-title="3.3V Regulated ESP-01 Rail" data-desc="Dedicated supply for Wi-Fi telemetry bridge">
-              <span class="hotspot-pulse"></span>
-              <span class="hotspot-dot pwr-dot"></span>
-            </div>
-
-            <!-- USB-B Connector -->
-            <div class="cad-hotspot" style="top: 48%; left: 24%;" data-pin="USB" data-title="USB Type-B Port &amp; Bridge" data-desc="USB communication and 500mA power supply link">
-              <span class="hotspot-pulse"></span>
-              <span class="hotspot-dot usb-dot"></span>
-            </div>
+          <div class="b3d-group">
+            <button id="btnB3dOrbit" class="b3d-btn active" title="Toggle 360 Auto-Orbit Rotation">
+              <span class="dot-indicator" id="orbitDot"></span>
+              <span id="orbitLabel">Auto-Orbit: ON</span>
+            </button>
+            <button id="btnB3dReset" class="b3d-btn" title="Reset Camera Perspective">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+              <span>Reset</span>
+            </button>
           </div>
         </div>
 
-        <div class="cad-studio-footer">
-          <span class="studio-badge">SolidWorks PhotoView 360 &bull; Ray-Traced Studio Lighting &bull; 300 DPI</span>
-          <span id="cadHotspotTooltip" class="hotspot-tooltip-text">Hover or tap any glowing component for circuit telemetry</span>
+        <!-- 3D Canvas Viewport -->
+        <div class="b3d-canvas-container" id="board3dCanvasContainer"></div>
+
+        <!-- Sleek Loading Spinner Overlay -->
+        <div id="board3dLoader" class="b3d-loader-overlay">
+          <div class="b3d-spinner"></div>
+          <div class="b3d-loader-title">Loading 3D Hardware Digital Twin...</div>
+          <div class="b3d-loader-sub" id="board3dProgress">2.1 MB Compressed GLTF &bull; Real-Time WebGL</div>
+        </div>
+
+        <!-- Footer Telemetry -->
+        <div class="b3d-footer">
+          <span class="b3d-badge">
+            <span class="badge-dot"></span>
+            GLTF 2.0 &bull; 60 FPS WebGL Engine
+          </span>
+          <span class="b3d-hint">Drag to Rotate 360&deg; &bull; Pinch/Scroll to Zoom &bull; Touch &amp; Inspect</span>
         </div>
       </div>
     </div>
@@ -3342,109 +3358,274 @@ function initSmdInteractions() {
 }
 
 // =========================================================================
-// PHOTOREALISTIC CAD STUDIO ENGINE (RAY-TRACED PRE-RENDERED HARDWARE SUITE)
+// AUTHENTIC 3D ARDUINO UNO HARDWARE DIGITAL TWIN (THREE.JS + GLTF 2.0)
 // =========================================================================
-let currentCadZoomLevel = 0; // 0: 1.0x, 1: 1.4x, 2: 1.85x
-const cadZoomClasses = ["", "zoom-15", "zoom-20"];
-const cadZoomLabels = ["Zoom: 1.0x", "Zoom: 1.4x", "Zoom: 1.85x"];
-let cadStudioInitialized = false;
+let bScene = null, bCamera = null, bRenderer = null, bControls = null;
+let bBoardGroup = null, bAutoRotate = true;
+let bLedD8 = null, bLedTx = null, bLedPower = null;
+let b3dInitialized = false;
+let b3dLoading = false;
 
-function initCadStudio() {
-  if (cadStudioInitialized) return;
-  cadStudioInitialized = true;
-
-  const activeImg = $("cadActiveImg");
-  const viewport = $("cadRenderViewport");
-  const tooltipText = $("cadHotspotTooltip");
-  const layer = $("cadHotspotsLayer");
-
-  // Angle Switcher (Ray-Traced 3D vs Top Orthographic)
-  document.querySelectorAll("[data-cad-angle]").forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll("[data-cad-angle]").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const angle = btn.dataset.cadAngle;
-
-      if (angle === "iso") {
-        activeImg.src = "arduino-uno-r3-1.snapshot.5/uno1.jpg";
-        updateHotspotPositions("iso");
-      } else {
-        activeImg.src = "arduino-uno-r3-1.snapshot.5/unotop.jpg";
-        updateHotspotPositions("top");
-      }
-    };
-  });
-
-  // Hotspots Toggle
-  const btnHotspots = $("btnCadHotspots");
-  if (btnHotspots) {
-    btnHotspots.onclick = () => {
-      const isHidden = layer.classList.toggle("hidden");
-      btnHotspots.textContent = `Hotspots: ${isHidden ? "OFF" : "ON"}`;
-      btnHotspots.classList.toggle("active", !isHidden);
-    };
+function initBoard3D() {
+  if (b3dInitialized) {
+    onResizeBoard3D();
+    return;
   }
+  const container = $("board3dCanvasContainer");
+  if (!container) return;
 
-  // Zoom Toggle
-  const btnZoom = $("btnCadZoom");
-  if (btnZoom) {
-    btnZoom.onclick = () => {
-      viewport.classList.remove(cadZoomClasses[1], cadZoomClasses[2], cadZoomClasses[0]);
-      currentCadZoomLevel = (currentCadZoomLevel + 1) % 3;
-      if (cadZoomClasses[currentCadZoomLevel]) {
-        viewport.classList.add(cadZoomClasses[currentCadZoomLevel]);
-      }
-      btnZoom.textContent = cadZoomLabels[currentCadZoomLevel];
-    };
-  }
+  const w = container.clientWidth || 600;
+  const h = container.clientHeight || 420;
 
-  // Hotspot interaction
-  document.querySelectorAll(".cad-hotspot").forEach(spot => {
-    spot.addEventListener("mouseenter", () => {
-      const title = spot.dataset.title;
-      const desc = spot.dataset.desc;
-      const pin = spot.dataset.pin;
-      tooltipText.innerHTML = `<span style="color:#f8fafc;font-weight:700;">${title}</span> &bull; <span style="color:#94a3b8;">${desc}</span>`;
-      if (pin && typeof selectPin === "function") {
-        selectPin(pin);
-      }
-    });
+  // 1. Scene & Atmosphere
+  bScene = new THREE.Scene();
+  bScene.fog = new THREE.FogExp2(0x030712, 0.018);
 
-    spot.addEventListener("mouseleave", () => {
-      tooltipText.textContent = "Hover or tap any glowing component for circuit telemetry";
-    });
+  // 2. Camera Setup (Isometric Perspective)
+  bCamera = new THREE.PerspectiveCamera(38, w / h, 0.1, 100);
+  bCamera.position.set(13, 14, 16);
 
-    spot.addEventListener("click", () => {
-      const pin = spot.dataset.pin;
-      if (pin && typeof selectPin === "function") {
-        selectPin(pin);
-      }
-    });
-  });
+  // 3. High-Fidelity Tone-Mapped Renderer
+  bRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+  bRenderer.setSize(w, h);
+  bRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  bRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  bRenderer.toneMappingExposure = 1.25;
+  bRenderer.outputEncoding = THREE.sRGBEncoding;
+  bRenderer.shadowMap.enabled = true;
+  bRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  container.innerHTML = "";
+  container.appendChild(bRenderer.domElement);
+
+  // 4. Smooth Damped Orbit Controls
+  bControls = new THREE.OrbitControls(bCamera, bRenderer.domElement);
+  bControls.enableDamping = true;
+  bControls.dampingFactor = 0.05;
+  bControls.autoRotate = bAutoRotate;
+  bControls.autoRotateSpeed = 1.1;
+  bControls.minDistance = 6;
+  bControls.maxDistance = 45;
+  bControls.target.set(0, 0, 0);
+
+  // 5. Studio Multi-Point Lighting
+  const ambLight = new THREE.AmbientLight(0x334155, 1.8);
+  bScene.add(ambLight);
+
+  // Key directional light (Pure white top-right)
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+  keyLight.position.set(14, 22, 16);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.width = 1024;
+  keyLight.shadow.mapSize.height = 1024;
+  bScene.add(keyLight);
+
+  // Back Rim light (Cyber Cyan backlight)
+  const rimLight = new THREE.DirectionalLight(0x38bdf8, 2.8);
+  rimLight.position.set(-16, 12, -14);
+  bScene.add(rimLight);
+
+  // Soft Fill light (Warm ambient from bottom front)
+  const fillLight = new THREE.DirectionalLight(0x94a3b8, 1.2);
+  fillLight.position.set(0, -10, 12);
+  bScene.add(fillLight);
+
+  // 6. Cyber Grid Helper & Floor Shadow
+  const grid = new THREE.GridHelper(36, 24, 0x1e293b, 0x0c1322);
+  grid.position.y = -2.4;
+  bScene.add(grid);
+
+  const shadowGeo = new THREE.PlaneGeometry(36, 36);
+  const shadowMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+  const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+  shadowMesh.rotation.x = -Math.PI / 2;
+  shadowMesh.position.y = -2.41;
+  shadowMesh.receiveShadow = true;
+  bScene.add(shadowMesh);
+
+  // 7. Interactive Toolbar Setup
+  setupBoard3DToolbar();
+
+  // 8. Load the Real 2.1 MB Compressed GLTF Model
+  loadArduinoGlb();
+
+  b3dInitialized = true;
+  animateBoard3D();
+  window.addEventListener("resize", onResizeBoard3D);
 }
 
-function updateHotspotPositions(angle) {
-  const spots = {
-    "D8": angle === "iso" ? { top: "24%", left: "54%" } : { top: "20%", left: "56%" },
-    "D9": angle === "iso" ? { top: "25%", left: "49%" } : { top: "20%", left: "51%" },
-    "D2": angle === "iso" ? { top: "26%", left: "70%" } : { top: "20%", left: "74%" },
-    "D3": angle === "iso" ? { top: "26%", left: "66%" } : { top: "20%", left: "70%" },
-    "A4": angle === "iso" ? { top: "48%", left: "77%" } : { top: "78%", left: "78%" },
-    "5V": angle === "iso" ? { top: "55%", left: "62%" } : { top: "78%", left: "54%" },
-    "3.3V": angle === "iso" ? { top: "55%", left: "58%" } : { top: "78%", left: "50%" },
-    "USB": angle === "iso" ? { top: "48%", left: "24%" } : { top: "35%", left: "18%" }
-  };
+function loadArduinoGlb() {
+  if (b3dLoading) return;
+  b3dLoading = true;
 
-  document.querySelectorAll(".cad-hotspot").forEach(el => {
-    const p = el.dataset.pin;
-    if (spots[p]) {
-      el.style.top = spots[p].top;
-      el.style.left = spots[p].left;
+  const loader = new THREE.GLTFLoader();
+  loader.load(
+    "arduino_uno.glb",
+    (gltf) => {
+      const model = gltf.scene;
+
+      // Accurately compute bounding box and center
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+
+      // Normalize scale uniformly so the board sits cleanly in the viewport
+      const targetScale = 14 / maxDim;
+      model.scale.set(targetScale, targetScale, targetScale);
+
+      // Re-center model after scaling so (0,0,0) is board geometric center
+      const scaledBox = new THREE.Box3().setFromObject(model);
+      const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+      model.position.x = -scaledCenter.x;
+      model.position.y = -scaledCenter.y;
+      model.position.z = -scaledCenter.z;
+
+      // Enhance material realism
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          if (child.material) {
+            child.material.envMapIntensity = 1.0;
+            if (child.material.map) {
+              child.material.map.anisotropy = 8;
+            }
+          }
+        }
+      });
+
+      bBoardGroup = new THREE.Group();
+      bBoardGroup.add(model);
+
+      // Live Status PointLights on Hardware Twin
+      // Power LED (Green)
+      bLedPower = new THREE.PointLight(0x10b981, 1.4, 2.5);
+      bLedPower.position.set(2.4, 0.4, -1.2);
+      bBoardGroup.add(bLedPower);
+
+      // Sentinel D8 LED (Emerald glow synced to physical hardware state)
+      bLedD8 = new THREE.PointLight(0x10b981, 0, 4.0);
+      bLedD8.position.set(0.1, 0.5, 2.2);
+      bBoardGroup.add(bLedD8);
+
+      // TX & RX Activity LEDs (Amber flickering on packets)
+      bLedTx = new THREE.PointLight(0xfef08a, 0.2, 1.5);
+      bLedTx.position.set(-0.6, 0.4, -1.2);
+      bBoardGroup.add(bLedTx);
+
+      bScene.add(bBoardGroup);
+
+      // Hide loading spinner
+      const loaderEl = $("board3dLoader");
+      if (loaderEl) loaderEl.classList.add("hidden");
+      b3dLoading = false;
+    },
+    (xhr) => {
+      if (xhr.lengthComputable) {
+        const pct = Math.round((xhr.loaded / xhr.total) * 100);
+        const progEl = $("board3dProgress");
+        if (progEl) progEl.textContent = `Loading: ${pct}% • 2.1 MB Compressed`;
+      }
+    },
+    (err) => {
+      console.error("Error loading arduino_uno.glb:", err);
+      const progEl = $("board3dProgress");
+      if (progEl) progEl.textContent = "Error loading 3D model.";
+      b3dLoading = false;
     }
-  });
+  );
 }
 
-// Setup Modal Tab Switching (Photorealistic CAD / 2D SVG / CAD Specs)
+function animateBoard3D() {
+  requestAnimationFrame(animateBoard3D);
+  if (!b3dInitialized) return;
+
+  if (bControls) bControls.update();
+
+  // Sync Sentinel D8 LED with physical toggle
+  if (bLedD8) {
+    bLedD8.intensity = modules.led ? 2.4 : 0;
+  }
+
+  // Dynamic TX/RX flickering on incoming telemetry packets
+  if (bLedTx && state.packetCount > 0) {
+    bLedTx.intensity = Math.random() > 0.4 ? 1.6 : 0.2;
+  }
+
+  if (bRenderer && bScene && bCamera) {
+    bRenderer.render(bScene, bCamera);
+  }
+}
+
+function onResizeBoard3D() {
+  const container = $("board3dCanvasContainer");
+  if (!container || !bRenderer || !bCamera) return;
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+  if (w === 0 || h === 0) return;
+  bCamera.aspect = w / h;
+  bCamera.updateProjectionMatrix();
+  bRenderer.setSize(w, h);
+}
+
+function setupBoard3DToolbar() {
+  // Angle presets
+  document.querySelectorAll("[data-b3d-view]").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll("[data-b3d-view]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const view = btn.dataset.b3dView;
+      if (view === "iso") {
+        bCamera.position.set(13, 14, 16);
+      } else if (view === "top") {
+        bCamera.position.set(0, 22, 0.01);
+      } else if (view === "front") {
+        bCamera.position.set(-18, 4, 0);
+      }
+      if (bControls) {
+        bControls.target.set(0, 0, 0);
+        bControls.update();
+      }
+    };
+  });
+
+  // Auto-Orbit toggle
+  const btnOrbit = $("btnB3dOrbit");
+  const orbitDot = $("orbitDot");
+  const orbitLabel = $("orbitLabel");
+  if (btnOrbit) {
+    btnOrbit.onclick = () => {
+      bAutoRotate = !bAutoRotate;
+      if (bControls) bControls.autoRotate = bAutoRotate;
+      btnOrbit.classList.toggle("active", bAutoRotate);
+      if (orbitDot) orbitDot.classList.toggle("off", !bAutoRotate);
+      if (orbitLabel) orbitLabel.textContent = `Auto-Orbit: ${bAutoRotate ? "ON" : "OFF"}`;
+    };
+  }
+
+  // Reset Camera Perspective
+  const btnReset = $("btnB3dReset");
+  if (btnReset) {
+    btnReset.onclick = () => {
+      bCamera.position.set(13, 14, 16);
+      if (bControls) {
+        bControls.target.set(0, 0, 0);
+        bControls.autoRotate = true;
+        bAutoRotate = true;
+        bControls.update();
+      }
+      if (btnOrbit) btnOrbit.classList.add("active");
+      if (orbitDot) orbitDot.classList.remove("off");
+      if (orbitLabel) orbitLabel.textContent = "Auto-Orbit: ON";
+      document.querySelectorAll("[data-b3d-view]").forEach(b => b.classList.remove("active"));
+      const isoBtn = document.querySelector('[data-b3d-view="iso"]');
+      if (isoBtn) isoBtn.classList.add("active");
+    };
+  }
+}
+
+// Setup Modal Tab Switching (3D Digital Twin / 2D SVG / CAD Specs)
 document.querySelectorAll("[data-board-tab]").forEach(tabBtn => {
   tabBtn.onclick = () => {
     document.querySelectorAll("[data-board-tab]").forEach(b => b.classList.remove("active"));
@@ -3461,6 +3642,13 @@ document.querySelectorAll("[data-board-tab]").forEach(tabBtn => {
       targetPane.style.display = "block";
       targetPane.classList.add("active-view");
     }
+
+    if (targetPaneId === "pane3dBoard") {
+      setTimeout(() => {
+        initBoard3D();
+        onResizeBoard3D();
+      }, 50);
+    }
   };
 });
 
@@ -3468,7 +3656,10 @@ document.querySelectorAll("[data-board-tab]").forEach(tabBtn => {
 $("btnOpenBoardModal").onclick = () => {
   modal.classList.add("open");
   selectPin(selectedPinId);
-  initCadStudio();
+  setTimeout(() => {
+    initBoard3D();
+    onResizeBoard3D();
+  }, 80);
 };
 
 $("btnCloseModal").onclick = () => {
