@@ -61,25 +61,28 @@ latest = {
     "error": None
 }
 
-async def send_hardware_command(app, cmd_str):
+active_tcp_writer = None
+active_serial_instance = None
+
+async def send_hardware_command(cmd_str):
     """Sends command string down active TCP Wi-Fi connection or local Serial"""
+    global active_tcp_writer, active_serial_instance
     if not cmd_str.endswith("\n"):
         cmd_str += "\n"
     sent = False
 
-    writer = app.get("tcp_writer")
-    if writer and not writer.is_closing():
+    if active_tcp_writer and not active_tcp_writer.is_closing():
         try:
-            writer.write(cmd_str.encode("utf-8"))
-            await writer.drain()
+            active_tcp_writer.write(cmd_str.encode("utf-8"))
+            await active_tcp_writer.drain()
             sent = True
         except Exception as e:
             print(f"[CMD ⚠️] TCP write error: {e}")
 
-    ser = app.get("serial_instance")
-    if ser and hasattr(ser, "is_open") and ser.is_open:
+    if active_serial_instance and hasattr(active_serial_instance, "is_open") and active_serial_instance.is_open:
         try:
-            ser.write(cmd_str.encode("utf-8"))
+            active_serial_instance.write(cmd_str.encode("utf-8"))
+            await active_serial_instance.drain() if hasattr(active_serial_instance, 'drain') else None
             sent = True
         except Exception as e:
             print(f"[CMD ⚠️] Serial write error: {e}")
@@ -107,19 +110,19 @@ async def websocket_handler(request):
                     if cmd == "PIN_SET":
                         pin = payload.get("pin")
                         val = payload.get("val", 0)
-                        await send_hardware_command(request.app, f"CMD:PIN:{pin}:{val}")
+                        await send_hardware_command(f"CMD:PIN:{pin}:{val}")
                     elif cmd == "PIN_PWM":
                         pin = payload.get("pin")
                         val = payload.get("val", 0)
-                        await send_hardware_command(request.app, f"CMD:PWM:{pin}:{val}")
+                        await send_hardware_command(f"CMD:PWM:{pin}:{val}")
                     elif cmd == "MOD_SET":
                         mod = payload.get("module")
                         state = payload.get("state", 0)
-                        await send_hardware_command(request.app, f"CMD:MOD:{mod}:{state}")
+                        await send_hardware_command(f"CMD:MOD:{mod}:{state}")
                     elif cmd == "LCD_TEXT":
                         l1 = payload.get("line1", "")
                         l2 = payload.get("line2", "")
-                        await send_hardware_command(request.app, f"CMD:LCD:{l1}|{l2}")
+                        await send_hardware_command(f"CMD:LCD:{l1}|{l2}")
                 except Exception as e:
                     print(f"[WS ⚠️] Parse error: {e}")
             elif msg.type == web.WSMsgType.ERROR:
@@ -268,6 +271,7 @@ async def start_udp_listener(app):
 
 async def tcp_stream_reader(app):
     """High-reliability persistent TCP client that streams directly from Arduino (port 8888)"""
+    global active_tcp_writer
     while True:
         target_ip = discover_esp_ip()
         try:
@@ -276,7 +280,7 @@ async def tcp_stream_reader(app):
                 timeout=1.5
             )
             print(f"[TCP 🔌] Connected to ProxiGuard stream at {target_ip}:{WIFI_PORT}!")
-            app["tcp_writer"] = writer
+            active_tcp_writer = writer
 
             while True:
                 line_bytes = await reader.readline()
@@ -287,17 +291,17 @@ async def tcp_stream_reader(app):
                 if processed:
                     await broadcast(processed)
 
-            app["tcp_writer"] = None
+            active_tcp_writer = None
             writer.close()
             await writer.wait_closed()
         except (asyncio.TimeoutError, ConnectionRefusedError, OSError):
-            app["tcp_writer"] = None
+            active_tcp_writer = None
             await asyncio.sleep(1.0)
         except asyncio.CancelledError:
-            app["tcp_writer"] = None
+            active_tcp_writer = None
             break
         except Exception as e:
-            app["tcp_writer"] = None
+            active_tcp_writer = None
             await asyncio.sleep(1.0)
 
 def find_serial_port():
@@ -314,12 +318,13 @@ def find_serial_port():
 
 async def serial_reader(app):
     """Fallback reader for USB serial line from Arduino"""
+    global active_serial_instance
     while True:
         try:
             port = find_serial_port()
             if serial and port and os.path.exists(port):
                 s = await asyncio.to_thread(serial.Serial, port, SERIAL_BAUD, timeout=1)
-                app["serial_instance"] = s
+                active_serial_instance = s
                 try:
                     while True:
                         raw = await asyncio.to_thread(s.readline)
@@ -330,7 +335,7 @@ async def serial_reader(app):
                                 await broadcast(processed)
                         await asyncio.sleep(0.01)
                 finally:
-                    app["serial_instance"] = None
+                    active_serial_instance = None
                     await asyncio.to_thread(s.close)
             else:
                 await asyncio.sleep(3)
