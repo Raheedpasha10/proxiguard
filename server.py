@@ -391,8 +391,12 @@ async def static_file(request):
         return web.FileResponse(safe_path)
     return web.Response(status=404, text="Not Found")
 
+async def api_latest(request):
+    return web.json_response(latest)
+
 app = web.Application()
 app.router.add_get("/", index)
+app.router.add_get("/api/latest", api_latest)
 app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/{filename:.*\\.(?:glb|gltf|bin|png|jpg|svg|json|ico|css|js)}", static_file)
 
