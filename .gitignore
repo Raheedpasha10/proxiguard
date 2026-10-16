@@ -1,20 +1,47 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# Environments and Dependencies
 .env
+.venv
+env/
 venv/
 ENV/
+env.bak/
+venv.bak/
 
-# Operating System
+# Operating System Files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Arduino Build Artefacts
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Arduino Compilation Artifacts
 build/
 *.hex
 *.elf
+*.bin
 
-# Logs
+# Runtime Logs
 *.log
+*.pid
+
+# Temporary Files
+*.tmp
+*.bak
+scratch/
