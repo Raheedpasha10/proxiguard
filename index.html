@@ -709,6 +709,198 @@ input[type=range]::-webkit-slider-thumb {
   color: #ffffff;
 }
 
+/* MODAL VIEW MODE TABS (3D / 2D / CAD GALLERY) */
+.board-view-tabs {
+  display: flex;
+  gap: 6px;
+  background: rgba(13, 16, 26, 0.9);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--surface-border);
+  margin-bottom: 12px;
+  width: fit-content;
+}
+
+.board-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: calc(var(--radius-sm) - 2px);
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.board-tab-btn:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.board-tab-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.15);
+}
+
+.board-view-pane {
+  width: 100%;
+}
+
+/* 3D BOARD STAGE */
+.board-3d-stage {
+  width: 100%;
+  height: 380px;
+  background: radial-gradient(circle at 50% 50%, rgba(20, 35, 60, 0.45) 0%, rgba(4, 7, 14, 0.98) 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border-subtle);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 20px rgba(0, 0, 0, 0.8);
+}
+
+.board-3d-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+  pointer-events: none;
+  gap: 8px;
+}
+
+.b3d-presets {
+  display: flex;
+  gap: 4px;
+  background: rgba(13, 16, 26, 0.88);
+  backdrop-filter: blur(16px);
+  padding: 3px;
+  border-radius: 20px;
+  border: 1px solid var(--surface-border);
+  pointer-events: auto;
+}
+
+.b3d-view-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.b3d-view-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.b3d-view-btn.active {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+}
+
+.board-3d-hint {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  letter-spacing: 0.4px;
+}
+
+/* CAD GALLERY PANE */
+.cad-gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 580px) {
+  .cad-gallery-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.cad-gallery-card {
+  background: rgba(13, 16, 26, 0.7);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cad-gallery-card:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-2px);
+}
+
+.cad-preview-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  background: #080c14;
+}
+
+.cad-card-meta {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cad-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.cad-desc {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+}
+
+.cad-comparison-alert {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cad-comparison-alert .alert-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.cad-comparison-alert .alert-body {
+  font-size: 11.5px;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
 /* Authentic Arduino Uno R3 SMD CAD Digital Twin Stage */
 .modal-smd-stage {
   width: 100%;
@@ -1541,8 +1733,46 @@ footer.footer-note {
       <button id="btnCloseModal" class="modal-close-btn">&times;</button>
     </div>
 
-    <!-- Authentic Arduino Uno R3 SMD Digital Twin (Official CAD Layout A000073) -->
-    <div class="modal-smd-stage" id="smdStageContainer">
+    <!-- Hardware Twin View Mode Tabs -->
+    <div class="board-view-tabs">
+      <button class="board-tab-btn active" data-board-tab="pane3dBoard">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <span>3D Solid Model</span>
+      </button>
+      <button class="board-tab-btn" data-board-tab="pane2dSvg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        <span>2D Pinout Inspector</span>
+      </button>
+      <button class="board-tab-btn" data-board-tab="paneCadGallery">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <span>CAD Renders &amp; Spec</span>
+      </button>
+    </div>
+
+    <!-- PANE 1: INTERACTIVE 3D ARDUINO UNO BOARD VIEWER -->
+    <div id="pane3dBoard" class="board-view-pane active-view">
+      <div class="board-3d-stage">
+        <div class="board-3d-toolbar">
+          <div class="b3d-presets">
+            <button class="b3d-view-btn active" data-b3d-view="iso">Isometric 3D</button>
+            <button class="b3d-view-btn" data-b3d-view="top">Top PCB</button>
+            <button class="b3d-view-btn" data-b3d-view="front">Connectors</button>
+          </div>
+          <div class="b3d-presets">
+            <button id="btnB3dOrbit" class="b3d-view-btn active">Auto-Orbit: ON</button>
+            <button id="btnB3dReset" class="b3d-view-btn">Reset</button>
+          </div>
+        </div>
+        <div id="board3dCanvasContainer" style="width:100%;height:380px;position:relative;cursor:grab;"></div>
+        <div class="board-3d-hint">
+          Drag to Rotate • Pinch / Scroll to Zoom • Double-Click to Reset
+        </div>
+      </div>
+    </div>
+
+    <!-- PANE 2: AUTHENTIC 2D ARDUINO UNO R3 SMD DIGITAL TWIN (OFFICIAL CAD LAYOUT A000073) -->
+    <div id="pane2dSvg" class="board-view-pane" style="display:none;">
+      <div class="modal-smd-stage" id="smdStageContainer">
       <div id="smdSvgWrapper" class="smd-svg-wrapper">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 686 533" width="100%" height="100%" class="uno-smd-svg">
 <defs>
@@ -2109,6 +2339,34 @@ footer.footer-note {
         </div>
       </div>
     </div>
+    <!-- END PANE 2 -->
+
+    <!-- PANE 3: RAY-TRACED CAD RENDERS & HARDWARE SPECIFICATION -->
+    <div id="paneCadGallery" class="board-view-pane" style="display:none;">
+      <div class="cad-gallery-grid">
+        <div class="cad-gallery-card">
+          <img src="arduino-uno-r3-1.snapshot.5/uno1.jpg" alt="Ray-Traced CAD Perspective Render" class="cad-preview-img">
+          <div class="cad-card-meta">
+            <span class="cad-title">SolidWorks CAD Ray-Traced Perspective</span>
+            <span class="cad-desc">GrabCAD AP214 Assembly Geometry (uno1.jpg)</span>
+          </div>
+        </div>
+        <div class="cad-gallery-card">
+          <img src="arduino-uno-r3-1.snapshot.5/unotop.jpg" alt="Top Orthographic CAD Alignment" class="cad-preview-img">
+          <div class="cad-card-meta">
+            <span class="cad-title">Top Orthographic Alignment Render</span>
+            <span class="cad-desc">Component Footprints &amp; Silkscreen Layer (unotop.jpg)</span>
+          </div>
+        </div>
+      </div>
+      <div class="cad-comparison-alert">
+        <div class="alert-title">Hardware Architecture Specification</div>
+        <div class="alert-body">
+          The imported CAD solid assembly models the reference <strong>DIP-28 Italian Uno R3</strong> (through-hole socketed MCU, single 5V rail). The active dashboard operates on your confirmed <strong>SMD CH340G Edition</strong> with dual 5V rails, dual ground headers, and ATmega328P TQFP-32 surface-mount architecture.
+        </div>
+      </div>
+    </div>
+    <!-- END PANE 3 -->
 
     
     <!-- UNIVERSAL HARDWARE CONTROL DECK (BIDIRECTIONAL CONTROLLER) -->
@@ -2959,10 +3217,482 @@ function initSmdInteractions() {
   });
 }
 
+// =========================================================================
+// INTERACTIVE 3D ARDUINO UNO BOARD ENGINE (THREE.JS SOLID MODEL)
+// =========================================================================
+let bScene, bCamera, bRenderer, bControls;
+let bBoardGroup, bLedPower, bLedPin13, bLedTx, bLedRx, bLedD8;
+let bAutoRotate = true;
+let b3dInitialized = false;
+
+function initBoard3D() {
+  const container = $("board3dCanvasContainer");
+  if (!container) return;
+
+  if (b3dInitialized) {
+    onResizeBoard3D();
+    return;
+  }
+
+  const w = container.clientWidth || 560;
+  const h = container.clientHeight || 380;
+
+  bScene = new THREE.Scene();
+
+  bCamera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
+  bCamera.position.set(0, 16, 22);
+
+  bRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  bRenderer.setSize(w, h);
+  bRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  bRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  bRenderer.toneMappingExposure = 1.35;
+  bRenderer.shadowMap.enabled = true;
+  container.innerHTML = "";
+  container.appendChild(bRenderer.domElement);
+
+  bControls = new THREE.OrbitControls(bCamera, bRenderer.domElement);
+  bControls.enableDamping = true;
+  bControls.dampingFactor = 0.06;
+  bControls.maxPolarAngle = Math.PI / 2 + 0.15;
+  bControls.minDistance = 8;
+  bControls.maxDistance = 50;
+  bControls.target.set(0, 0, 0);
+
+  // Lighting
+  const ambLight = new THREE.AmbientLight(0x2a3b5c, 1.8);
+  bScene.add(ambLight);
+
+  const mainLight = new THREE.DirectionalLight(0xffffff, 2.6);
+  mainLight.position.set(12, 22, 14);
+  mainLight.castShadow = true;
+  bScene.add(mainLight);
+
+  const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.8);
+  fillLight.position.set(-16, 8, -10);
+  bScene.add(fillLight);
+
+  const rimLight = new THREE.DirectionalLight(0x10b981, 1.2);
+  rimLight.position.set(0, -10, -15);
+  bScene.add(rimLight);
+
+  // Reflective Floor Grid
+  const grid = new THREE.GridHelper(24, 24, 0x1e293b, 0x0f172a);
+  grid.position.y = -1.2;
+  bScene.add(grid);
+
+  // Build Board
+  buildArduino3DModel();
+
+  b3dInitialized = true;
+  animateBoard3D();
+
+  // Setup toolbar buttons
+  setupBoard3DToolbar();
+}
+
+function buildArduino3DModel() {
+  bBoardGroup = new THREE.Group();
+  bScene.add(bBoardGroup);
+
+  // 1. PCB BOARD
+  const pcbW = 6.86;
+  const pcbH = 5.34;
+  const pcbThick = 0.16;
+
+  // PCB Rounded Outline Shape with Standard Corner Notches
+  const shape = new THREE.Shape();
+  const hw = pcbW / 2;
+  const hh = pcbH / 2;
+  const r = 0.25;
+
+  shape.moveTo(-hw + r, -hh);
+  shape.lineTo(hw - 0.7, -hh);
+  shape.lineTo(hw, -hh + 0.7); // Bottom-right chamfer
+  shape.lineTo(hw, hh - 1.2);
+  shape.lineTo(hw - 0.35, hh - 0.85); // Header notch
+  shape.lineTo(hw - 0.35, hh - r);
+  shape.quadraticCurveTo(hw - 0.35, hh, hw - 0.35 - r, hh);
+  shape.lineTo(-hw + r, hh);
+  shape.quadraticCurveTo(-hw, hh, -hw, hh - r);
+  shape.lineTo(-hw, -hh + r);
+  shape.quadraticCurveTo(-hw, -hh, -hw + r, -hh);
+
+  const extrudeSettings = {
+    depth: pcbThick,
+    bevelEnabled: true,
+    bevelSegments: 2,
+    steps: 1,
+    bevelSize: 0.02,
+    bevelThickness: 0.02
+  };
+
+  const pcbGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  pcbGeo.center();
+
+  // Load PCB Top Silkscreen Texture
+  const textureLoader = new THREE.TextureLoader();
+  const pcbTexture = textureLoader.load("/arduino_pcb_top.png", () => {
+    if (bRenderer) bRenderer.render(bScene, bCamera);
+  }, undefined, () => {});
+  pcbTexture.anisotropy = 4;
+
+  const pcbTopMat = new THREE.MeshStandardMaterial({
+    map: pcbTexture,
+    color: 0x0e3b75,
+    roughness: 0.38,
+    metalness: 0.15
+  });
+
+  const pcbSideMat = new THREE.MeshStandardMaterial({
+    color: 0x09254d,
+    roughness: 0.6,
+    metalness: 0.1
+  });
+
+  const pcbMesh = new THREE.Mesh(pcbGeo, [pcbTopMat, pcbSideMat]);
+  pcbMesh.rotation.x = -Math.PI / 2;
+  pcbMesh.receiveShadow = true;
+  bBoardGroup.add(pcbMesh);
+
+  // Mounting Holes (4 golden solder rings)
+  const holePositions = [
+    [-hw + 1.4, -hh + 1.5],
+    [hw - 1.5, -hh + 0.7],
+    [hw - 1.5, hh - 0.7],
+    [-hw + 1.4, hh - 3.7]
+  ];
+  const holeGeo = new THREE.RingGeometry(0.12, 0.22, 16);
+  const holeMat = new THREE.MeshStandardMaterial({
+    color: 0xd97706,
+    metalness: 0.85,
+    roughness: 0.2,
+    side: THREE.DoubleSide
+  });
+  holePositions.forEach(pos => {
+    const hole = new THREE.Mesh(holeGeo, holeMat);
+    hole.rotation.x = -Math.PI / 2;
+    hole.position.set(pos[0], pcbThick / 2 + 0.005, pos[1]);
+    bBoardGroup.add(hole);
+  });
+
+  // 2. METALLIC USB-B CONNECTOR
+  const usbGroup = new THREE.Group();
+  const usbBodyGeo = new THREE.BoxGeometry(1.2, 1.05, 1.25);
+  const metalMat = new THREE.MeshStandardMaterial({
+    color: 0xd1d5db,
+    metalness: 0.88,
+    roughness: 0.22
+  });
+  const usbBody = new THREE.Mesh(usbBodyGeo, metalMat);
+  usbGroup.add(usbBody);
+
+  const usbHoleGeo = new THREE.BoxGeometry(0.8, 0.75, 0.3);
+  const darkCavityMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.8 });
+  const usbHole = new THREE.Mesh(usbHoleGeo, darkCavityMat);
+  usbHole.position.set(0, 0, -0.5);
+  usbGroup.add(usbHole);
+
+  const tongueGeo = new THREE.BoxGeometry(0.65, 0.15, 0.25);
+  const tongueMat = new THREE.MeshStandardMaterial({ color: 0xf9fafb, roughness: 0.5 });
+  const tongue = new THREE.Mesh(tongueGeo, tongueMat);
+  tongue.position.set(0, -0.15, -0.45);
+  usbGroup.add(tongue);
+
+  usbGroup.position.set(-hw + 0.6, 0.55, -hh + 1.25);
+  bBoardGroup.add(usbGroup);
+
+  // 3. DC POWER BARREL JACK
+  const dcGroup = new THREE.Group();
+  const dcBodyGeo = new THREE.BoxGeometry(1.35, 1.05, 0.9);
+  const dcMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.65, metalness: 0.1 });
+  const dcBody = new THREE.Mesh(dcBodyGeo, dcMat);
+  dcGroup.add(dcBody);
+
+  const dcHoleGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.3, 16);
+  dcHoleGeo.rotateX(Math.PI / 2);
+  const dcHole = new THREE.Mesh(dcHoleGeo, darkCavityMat);
+  dcHole.position.set(-0.55, 0, 0);
+  dcGroup.add(dcHole);
+
+  const dcPinGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.25, 12);
+  dcPinGeo.rotateX(Math.PI / 2);
+  const dcPin = new THREE.Mesh(dcPinGeo, metalMat);
+  dcPin.position.set(-0.55, 0, 0);
+  dcGroup.add(dcPin);
+
+  dcGroup.position.set(-hw + 0.7, 0.55, hh - 1.0);
+  bBoardGroup.add(dcGroup);
+
+  // 4. FEMALE HEADER STRIPS (Black blocks with gold-plated contacts)
+  const headerMat = new THREE.MeshStandardMaterial({ color: 0x1c1c1e, roughness: 0.55 });
+  const goldContactMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.85, roughness: 0.2 });
+
+  function createHeader(numPins, xPos, zPos) {
+    const hGroup = new THREE.Group();
+    const pinPitch = 0.254;
+    const hLength = numPins * pinPitch;
+    const blockGeo = new THREE.BoxGeometry(hLength, 0.85, 0.25);
+    const block = new THREE.Mesh(blockGeo, headerMat);
+    block.position.y = 0.425;
+    hGroup.add(block);
+
+    const contactGeo = new THREE.PlaneGeometry(0.1, 0.1);
+    for (let i = 0; i < numPins; i++) {
+      const contact = new THREE.Mesh(contactGeo, goldContactMat);
+      contact.rotation.x = -Math.PI / 2;
+      const px = -hLength / 2 + pinPitch * (i + 0.5);
+      contact.position.set(px, 0.851, 0);
+      hGroup.add(contact);
+    }
+    hGroup.position.set(xPos, pcbThick / 2, zPos);
+    bBoardGroup.add(hGroup);
+  }
+
+  createHeader(10, 0.75, -hh + 0.22); // SCL, SDA, AREF, GND, D13-D8
+  createHeader(8, 2.35, -hh + 0.22);  // D7-D0
+  createHeader(8, -0.6, hh - 0.22);   // 5V Aux, RESET, 3.3V, 5V, GND, GND, Vin
+  createHeader(6, 1.8, hh - 0.22);    // A0-A5
+
+  // 5. ATMEGA328P TQFP-32 SURFACE MOUNT MCU (Matching SMD board!)
+  const mcuGroup = new THREE.Group();
+  const mcuBodyGeo = new THREE.BoxGeometry(0.9, 0.12, 0.9);
+  const icMat = new THREE.MeshStandardMaterial({ color: 0x181d26, roughness: 0.45, metalness: 0.2 });
+  const mcuBody = new THREE.Mesh(mcuBodyGeo, icMat);
+  mcuGroup.add(mcuBody);
+
+  const dotGeo = new THREE.CircleGeometry(0.04, 12);
+  const dotMat = new THREE.MeshBasicMaterial({ color: 0x475569 });
+  const dot = new THREE.Mesh(dotGeo, dotMat);
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(-0.32, 0.061, -0.32);
+  mcuGroup.add(dot);
+
+  const leadMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9, roughness: 0.2 });
+  const leadGeoX = new THREE.BoxGeometry(0.04, 0.04, 0.18);
+  const leadGeoZ = new THREE.BoxGeometry(0.18, 0.04, 0.04);
+  for (let i = 0; i < 8; i++) {
+    const off = -0.35 + i * 0.1;
+    const lN = new THREE.Mesh(leadGeoX, leadMat);
+    lN.position.set(off, 0.02, -0.52);
+    mcuGroup.add(lN);
+    const lS = new THREE.Mesh(leadGeoX, leadMat);
+    lS.position.set(off, 0.02, 0.52);
+    mcuGroup.add(lS);
+    const lE = new THREE.Mesh(leadGeoZ, leadMat);
+    lE.position.set(0.52, 0.02, off);
+    mcuGroup.add(lE);
+    const lW = new THREE.Mesh(leadGeoZ, leadMat);
+    lW.position.set(-0.52, 0.02, off);
+    mcuGroup.add(lW);
+  }
+  mcuGroup.position.set(1.4, pcbThick / 2 + 0.06, 0.4);
+  bBoardGroup.add(mcuGroup);
+
+  // 6. CH340G USB INTERFACE IC (SOP-16 near USB)
+  const chGroup = new THREE.Group();
+  const chBodyGeo = new THREE.BoxGeometry(0.48, 0.1, 0.85);
+  const chBody = new THREE.Mesh(chBodyGeo, icMat);
+  chGroup.add(chBody);
+  for (let i = 0; i < 8; i++) {
+    const off = -0.35 + i * 0.1;
+    const l1 = new THREE.Mesh(leadGeoZ, leadMat);
+    l1.position.set(-0.32, 0.02, off);
+    chGroup.add(l1);
+    const l2 = new THREE.Mesh(leadGeoZ, leadMat);
+    l2.position.set(0.32, 0.02, off);
+    chGroup.add(l2);
+  }
+  chGroup.position.set(-1.3, pcbThick / 2 + 0.05, -1.0);
+  bBoardGroup.add(chGroup);
+
+  // 7. 16.000 MHZ CRYSTAL OSCILLATOR (Silver oval can)
+  const crystalGeo = new THREE.BoxGeometry(0.95, 0.3, 0.38);
+  const crystal = new THREE.Mesh(crystalGeo, metalMat);
+  crystal.position.set(-1.45, pcbThick / 2 + 0.15, 0.1);
+  bBoardGroup.add(crystal);
+
+  // 8. TACTILE RESET PUSH BUTTON
+  const btnGroup = new THREE.Group();
+  const btnFrameGeo = new THREE.BoxGeometry(0.5, 0.25, 0.5);
+  const btnFrame = new THREE.Mesh(btnFrameGeo, metalMat);
+  btnGroup.add(btnFrame);
+  const btnCapGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.15, 16);
+  const redMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3 });
+  const btnCap = new THREE.Mesh(btnCapGeo, redMat);
+  btnCap.position.y = 0.18;
+  btnGroup.add(btnCap);
+  btnGroup.position.set(-hw + 0.6, pcbThick / 2 + 0.125, -hh + 0.5);
+  bBoardGroup.add(btnGroup);
+
+  // 9. ELECTROLYTIC CAPACITORS
+  const capGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.6, 16);
+  const cap1 = new THREE.Mesh(capGeo, metalMat);
+  cap1.position.set(-1.0, pcbThick / 2 + 0.3, 1.5);
+  bBoardGroup.add(cap1);
+  const cap2 = new THREE.Mesh(capGeo, metalMat);
+  cap2.position.set(-0.3, pcbThick / 2 + 0.3, 1.5);
+  bBoardGroup.add(cap2);
+
+  // 10. ICSP 6-PIN HEADER
+  const icspGroup = new THREE.Group();
+  const icspBase = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.2, 0.75), headerMat);
+  icspGroup.add(icspBase);
+  const pinGeo = new THREE.BoxGeometry(0.06, 0.45, 0.06);
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 3; c++) {
+      const pin = new THREE.Mesh(pinGeo, goldContactMat);
+      pin.position.set(-0.12 + r * 0.24, 0.25, -0.25 + c * 0.25);
+      icspGroup.add(pin);
+    }
+  }
+  icspGroup.position.set(hw - 0.7, pcbThick / 2 + 0.1, 0.0);
+  bBoardGroup.add(icspGroup);
+
+  // 11. ACTIVE STATUS LEDS WITH DYNAMIC GLOW
+  const ledGeo = new THREE.BoxGeometry(0.12, 0.06, 0.08);
+
+  // Power LED (Green)
+  bLedPower = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: 0x10b981 }));
+  bLedPower.position.set(2.4, pcbThick / 2 + 0.04, -1.2);
+  bBoardGroup.add(bLedPower);
+  const pwrLight = new THREE.PointLight(0x10b981, 0.8, 1.5);
+  pwrLight.position.copy(bLedPower.position);
+  pwrLight.position.y += 0.08;
+  bBoardGroup.add(pwrLight);
+
+  // Pin 13 LED (Amber)
+  bLedPin13 = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: 0xf59e0b }));
+  bLedPin13.position.set(-0.6, pcbThick / 2 + 0.04, -1.6);
+  bBoardGroup.add(bLedPin13);
+
+  // TX & RX LEDs
+  bLedTx = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: 0xfef08a }));
+  bLedTx.position.set(-0.6, pcbThick / 2 + 0.04, -1.3);
+  bBoardGroup.add(bLedTx);
+
+  bLedRx = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: 0xfef08a }));
+  bLedRx.position.set(-0.6, pcbThick / 2 + 0.04, -1.05);
+  bBoardGroup.add(bLedRx);
+
+  // Sentinel D8 LED (Linked to hardware LED toggle!)
+  bLedD8 = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: 0x059669 }));
+  bLedD8.position.set(0.1, pcbThick / 2 + 0.04, -hh + 0.5);
+  bBoardGroup.add(bLedD8);
+}
+
+function animateBoard3D() {
+  requestAnimationFrame(animateBoard3D);
+  if (!b3dInitialized) return;
+
+  if (bAutoRotate && bBoardGroup) {
+    bBoardGroup.rotation.y += 0.005;
+  }
+
+  // Update Sentinel D8 LED glow based on live modules.led state
+  if (bLedD8) {
+    bLedD8.material.color.setHex(modules.led ? 0x34d399 : 0x0f2b1d);
+  }
+
+  // Realistic random flicker for TX/RX when live data arrives
+  if (bLedTx && state.packetCount > 0) {
+    bLedTx.material.color.setHex(Math.random() > 0.4 ? 0xfef08a : 0x422006);
+    bLedRx.material.color.setHex(Math.random() > 0.5 ? 0xfef08a : 0x422006);
+  }
+
+  if (bControls) bControls.update();
+  if (bRenderer && bScene && bCamera) bRenderer.render(bScene, bCamera);
+}
+
+function onResizeBoard3D() {
+  const container = $("board3dCanvasContainer");
+  if (!container || !bRenderer || !bCamera) return;
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+  if (w === 0 || h === 0) return;
+  bCamera.aspect = w / h;
+  bCamera.updateProjectionMatrix();
+  bRenderer.setSize(w, h);
+}
+
+function setupBoard3DToolbar() {
+  // Presets
+  document.querySelectorAll("[data-b3d-view]").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll("[data-b3d-view]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      bAutoRotate = false;
+      $("btnB3dOrbit").textContent = "Auto-Orbit: OFF";
+      $("btnB3dOrbit").classList.remove("active");
+
+      const mode = btn.dataset.b3dView;
+      if (mode === "iso") {
+        bCamera.position.set(0, 16, 22);
+        if (bBoardGroup) bBoardGroup.rotation.set(0, 0, 0);
+      } else if (mode === "top") {
+        bCamera.position.set(0, 24, 0.01);
+        if (bBoardGroup) bBoardGroup.rotation.set(0, 0, 0);
+      } else if (mode === "front") {
+        bCamera.position.set(-22, 6, 0);
+        if (bBoardGroup) bBoardGroup.rotation.set(0, 0, 0);
+      }
+      if (bControls) bControls.target.set(0, 0, 0);
+    };
+  });
+
+  // Auto-Orbit toggle
+  $("btnB3dOrbit").onclick = () => {
+    bAutoRotate = !bAutoRotate;
+    $("btnB3dOrbit").textContent = `Auto-Orbit: ${bAutoRotate ? "ON" : "OFF"}`;
+    $("btnB3dOrbit").classList.toggle("active", bAutoRotate);
+  };
+
+  // Reset View
+  $("btnB3dReset").onclick = () => {
+    bAutoRotate = true;
+    $("btnB3dOrbit").textContent = "Auto-Orbit: ON";
+    $("btnB3dOrbit").classList.add("active");
+    bCamera.position.set(0, 16, 22);
+    if (bBoardGroup) bBoardGroup.rotation.set(0, 0, 0);
+    if (bControls) bControls.target.set(0, 0, 0);
+  };
+}
+
+// Setup Modal Tab Switching (3D Solid / 2D SVG / CAD Gallery)
+document.querySelectorAll("[data-board-tab]").forEach(tabBtn => {
+  tabBtn.onclick = () => {
+    document.querySelectorAll("[data-board-tab]").forEach(b => b.classList.remove("active"));
+    tabBtn.classList.add("active");
+
+    const targetPaneId = tabBtn.dataset.boardTab;
+    document.querySelectorAll(".board-view-pane").forEach(p => {
+      p.style.display = "none";
+      p.classList.remove("active-view");
+    });
+
+    const targetPane = $(targetPaneId);
+    if (targetPane) {
+      targetPane.style.display = "block";
+      targetPane.classList.add("active-view");
+    }
+
+    if (targetPaneId === "pane3dBoard") {
+      setTimeout(() => {
+        initBoard3D();
+        onResizeBoard3D();
+      }, 50);
+    }
+  };
+});
+
 // Modal Toggle Wiring
 $("btnOpenBoardModal").onclick = () => {
   modal.classList.add("open");
   selectPin(selectedPinId);
+  setTimeout(() => {
+    initBoard3D();
+    onResizeBoard3D();
+  }, 100);
 };
 
 $("btnCloseModal").onclick = () => {
