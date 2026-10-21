@@ -30,9 +30,9 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 // Hardware Pin Assignments
 const byte TRIG_PIN = 9;
 const byte ECHO_PIN = 10;
-const byte IR_PIN   = A2;
+const byte IR_PIN   = 8;
 const byte VIB_PIN  = 13;
-const byte LED_PIN  = 8;
+const byte LED_PIN  = A3;
 
 // Software-Defined Module States
 bool hcsr04_enabled = true;
@@ -180,7 +180,7 @@ void setup() {
   digitalWrite(LED_PIN, LOW);
 
   Serial.println(F("\n=== ProxiGuard Sentinel Booting ==="));
-  Serial.println(F("Sensors: HC-SR04 (D9/D10) | IR (A2) | VIB (D13) | LED (D8) | LCD (A4/A5)"));
+  Serial.println(F("Sensors: HC-SR04 (D9/D10) | IR (D8) | VIB (D13) | LED (A3) | LCD (A4/A5)"));
 
   delay(2000);
   initServer();
