@@ -301,15 +301,48 @@ header.nav-header {
   pointer-events: auto;
 }
 
-#sensorCanvasContainer {
+#sensorCanvasContainer, #irCanvasContainer, #vibCanvasContainer {
   width: 100%;
   height: 400px;
   position: relative;
   cursor: grab;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-#sensorCanvasContainer:active {
+#sensorCanvasContainer:active, #irCanvasContainer:active, #vibCanvasContainer:active {
   cursor: grabbing;
+}
+
+.vib-seismo-overlay {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 220px;
+  height: 90px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.vib-seismo-overlay canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.seismo-tag {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #fbbf24;
+  margin-bottom: 2px;
 }
 
 /* HUD Overlay on Sensor Viewport */
@@ -1880,20 +1913,20 @@ footer.footer-note {
     <!-- PANE 2: HW-201 OPTICAL IR TRIPWIRE -->
     <div id="paneIr" class="carousel-pane">
       <div class="playground-toolbar">
-        <span class="orbit-badge" style="background:rgba(244,63,94,0.15);color:#f43f5e;border-color:rgba(244,63,94,0.3);">HW-201 Active IR Micro-Tripwire (Pin D8)</span>
+        <div class="view-presets">
+          <span class="orbit-badge" style="background:rgba(244,63,94,0.15);color:#f43f5e;border-color:rgba(244,63,94,0.3);">HW-201 Active IR Micro-Tripwire (Pin D8)</span>
+          <button class="view-btn active" data-ir-view="iso">Isometric 3D</button>
+          <button class="view-btn" data-ir-view="top">Top View</button>
+          <button class="view-btn" data-ir-view="beam">Beam Path</button>
+        </div>
         <div id="gateIr" class="card-quick-gate active" title="Arm / Disarm Optical Beam">
           <span class="gate-label">Optical Guard</span>
           <div class="gate-switch"></div>
         </div>
       </div>
 
-      <div class="ir-stage">
-        <div class="ir-beam-graphic">
-          <div class="ir-emitter-led" title="940nm IR Emitter Diode"></div>
-          <div id="irLaserBeam" class="ir-laser-beam"></div>
-          <div class="ir-detector-led" title="Infrared Phototransistor Receiver"></div>
-        </div>
-      </div>
+      <!-- WebGL Three.js HW-201 Viewport -->
+      <div id="irCanvasContainer"></div>
 
       <div class="hud-telemetry">
         <div class="hud-readout">
@@ -1907,15 +1940,24 @@ footer.footer-note {
     <!-- PANE 3: SW-420 SEISMIC / VIBRATION GUARD -->
     <div id="paneVibration" class="carousel-pane">
       <div class="playground-toolbar">
-        <span class="orbit-badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);">SW-420 Seismic &amp; Tamper Guard (Pin D13)</span>
+        <div class="view-presets">
+          <span class="orbit-badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);">SW-420 Seismic &amp; Tamper Guard (Pin D13)</span>
+          <button class="view-btn active" data-vib-view="iso">Isometric 3D</button>
+          <button class="view-btn" data-vib-view="capsule">Sensor Capsule</button>
+          <button class="view-btn" data-vib-view="top">Top View</button>
+        </div>
         <div id="gateVib" class="card-quick-gate active" title="Arm / Disarm Shock Sensor">
           <span class="gate-label">Vibration Guard</span>
           <div class="gate-switch"></div>
         </div>
       </div>
 
-      <div class="vib-stage">
-        <canvas id="vibCanvas"></canvas>
+      <!-- WebGL Three.js SW-420 Viewport with Floating Seismograph -->
+      <div id="vibCanvasContainer">
+        <div class="vib-seismo-overlay">
+          <div class="seismo-tag">Real-Time Accelerometer Trace</div>
+          <canvas id="vibCanvas"></canvas>
+        </div>
       </div>
 
       <div class="hud-telemetry">
@@ -3117,7 +3159,6 @@ function onResize() {
     sRenderer.setSize(sCont.clientWidth, sCont.clientHeight);
   }
 }
-window.addEventListener('resize', onResize);
 
 // Sensor 3D Animation Loop
 function animateSensorPlayground() {
@@ -3162,6 +3203,469 @@ function animateSensorPlayground() {
   sControls.update();
   sRenderer.render(sScene, sCamera);
 }
+
+// ========================================================
+// HW-201 ACTIVE OPTICAL IR 3D PLAYGROUND
+// ========================================================
+let irScene, irCamera, irRenderer, irControls;
+let irModel, irD0Led, irBeamMesh, irReflectBeam, irObstacle;
+const irScatterRings = [];
+let irBreachState = false;
+let irBreachAnim = 0;
+
+function initIrPlayground() {
+  const container = $("irCanvasContainer");
+  if (!container) return;
+  const w = container.clientWidth || 600;
+  const h = container.clientHeight || 400;
+
+  irScene = new THREE.Scene();
+  irScene.fog = new THREE.FogExp2(0x05070a, 0.024);
+
+  irCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+  irCamera.position.set(0, 9, 23);
+
+  irRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  irRenderer.setSize(w, h);
+  irRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  irRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  irRenderer.toneMappingExposure = 1.35;
+  container.appendChild(irRenderer.domElement);
+
+  irControls = new THREE.OrbitControls(irCamera, irRenderer.domElement);
+  irControls.enableDamping = true;
+  irControls.dampingFactor = 0.05;
+  irControls.maxPolarAngle = Math.PI / 2 + 0.15;
+  irControls.minDistance = 6;
+  irControls.maxDistance = 50;
+  irControls.target.set(0, 0, 5);
+
+  const amb = new THREE.AmbientLight(0x1e293b, 1.4);
+  irScene.add(amb);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+  keyLight.position.set(12, 18, 14);
+  irScene.add(keyLight);
+  const rimLight = new THREE.DirectionalLight(0xf43f5e, 2.6);
+  rimLight.position.set(-14, 4, -10);
+  irScene.add(rimLight);
+
+  const grid = new THREE.GridHelper(40, 20, 0x1e293b, 0x0f172a);
+  grid.position.y = -2.6;
+  grid.position.z = 6;
+  irScene.add(grid);
+
+  buildSoloHW201();
+}
+
+function buildSoloHW201() {
+  irModel = new THREE.Group();
+
+  const pcbGeo = new THREE.BoxGeometry(8.2, 3.4, 0.4);
+  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x0c2544, roughness: 0.45, metalness: 0.2 });
+  const pcb = new THREE.Mesh(pcbGeo, pcbMat);
+  irModel.add(pcb);
+
+  const viaGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.45, 16);
+  const viaMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.95, roughness: 0.15 });
+  [[-3.4, 1.1], [-3.4, -1.1]].forEach(([x, y]) => {
+    const v = new THREE.Mesh(viaGeo, viaMat);
+    v.rotation.x = Math.PI / 2;
+    v.position.set(x, y, 0);
+    irModel.add(v);
+  });
+
+  // Clear Glass 940nm IR Emitter Diode (Left: x = -0.75)
+  const emitGroup = new THREE.Group();
+  const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x93c5fd, transmission: 0.88, roughness: 0.1, transparent: true, opacity: 0.9 });
+  const emitBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.9, 20), glassMat);
+  emitBody.rotation.x = Math.PI / 2;
+  emitBody.position.z = 0.45;
+  const emitDome = new THREE.Mesh(new THREE.SphereGeometry(0.35, 20, 16), glassMat);
+  emitDome.position.z = 0.9;
+  const emitCore = new THREE.PointLight(0x38bdf8, 0.8, 8);
+  emitCore.position.z = 0.7;
+  emitGroup.add(emitBody, emitDome, emitCore);
+  emitGroup.position.set(-0.75, 0.1, 1.7);
+  irModel.add(emitGroup);
+
+  // Dark Tinted IR Phototransistor Receiver (Right: x = +0.75)
+  const recvGroup = new THREE.Group();
+  const darkGlassMat = new THREE.MeshStandardMaterial({ color: 0x050508, roughness: 0.15, metalness: 0.85 });
+  const recvBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.9, 20), darkGlassMat);
+  recvBody.rotation.x = Math.PI / 2;
+  recvBody.position.z = 0.45;
+  const recvDome = new THREE.Mesh(new THREE.SphereGeometry(0.35, 20, 16), darkGlassMat);
+  recvDome.position.z = 0.9;
+  recvGroup.add(recvBody, recvDome);
+  recvGroup.position.set(0.75, 0.1, 1.7);
+  irModel.add(recvGroup);
+
+  // LM393 Dual Comparator IC
+  const icGeo = new THREE.BoxGeometry(1.6, 1.2, 0.35);
+  const icMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.8 });
+  const ic = new THREE.Mesh(icGeo, icMat);
+  ic.position.set(0.0, 0.35, 0.2);
+  irModel.add(ic);
+
+  // Blue Calibration Trimmer Potentiometer
+  const potGeo = new THREE.BoxGeometry(1.4, 1.4, 1.1);
+  const potMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.4 });
+  const pot = new THREE.Mesh(potGeo, potMat);
+  pot.position.set(-1.8, 0.75, -0.2);
+  const screwGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.12, 16);
+  const screwMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 });
+  const screw = new THREE.Mesh(screwGeo, screwMat);
+  screw.position.set(-1.8, 1.35, -0.2);
+  irModel.add(pot, screw);
+
+  // Power LED (Red)
+  const pwrLedGeo = new THREE.BoxGeometry(0.28, 0.4, 0.2);
+  const pwrLedMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444, emissiveIntensity: 1.4 });
+  const pwrLed = new THREE.Mesh(pwrLedGeo, pwrLedMat);
+  pwrLed.position.set(1.6, 0.3, -0.7);
+  irModel.add(pwrLed);
+
+  // Signal D0 Indicator LED (Green/Orange)
+  const d0Geo = new THREE.BoxGeometry(0.28, 0.4, 0.2);
+  const d0Mat = new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 0.2 });
+  irD0Led = new THREE.Mesh(d0Geo, d0Mat);
+  irD0Led.position.set(1.6, 0.3, 0.4);
+  irModel.add(irD0Led);
+
+  // 3-Pin Header at Rear
+  const pinGeo = new THREE.CylinderGeometry(0.09, 0.09, 1.1, 12);
+  [-0.6, 0, 0.6].forEach(x => {
+    const p = new THREE.Mesh(pinGeo, viaMat);
+    p.position.set(x, 0.6, -1.7);
+    irModel.add(p);
+  });
+
+  irScene.add(irModel);
+
+  // Forward Laser Beam
+  const beamGeo = new THREE.CylinderGeometry(0.06, 0.22, 9.5, 16);
+  const beamMat = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.65 });
+  irBeamMesh = new THREE.Mesh(beamGeo, beamMat);
+  irBeamMesh.rotation.x = Math.PI / 2;
+  irBeamMesh.position.set(-0.75, 0.1, 7.5);
+  irScene.add(irBeamMesh);
+
+  // Return Reflection Beam
+  const reflectGeo = new THREE.CylinderGeometry(0.22, 0.06, 9.5, 16);
+  const reflectMat = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.5 });
+  irReflectBeam = new THREE.Mesh(reflectGeo, reflectMat);
+  irReflectBeam.rotation.x = Math.PI / 2;
+  irReflectBeam.position.set(0.75, 0.1, 7.5);
+  irScene.add(irReflectBeam);
+
+  // Intruder Target Obstacle (slides into beam on breach)
+  irObstacle = new THREE.Group();
+  const obsPlate = new THREE.Mesh(
+    new THREE.BoxGeometry(3.6, 4.4, 0.3),
+    new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.6 })
+  );
+  const obsRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.8, 1.2, 24),
+    new THREE.MeshBasicMaterial({ color: 0x10b981, side: THREE.DoubleSide })
+  );
+  obsRing.position.z = -0.16;
+  irObstacle.add(obsPlate, obsRing);
+  irObstacle.position.set(8.0, 0.5, 10.5);
+  irScene.add(irObstacle);
+
+  // Alarm Scatter Rings
+  for (let i = 0; i < 3; i++) {
+    const r = new THREE.Mesh(
+      new THREE.RingGeometry(0.3 + i * 0.4, 0.45 + i * 0.4, 32),
+      new THREE.MeshBasicMaterial({ color: 0xf43f5e, transparent: true, opacity: 0, side: THREE.DoubleSide })
+    );
+    r.position.set(0, 0.5, 10.5);
+    irScene.add(r);
+    irScatterRings.push(r);
+  }
+}
+
+function animateIrPlayground() {
+  requestAnimationFrame(animateIrPlayground);
+  if (!irScene || !irCamera || !irRenderer) return;
+
+  const targetAnim = irBreachState ? 1.0 : 0.0;
+  irBreachAnim += (targetAnim - irBreachAnim) * 0.12;
+
+  if (irObstacle) {
+    irObstacle.position.x = 8.0 * (1.0 - irBreachAnim);
+    const obsColor = irBreachState ? 0xf43f5e : 0x10b981;
+    irObstacle.children[1].material.color.setHex(obsColor);
+  }
+
+  const beamHex = irBreachState ? 0xf43f5e : 0x10b981;
+  if (irBeamMesh) {
+    irBeamMesh.material.color.setHex(beamHex);
+    irBeamMesh.material.opacity = irBreachState ? (0.5 + Math.sin(Date.now() * 0.015) * 0.35) : 0.65;
+  }
+  if (irReflectBeam) {
+    irReflectBeam.material.color.setHex(beamHex);
+    irReflectBeam.material.opacity = irBreachState ? (0.35 + Math.sin(Date.now() * 0.015) * 0.25) : 0.5;
+  }
+
+  if (irD0Led) {
+    const d0Emissive = irBreachState ? 0xf43f5e : 0x10b981;
+    irD0Led.material.emissive.setHex(d0Emissive);
+    irD0Led.material.emissiveIntensity = irBreachState ? 2.5 : 0.2;
+  }
+
+  irScatterRings.forEach((ring, idx) => {
+    if (irBreachState) {
+      const t = (Date.now() * 0.003 + idx * 0.33) % 1.0;
+      ring.scale.set(1.0 + t * 1.8, 1.0 + t * 1.8, 1.0);
+      ring.material.opacity = Math.max(0, 0.8 * (1.0 - t));
+    } else {
+      ring.material.opacity = 0;
+    }
+  });
+
+  if (irControls) irControls.update();
+  irRenderer.render(irScene, irCamera);
+}
+
+// ========================================================
+// SW-420 SEISMIC & VIBRATION 3D PLAYGROUND
+// ========================================================
+let vibScene, vibCamera, vibRenderer, vibControls;
+let vibModel, vibD0Led, vibCapsuleGroup, vibSpringMesh, vibSparkLight;
+const vibShockwaveRings = [];
+let vibShockEnergy = 0;
+
+function initVibPlayground() {
+  const container = $("vibCanvasContainer");
+  if (!container) return;
+  const w = container.clientWidth || 600;
+  const h = container.clientHeight || 400;
+
+  vibScene = new THREE.Scene();
+  vibScene.fog = new THREE.FogExp2(0x05070a, 0.024);
+
+  vibCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+  vibCamera.position.set(0, 9, 22);
+
+  vibRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  vibRenderer.setSize(w, h);
+  vibRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  vibRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  vibRenderer.toneMappingExposure = 1.35;
+  container.appendChild(vibRenderer.domElement);
+
+  vibControls = new THREE.OrbitControls(vibCamera, vibRenderer.domElement);
+  vibControls.enableDamping = true;
+  vibControls.dampingFactor = 0.05;
+  vibControls.maxPolarAngle = Math.PI / 2 + 0.15;
+  vibControls.minDistance = 6;
+  vibControls.maxDistance = 50;
+  vibControls.target.set(0, 0, 0);
+
+  const amb = new THREE.AmbientLight(0x1e293b, 1.4);
+  vibScene.add(amb);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+  keyLight.position.set(12, 18, 14);
+  vibScene.add(keyLight);
+  const amberRim = new THREE.DirectionalLight(0xfbbf24, 2.8);
+  amberRim.position.set(-14, 4, -10);
+  vibScene.add(amberRim);
+
+  const grid = new THREE.GridHelper(40, 20, 0x1e293b, 0x0f172a);
+  grid.position.y = -2.6;
+  vibScene.add(grid);
+
+  buildSoloSW420();
+}
+
+function buildSoloSW420() {
+  vibModel = new THREE.Group();
+
+  const pcbGeo = new THREE.BoxGeometry(8.6, 3.4, 0.4);
+  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x0c2544, roughness: 0.45, metalness: 0.2 });
+  const pcb = new THREE.Mesh(pcbGeo, pcbMat);
+  vibModel.add(pcb);
+
+  const viaGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.45, 16);
+  const viaMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.95, roughness: 0.15 });
+  [[-3.6, 1.1], [-3.6, -1.1]].forEach(([x, y]) => {
+    const v = new THREE.Mesh(viaGeo, viaMat);
+    v.rotation.x = Math.PI / 2;
+    v.position.set(x, y, 0);
+    vibModel.add(v);
+  });
+
+  // LM393 Dual Comparator IC
+  const icGeo = new THREE.BoxGeometry(1.6, 1.2, 0.35);
+  const icMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.8 });
+  const ic = new THREE.Mesh(icGeo, icMat);
+  ic.position.set(0.2, 0.35, -0.4);
+  vibModel.add(ic);
+
+  // Blue Calibration Trimmer Potentiometer
+  const potGeo = new THREE.BoxGeometry(1.4, 1.4, 1.1);
+  const potMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.4 });
+  const pot = new THREE.Mesh(potGeo, potMat);
+  pot.position.set(-1.8, 0.75, -0.4);
+  const screwGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.12, 16);
+  const screwMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 });
+  const screw = new THREE.Mesh(screwGeo, screwMat);
+  screw.position.set(-1.8, 1.35, -0.4);
+  vibModel.add(pot, screw);
+
+  // Power LED (Red)
+  const pwrLedGeo = new THREE.BoxGeometry(0.28, 0.4, 0.2);
+  const pwrLedMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444, emissiveIntensity: 1.4 });
+  const pwrLed = new THREE.Mesh(pwrLedGeo, pwrLedMat);
+  pwrLed.position.set(1.8, 0.3, -0.9);
+  vibModel.add(pwrLed);
+
+  // Signal D0 Indicator LED (Amber/Red on Shock)
+  const d0Geo = new THREE.BoxGeometry(0.28, 0.4, 0.2);
+  const d0Mat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xfbbf24, emissiveIntensity: 0.2 });
+  vibD0Led = new THREE.Mesh(d0Geo, d0Mat);
+  vibD0Led.position.set(1.8, 0.3, 0.2);
+  vibModel.add(vibD0Led);
+
+  // 3-Pin Header at Rear (VCC, GND, DO)
+  const pinGeo = new THREE.CylinderGeometry(0.09, 0.09, 1.1, 12);
+  [-0.6, 0, 0.6].forEach(x => {
+    const p = new THREE.Mesh(pinGeo, viaMat);
+    p.position.set(x, 0.6, -1.8);
+    vibModel.add(p);
+  });
+
+  // SW-420 Mechanical Sensor Capsule
+  vibCapsuleGroup = new THREE.Group();
+
+  const casingGeo = new THREE.CylinderGeometry(0.9, 0.9, 4.4, 32);
+  const casingMat = new THREE.MeshPhysicalMaterial({ color: 0x0f172a, roughness: 0.12, transmission: 0.85, transparent: true, opacity: 0.7 });
+  const casing = new THREE.Mesh(casingGeo, casingMat);
+  casing.rotation.z = Math.PI / 2;
+  vibCapsuleGroup.add(casing);
+
+  const capGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.3, 32);
+  [-2.2, 2.2].forEach(x => {
+    const cap = new THREE.Mesh(capGeo, viaMat);
+    cap.rotation.z = Math.PI / 2;
+    cap.position.x = x;
+    vibCapsuleGroup.add(cap);
+  });
+
+  const rodGeo = new THREE.CylinderGeometry(0.08, 0.08, 4.0, 16);
+  const rod = new THREE.Mesh(rodGeo, viaMat);
+  rod.rotation.z = Math.PI / 2;
+  vibCapsuleGroup.add(rod);
+
+  // Flexible vibration spring coils
+  vibSpringMesh = new THREE.Group();
+  const coilGeo = new THREE.TorusGeometry(0.48, 0.065, 12, 28);
+  const springMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.2 });
+  for (let i = 0; i < 9; i++) {
+    const coil = new THREE.Mesh(coilGeo, springMat);
+    coil.position.x = -1.6 + i * 0.4;
+    vibSpringMesh.add(coil);
+  }
+  vibCapsuleGroup.add(vibSpringMesh);
+
+  // Spark Light at Contact Point
+  vibSparkLight = new THREE.PointLight(0xfbbf24, 0, 8);
+  vibCapsuleGroup.add(vibSparkLight);
+
+  vibCapsuleGroup.position.set(0, 0.75, 1.0);
+  vibModel.add(vibCapsuleGroup);
+
+  vibScene.add(vibModel);
+
+  // Concentric Seismic Ground Shockwave Rings
+  for (let i = 0; i < 3; i++) {
+    const r = new THREE.Mesh(
+      new THREE.RingGeometry(0.5, 0.85, 36),
+      new THREE.MeshBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0, side: THREE.DoubleSide })
+    );
+    r.rotation.x = Math.PI / 2;
+    r.position.set(0, -2.58, 0);
+    vibScene.add(r);
+    vibShockwaveRings.push(r);
+  }
+}
+
+function animateVibPlayground() {
+  requestAnimationFrame(animateVibPlayground);
+  if (!vibScene || !vibCamera || !vibRenderer) return;
+
+  vibShockEnergy *= 0.94;
+  if (vibShockEnergy < 0.01) vibShockEnergy = 0;
+
+  if (vibSpringMesh) {
+    if (vibShockEnergy > 0.01) {
+      vibSpringMesh.position.y = Math.sin(Date.now() * 0.08) * 0.24 * vibShockEnergy;
+      vibSpringMesh.position.z = Math.cos(Date.now() * 0.09) * 0.24 * vibShockEnergy;
+      vibSpringMesh.rotation.x = Math.sin(Date.now() * 0.1) * 0.2 * vibShockEnergy;
+    } else {
+      vibSpringMesh.position.set(0, 0, 0);
+      vibSpringMesh.rotation.set(0, 0, 0);
+    }
+  }
+
+  if (vibModel) {
+    if (vibShockEnergy > 0.05) {
+      vibModel.position.y = Math.sin(Date.now() * 0.06) * 0.12 * vibShockEnergy;
+      vibModel.rotation.z = Math.sin(Date.now() * 0.05) * 0.04 * vibShockEnergy;
+    } else {
+      vibModel.position.set(0, 0, 0);
+      vibModel.rotation.set(0, 0, 0);
+    }
+  }
+
+  if (vibSparkLight) {
+    vibSparkLight.intensity = (vibShockEnergy > 0.2) ? (vibShockEnergy * 3.5) : 0;
+  }
+
+  if (vibD0Led) {
+    const isShock = vibShockEnergy > 0.15;
+    vibD0Led.material.emissive.setHex(isShock ? 0xef4444 : 0xfbbf24);
+    vibD0Led.material.emissiveIntensity = isShock ? 3.0 : 0.2;
+  }
+
+  vibShockwaveRings.forEach((ring, idx) => {
+    if (vibShockEnergy > 0.05) {
+      const t = (Date.now() * 0.003 + idx * 0.33) % 1.0;
+      ring.scale.set(1.0 + t * 4.5, 1.0 + t * 4.5, 1.0);
+      ring.material.opacity = Math.max(0, vibShockEnergy * 0.85 * (1.0 - t));
+    } else {
+      ring.material.opacity = 0;
+    }
+  });
+
+  if (vibControls) vibControls.update();
+  vibRenderer.render(vibScene, vibCamera);
+}
+
+function onResizeIr() {
+  const c = $("irCanvasContainer");
+  if (c && irCamera && irRenderer) {
+    irCamera.aspect = c.clientWidth / c.clientHeight;
+    irCamera.updateProjectionMatrix();
+    irRenderer.setSize(c.clientWidth, c.clientHeight);
+  }
+}
+
+function onResizeVib() {
+  const c = $("vibCanvasContainer");
+  if (c && vibCamera && vibRenderer) {
+    vibCamera.aspect = c.clientWidth / c.clientHeight;
+    vibCamera.updateProjectionMatrix();
+    vibRenderer.setSize(c.clientWidth, c.clientHeight);
+  }
+}
+
+window.addEventListener('resize', () => {
+  onResize();
+  onResizeIr();
+  onResizeVib();
+});
 
 // --- Live Waveform Chart ---
 const chartCanvas = $("chartCanvas");
@@ -3389,12 +3893,11 @@ function processTelemetry(data) {
   // --- HW-201 Optical IR Tripwire State Processing ---
   if (data.ir_triggered !== undefined) {
     const isBreach = !!data.ir_triggered;
-    const beam = $("irLaserBeam");
+    irBreachState = isBreach;
     const statusText = $("irStatusText");
     const countBadge = $("irEventCountBadge");
     const stripIr = $("stripIrVal");
 
-    if (beam) beam.classList.toggle("broken", isBreach);
     if (statusText) {
       statusText.textContent = isBreach ? "BREACH DETECTED" : "SECURE";
       statusText.style.color = isBreach ? "#f43f5e" : "#10b981";
@@ -3413,12 +3916,15 @@ function processTelemetry(data) {
   // --- SW-420 Seismic Shock Processing ---
   if (data.vib_triggered !== undefined) {
     const isShock = !!data.vib_triggered;
+    if (isShock) {
+      vibShockEnergy = 1.0;
+      currentVibIntensity = 1.0;
+    }
     const vibText = $("vibStatusText");
     const vibBadge = $("vibBadge");
     const stripVib = $("stripVibVal");
 
     if (isShock) {
-      currentVibIntensity = 1.0;
       if (vibText) {
         vibText.textContent = "SHOCK DETECTED";
         vibText.style.color = "#ef4444";
@@ -3507,9 +4013,10 @@ function startWS() {
 // --- UI Controls & Modal Wiring ---
 
 // Camera Presets on Sensor Playground
-document.querySelectorAll(".view-btn").forEach(btn => {
+// Camera Presets on Sensor Playgrounds
+document.querySelectorAll("#paneUltrasonic .view-btn").forEach(btn => {
   btn.onclick = () => {
-    document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("#paneUltrasonic .view-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     const v = btn.dataset.view;
     if (v === 'iso') {
@@ -3521,6 +4028,42 @@ document.querySelectorAll(".view-btn").forEach(btn => {
     } else if (v === 'front') {
       sCamera.position.set(0, 0, 26);
       sControls.target.set(0, 0, 7);
+    }
+  };
+});
+
+document.querySelectorAll("#paneIr .view-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#paneIr .view-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const v = btn.dataset.irView;
+    if (v === 'iso') {
+      irCamera.position.set(0, 9, 23);
+      irControls.target.set(0, 0, 5);
+    } else if (v === 'top') {
+      irCamera.position.set(0, 25, 5);
+      irControls.target.set(0, 0, 5);
+    } else if (v === 'beam') {
+      irCamera.position.set(11, 4, 9);
+      irControls.target.set(0, 0, 7);
+    }
+  };
+});
+
+document.querySelectorAll("#paneVibration .view-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#paneVibration .view-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const v = btn.dataset.vibView;
+    if (v === 'iso') {
+      vibCamera.position.set(0, 9, 22);
+      vibControls.target.set(0, 0, 0);
+    } else if (v === 'capsule') {
+      vibCamera.position.set(0, 3.5, 10);
+      vibControls.target.set(0, 0.7, 1);
+    } else if (v === 'top') {
+      vibCamera.position.set(0, 25, 0);
+      vibControls.target.set(0, 0, 0);
     }
   };
 });
@@ -4104,6 +4647,8 @@ document.querySelectorAll(".carousel-pill").forEach(pill => {
       targetPane.classList.add("active-pane");
       // Trigger canvas resize if switching back to 3D view
       if (targetPaneId === "paneUltrasonic") onResize();
+      if (targetPaneId === "paneIr") onResizeIr();
+      if (targetPaneId === "paneVibration") onResizeVib();
     }
   };
 });
@@ -4169,6 +4714,10 @@ updateSeismographLoop();
 window.onload = () => {
   initSensorPlayground();
   animateSensorPlayground();
+  initIrPlayground();
+  animateIrPlayground();
+  initVibPlayground();
+  animateVibPlayground();
   initSmdInteractions();
   selectPin("D9");
   startWS();
