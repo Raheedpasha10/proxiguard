@@ -202,6 +202,11 @@ header.nav-header {
   border: 1px solid var(--surface-border);
   gap: 6px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.sensor-carousel-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .carousel-pill {
@@ -316,25 +321,43 @@ header.nav-header {
 
 .vib-seismo-overlay {
   position: absolute;
-  top: 14px;
-  right: 16px;
-  width: 220px;
-  height: 90px;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(251, 191, 36, 0.25);
+  top: 58px;
+  right: 14px;
+  width: 200px;
+  height: 78px;
+  background: rgba(13, 16, 26, 0.85);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(251, 191, 36, 0.28);
   border-radius: 8px;
-  padding: 6px 8px;
+  padding: 6px 10px;
   display: flex;
   flex-direction: column;
-  z-index: 5;
+  z-index: 15;
   pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
-.vib-seismo-overlay canvas {
-  width: 100%;
-  height: 100%;
+@media (max-width: 600px) {
+  .vib-seismo-overlay {
+    top: 52px;
+    right: 10px;
+    width: 150px;
+    height: 64px;
+    padding: 4px 6px;
+  }
 }
+
+.vib-seismo-overlay canvas,
+.vib-seismo-overlay #vibCanvas {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1;
+  min-height: 0;
+  display: block;
+}
+
+#sliderIrRange { accent-color: #f43f5e; }
+#sliderVibGain { accent-color: #fbbf24; }
 
 .seismo-tag {
   font-size: 9px;
@@ -352,11 +375,25 @@ header.nav-header {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
-  padding: 10px 14px;
-  background: rgba(15, 23, 42, 0.65);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 16px;
+  background: rgba(11, 15, 25, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
+  z-index: 5;
+  position: relative;
+}
+
+@media (max-width: 540px) {
+  .sensor-interactive-bar {
+    padding: 8px 10px;
+    gap: 8px;
+    justify-content: center;
+  }
+  .shock-btn-group {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
 }
 
 .sensor-test-btn {
@@ -483,6 +520,22 @@ header.nav-header {
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.95);
 }
 
+.hud-status-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.95);
+  transition: color 0.25s ease;
+}
+
+@media (max-width: 500px) {
+  .hud-status-text {
+    font-size: 20px;
+  }
+}
+
 .hud-unit {
   font-size: 13px;
   font-weight: 500;
@@ -495,6 +548,7 @@ header.nav-header {
   border-radius: 16px;
   font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
   background: rgba(13, 16, 26, 0.88);
   backdrop-filter: blur(16px);
   border: 1px solid var(--surface-border);
@@ -1620,11 +1674,7 @@ footer.footer-note {
   padding: 16px;
 }
 
-#vibCanvas {
-  width: 100%;
-  height: 140px;
-  display: block;
-}
+/* .vib-seismo-overlay manages #vibCanvas dimensions */
 
 /* UNIVERSAL HARDWARE CONTROL DECK (IN BOARD MODAL) */
 .modal-controls-deck {
@@ -1801,15 +1851,16 @@ footer.footer-note {
 
 /* 16x2 I2C CHARACTER LCD PLAYGROUND CARD */
 .lcd-stage {
-  height: 290px;
+  min-height: 380px;
+  height: auto;
   position: relative;
   background: radial-gradient(circle at 50% 50%, rgba(10, 30, 20, 0.4) 0%, rgba(4, 7, 14, 0.96) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  gap: 14px;
+  padding: 56px 16px 24px 16px;
+  gap: 12px;
 }
 
 .lcd-bezel {
@@ -2008,15 +2059,15 @@ footer.footer-note {
       </div>
 
       <!-- WebGL Three.js Sensor Viewport -->
-      <div id="sensorCanvasContainer"></div>
-
-      <!-- Live Telemetry HUD -->
-      <div class="hud-telemetry">
-        <div class="hud-readout">
-          <div id="distanceNumber" class="hud-num">--</div>
-          <div id="distanceUnit" class="hud-unit">centimeters</div>
+      <div id="sensorCanvasContainer">
+        <!-- Live Telemetry HUD -->
+        <div class="hud-telemetry">
+          <div class="hud-readout">
+            <div id="distanceNumber" class="hud-num">--</div>
+            <div id="distanceUnit" class="hud-unit">centimeters</div>
+          </div>
+          <div id="zoneBadge" class="hud-badge-zone">STANDBY</div>
         </div>
-        <div id="zoneBadge" class="hud-badge-zone">STANDBY</div>
       </div>
     </div>
 
@@ -2024,7 +2075,6 @@ footer.footer-note {
     <div id="paneIr" class="carousel-pane">
       <div class="playground-toolbar">
         <div class="view-presets">
-          <span class="orbit-badge" style="background:rgba(244,63,94,0.15);color:#f43f5e;border-color:rgba(244,63,94,0.3);">HW-201 Active IR Micro-Tripwire (Pin D8)</span>
           <button class="view-btn active" data-ir-view="iso">Isometric 3D</button>
           <button class="view-btn" data-ir-view="top">Top View</button>
           <button class="view-btn" data-ir-view="beam">Beam Path</button>
@@ -2036,7 +2086,16 @@ footer.footer-note {
       </div>
 
       <!-- WebGL Three.js HW-201 Viewport -->
-      <div id="irCanvasContainer"></div>
+      <div id="irCanvasContainer">
+        <!-- Live Telemetry HUD -->
+        <div class="hud-telemetry">
+          <div class="hud-readout">
+            <div id="irStatusText" class="hud-status-text" style="color:#10b981;">SECURE</div>
+            <div class="hud-unit">Active Optical Beam &bull; Sub-Millisecond Response</div>
+          </div>
+          <div id="irEventCountBadge" class="hud-badge-zone" style="background:rgba(244,63,94,0.15);color:#f43f5e;border-color:rgba(244,63,94,0.3);">0 BREACHES</div>
+        </div>
+      </div>
 
       <!-- Interactive Tripwire Test & Sensitivity Bar -->
       <div class="sensor-interactive-bar">
@@ -2052,21 +2111,12 @@ footer.footer-note {
           <span>Auto Cycle</span>
         </button>
       </div>
-
-      <div class="hud-telemetry">
-        <div class="hud-readout">
-          <div id="irStatusText" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#10b981;">SECURE</div>
-          <div class="hud-unit">Active Optical Beam &bull; Sub-Millisecond Response</div>
-        </div>
-        <div id="irEventCountBadge" class="hud-badge-zone" style="background:rgba(244,63,94,0.15);color:#f43f5e;border-color:rgba(244,63,94,0.3);">0 BREACHES</div>
-      </div>
     </div>
 
     <!-- PANE 3: SW-420 SEISMIC / VIBRATION GUARD -->
     <div id="paneVibration" class="carousel-pane">
       <div class="playground-toolbar">
         <div class="view-presets">
-          <span class="orbit-badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);">SW-420 Seismic &amp; Tamper Guard (Pin D13)</span>
           <button class="view-btn active" data-vib-view="iso">Isometric 3D</button>
           <button class="view-btn" data-vib-view="capsule">Sensor Capsule</button>
           <button class="view-btn" data-vib-view="top">Top View</button>
@@ -2085,6 +2135,15 @@ footer.footer-note {
             <span id="seismoPeakG" style="font-size:9px;font-family:var(--font-mono, monospace);color:#fbbf24;font-weight:700;">0.00 G</span>
           </div>
           <canvas id="vibCanvas"></canvas>
+        </div>
+
+        <!-- Live Telemetry HUD -->
+        <div class="hud-telemetry">
+          <div class="hud-readout">
+            <div id="vibStatusText" class="hud-status-text" style="color:#10b981;">CALM</div>
+            <div class="hud-unit">Seismic Shock Sensor &bull; Anti-Tamper Contact Switch</div>
+          </div>
+          <div id="vibBadge" class="hud-badge-zone" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);">MONITORING</div>
         </div>
       </div>
 
@@ -2108,14 +2167,6 @@ footer.footer-note {
         <button id="btnVibClearSeismo" class="sensor-sub-btn" title="Clear seismograph peaks">
           <span>Clear Trace</span>
         </button>
-      </div>
-
-      <div class="hud-telemetry">
-        <div class="hud-readout">
-          <div id="vibStatusText" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#10b981;">CALM</div>
-          <div class="hud-unit">Seismic Shock Sensor &bull; Anti-Tamper Contact Switch</div>
-        </div>
-        <div id="vibBadge" class="hud-badge-zone" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);">MONITORING</div>
       </div>
     </div>
 
@@ -2153,14 +2204,14 @@ footer.footer-note {
           <button class="lcd-preset-btn" data-l1="STANDBY MODE" data-l2="SYSTEM SLEEPING">Preset: Standby</button>
           <button class="lcd-preset-btn" data-l1="" data-l2="">Clear Screen</button>
         </div>
-      </div>
 
-      <div class="hud-telemetry">
-        <div class="hud-readout">
-          <div id="lcdBacklightStatus" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#34d399;">BACKLIGHT ON</div>
-          <div class="hud-unit">Hardware Address 0x27 &bull; PCF8574 Backpack Driver</div>
+        <div class="hud-telemetry" style="position:relative;left:auto;right:auto;bottom:auto;width:100%;max-width:540px;margin-top:6px;">
+          <div class="hud-readout">
+            <div id="lcdBacklightStatus" class="hud-status-text" style="color:#34d399;">BACKLIGHT ON</div>
+            <div class="hud-unit">Hardware Address 0x27 &bull; PCF8574 Backpack Driver</div>
+          </div>
+          <div class="hud-badge-zone" style="background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.3);">I2C BUS 100 kHz</div>
         </div>
-        <div class="hud-badge-zone" style="background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.3);">I2C BUS 100 kHz</div>
       </div>
     </div>
 
