@@ -345,6 +345,116 @@ header.nav-header {
   margin-bottom: 2px;
 }
 
+/* Interactive Action Bars on Sensor Stages */
+.sensor-interactive-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.65);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.sensor-test-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.ir-test-btn {
+  background: rgba(244, 63, 94, 0.15);
+  color: #f43f5e;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+}
+.ir-test-btn:hover {
+  background: rgba(244, 63, 94, 0.3);
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
+}
+.ir-test-btn:active, .ir-test-btn.held {
+  background: #f43f5e;
+  color: #ffffff;
+  transform: scale(0.96);
+  box-shadow: 0 0 24px rgba(244, 63, 94, 0.7);
+}
+
+.shock-btn-group {
+  display: flex;
+  gap: 6px;
+}
+
+.vib-test-btn {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+.vib-test-btn:hover {
+  background: rgba(251, 191, 36, 0.28);
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.35);
+}
+.vib-test-btn:active {
+  background: #fbbf24;
+  color: #0f172a;
+  transform: scale(0.96);
+  box-shadow: 0 0 22px rgba(251, 191, 36, 0.6);
+}
+
+.sensor-range-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.sensor-range-group strong {
+  color: var(--text-primary);
+  font-family: var(--font-mono, monospace);
+}
+
+.sensor-mini-slider {
+  width: 90px;
+  height: 5px;
+  accent-color: var(--accent-cyan, #38bdf8);
+  cursor: pointer;
+}
+
+.sensor-sub-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.sensor-sub-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+.sensor-sub-btn.active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
 /* HUD Overlay on Sensor Viewport */
 .hud-telemetry {
   position: absolute;
@@ -1816,7 +1926,7 @@ footer.footer-note {
   border-color: rgba(255, 255, 255, 0.25);
 }
 
-#sensorCanvasContainer canvas, #board3dCanvasContainer canvas {
+#sensorCanvasContainer canvas, #irCanvasContainer canvas, #vibCanvasContainer canvas, #board3dCanvasContainer canvas {
   touch-action: none;
 }
 </style>
@@ -1928,6 +2038,21 @@ footer.footer-note {
       <!-- WebGL Three.js HW-201 Viewport -->
       <div id="irCanvasContainer"></div>
 
+      <!-- Interactive Tripwire Test & Sensitivity Bar -->
+      <div class="sensor-interactive-bar">
+        <button id="btnTripwireTest" class="sensor-test-btn ir-test-btn" title="Simulate intruder breaking the active beam">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          <span id="btnTripwireLabel">Hold to Break Beam</span>
+        </button>
+        <div class="sensor-range-group">
+          <span class="range-tag">Target: <strong id="lblIrDist">8.0 cm</strong></span>
+          <input type="range" id="sliderIrRange" min="3" max="15" value="8" step="0.5" class="sensor-mini-slider" title="Adjust obstacle proximity in 3D">
+        </div>
+        <button id="btnIrAutoScan" class="sensor-sub-btn" title="Conveyor / Intrusion Demo Loop">
+          <span>Auto Cycle</span>
+        </button>
+      </div>
+
       <div class="hud-telemetry">
         <div class="hud-readout">
           <div id="irStatusText" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#10b981;">SECURE</div>
@@ -1955,9 +2080,34 @@ footer.footer-note {
       <!-- WebGL Three.js SW-420 Viewport with Floating Seismograph -->
       <div id="vibCanvasContainer">
         <div class="vib-seismo-overlay">
-          <div class="seismo-tag">Real-Time Accelerometer Trace</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+            <span class="seismo-tag">Real-Time Trace</span>
+            <span id="seismoPeakG" style="font-size:9px;font-family:var(--font-mono, monospace);color:#fbbf24;font-weight:700;">0.00 G</span>
+          </div>
           <canvas id="vibCanvas"></canvas>
         </div>
+      </div>
+
+      <!-- Interactive Shock Simulator & Seismograph Control Bar -->
+      <div class="sensor-interactive-bar">
+        <div class="shock-btn-group">
+          <button id="btnShockTap" class="sensor-test-btn vib-test-btn" data-intensity="0.35" title="Simulate gentle surface vibration">
+            <span>Tap</span>
+          </button>
+          <button id="btnShockImpact" class="sensor-test-btn vib-test-btn" data-intensity="0.8" title="Simulate impact strike">
+            <span>Strike</span>
+          </button>
+          <button id="btnShockQuake" class="sensor-test-btn vib-test-btn" data-intensity="1.5" title="Simulate seismic earthquake tremor">
+            <span>Quake!</span>
+          </button>
+        </div>
+        <div class="sensor-range-group">
+          <span class="range-tag">Gain: <strong id="lblVibGain">2x</strong></span>
+          <input type="range" id="sliderVibGain" min="1" max="5" value="2" step="1" class="sensor-mini-slider" title="Adjust seismograph display gain">
+        </div>
+        <button id="btnVibClearSeismo" class="sensor-sub-btn" title="Clear seismograph peaks">
+          <span>Clear Trace</span>
+        </button>
       </div>
 
       <div class="hud-telemetry">
@@ -2029,12 +2179,12 @@ footer.footer-note {
       <span class="hw-sub">HC-SR04 Transducer</span>
     </div>
     <div class="hw-chip echo">
-      <span class="hw-label">IR Guard (D2)</span>
+      <span class="hw-label">IR Guard (D8)</span>
       <span class="hw-val" id="stripIrVal"><span class="micro-dot" style="background:#10b981;"></span> ARMED</span>
       <span class="hw-sub">HW-201 940nm Beam</span>
     </div>
     <div class="hw-chip" style="border-color:rgba(251,191,36,0.25);">
-      <span class="hw-label">Seismic (D3)</span>
+      <span class="hw-label">Seismic (D13)</span>
       <span class="hw-val" id="stripVibVal"><span class="micro-dot" style="background:#fbbf24;"></span> CALM</span>
       <span class="hw-sub">SW-420 Shock Guard</span>
     </div>
@@ -2957,6 +3107,73 @@ function playDramaticPulse(dist) {
   } catch (e) {}
 }
 
+function playLaserBeep() {
+  if (!state.acoustic) return;
+  initAudioSystem();
+  if (!audioCtx) return;
+  try {
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const subOsc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(1400, now);
+    osc.frequency.exponentialRampToValueAtTime(560, now + 0.08);
+
+    subOsc.type = "sine";
+    subOsc.frequency.setValueAtTime(440, now);
+    subOsc.frequency.exponentialRampToValueAtTime(220, now + 0.08);
+
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(1100, now);
+    filter.Q.setValueAtTime(4.5, now);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.18, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+
+    osc.connect(filter);
+    subOsc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(now);
+    subOsc.start(now);
+    osc.stop(now + 0.1);
+    subOsc.stop(now + 0.1);
+  } catch (e) {}
+}
+
+function playShockSound(intensity) {
+  if (!state.acoustic) return;
+  initAudioSystem();
+  if (!audioCtx) return;
+  try {
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = intensity > 1.0 ? "triangle" : "sine";
+    const startFreq = intensity > 1.0 ? 85 : (intensity > 0.6 ? 115 : 155);
+    const endFreq = 26;
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, now + (intensity > 1.0 ? 0.35 : 0.14));
+
+    const vol = Math.min(0.28, 0.07 + intensity * 0.12);
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(vol, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + (intensity > 1.0 ? 0.36 : 0.15));
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(now);
+    osc.stop(now + (intensity > 1.0 ? 0.38 : 0.16));
+  } catch (e) {}
+}
+
 function updateAcousticScheduler(d) {
   if (!state.acoustic || d == null || d <= 0) return;
   const now = performance.now();
@@ -3208,10 +3425,13 @@ function animateSensorPlayground() {
 // HW-201 ACTIVE OPTICAL IR 3D PLAYGROUND
 // ========================================================
 let irScene, irCamera, irRenderer, irControls;
-let irModel, irD0Led, irBeamMesh, irReflectBeam, irObstacle;
+let irModel, irD0Led, irBeamMesh, irReflectBeam, irObstacle, irDimensionLine, irImpactPointLight;
 const irScatterRings = [];
 let irBreachState = false;
-let irBreachAnim = 0;
+let manualIrBreach = false;
+let irAutoCycle = false;
+let irAutoScanBreach = false;
+let irTargetDistCm = 8.0;
 
 function initIrPlayground() {
   const container = $("irCanvasContainer");
@@ -3358,28 +3578,44 @@ function buildSoloHW201() {
   irReflectBeam.position.set(0.75, 0.1, 7.5);
   irScene.add(irReflectBeam);
 
+  // Optical Impact Glow PointLight
+  irImpactPointLight = new THREE.PointLight(0x10b981, 0, 7.0);
+  irScene.add(irImpactPointLight);
+
   // Intruder Target Obstacle (slides into beam on breach)
   irObstacle = new THREE.Group();
   const obsPlate = new THREE.Mesh(
-    new THREE.BoxGeometry(3.6, 4.4, 0.3),
+    new THREE.BoxGeometry(4.0, 5.0, 0.35),
     new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.6 })
   );
   const obsRing = new THREE.Mesh(
-    new THREE.RingGeometry(0.8, 1.2, 24),
+    new THREE.RingGeometry(0.8, 1.25, 24),
     new THREE.MeshBasicMaterial({ color: 0x10b981, side: THREE.DoubleSide })
   );
-  obsRing.position.z = -0.16;
-  irObstacle.add(obsPlate, obsRing);
-  irObstacle.position.set(8.0, 0.5, 10.5);
+  obsRing.position.z = -0.19;
+  const obsCenterDot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.25, 16),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+  );
+  obsCenterDot.position.z = -0.20;
+  irObstacle.add(obsPlate, obsRing, obsCenterDot);
+  irObstacle.position.set(8.0, 0.5, 10.0);
   irScene.add(irObstacle);
+
+  // Laser Dimension Ruler Line
+  const irRulerMat = new THREE.LineDashedMaterial({ color: 0x10b981, dashSize: 0.45, gapSize: 0.3 });
+  const irPoints = [new THREE.Vector3(0, 2.8, 2.0), new THREE.Vector3(0, 2.8, 10.0)];
+  irDimensionLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(irPoints), irRulerMat);
+  irDimensionLine.computeLineDistances();
+  irScene.add(irDimensionLine);
 
   // Alarm Scatter Rings
   for (let i = 0; i < 3; i++) {
     const r = new THREE.Mesh(
-      new THREE.RingGeometry(0.3 + i * 0.4, 0.45 + i * 0.4, 32),
+      new THREE.RingGeometry(0.3 + i * 0.45, 0.48 + i * 0.45, 32),
       new THREE.MeshBasicMaterial({ color: 0xf43f5e, transparent: true, opacity: 0, side: THREE.DoubleSide })
     );
-    r.position.set(0, 0.5, 10.5);
+    r.position.set(0, 0.1, 10.0);
     irScene.add(r);
     irScatterRings.push(r);
   }
@@ -3389,42 +3625,121 @@ function animateIrPlayground() {
   requestAnimationFrame(animateIrPlayground);
   if (!irScene || !irCamera || !irRenderer) return;
 
-  const targetAnim = irBreachState ? 1.0 : 0.0;
-  irBreachAnim += (targetAnim - irBreachAnim) * 0.12;
-
-  if (irObstacle) {
-    irObstacle.position.x = 8.0 * (1.0 - irBreachAnim);
-    const obsColor = irBreachState ? 0xf43f5e : 0x10b981;
-    irObstacle.children[1].material.color.setHex(obsColor);
-  }
-
-  const beamHex = irBreachState ? 0xf43f5e : 0x10b981;
-  if (irBeamMesh) {
-    irBeamMesh.material.color.setHex(beamHex);
-    irBeamMesh.material.opacity = irBreachState ? (0.5 + Math.sin(Date.now() * 0.015) * 0.35) : 0.65;
-  }
-  if (irReflectBeam) {
-    irReflectBeam.material.color.setHex(beamHex);
-    irReflectBeam.material.opacity = irBreachState ? (0.35 + Math.sin(Date.now() * 0.015) * 0.25) : 0.5;
-  }
-
-  if (irD0Led) {
-    const d0Emissive = irBreachState ? 0xf43f5e : 0x10b981;
-    irD0Led.material.emissive.setHex(d0Emissive);
-    irD0Led.material.emissiveIntensity = irBreachState ? 2.5 : 0.2;
-  }
-
-  irScatterRings.forEach((ring, idx) => {
-    if (irBreachState) {
-      const t = (Date.now() * 0.003 + idx * 0.33) % 1.0;
-      ring.scale.set(1.0 + t * 1.8, 1.0 + t * 1.8, 1.0);
-      ring.material.opacity = Math.max(0, 0.8 * (1.0 - t));
-    } else {
-      ring.material.opacity = 0;
+  // Auto Cycle Mode: sinusoidal sweep across beam
+  if (irAutoCycle) {
+    const t = Date.now() * 0.0022;
+    irObstacle.position.x = Math.sin(t) * 7.5;
+    const inBeam = Math.abs(irObstacle.position.x) < 1.4;
+    if (inBeam !== irAutoScanBreach) {
+      irAutoScanBreach = inBeam;
+      if (inBeam) {
+        modules.irBreachCount++;
+        if ($("irEventCountBadge")) $("irEventCountBadge").textContent = `${modules.irBreachCount} BREACH${modules.irBreachCount > 1 ? 'ES' : ''}`;
+        playLaserBeep();
+        if (navigator.vibrate) navigator.vibrate(30);
+      }
     }
-  });
+  } else {
+    // Manual or Hardware Breach Animation
+    const targetX = (irBreachState || manualIrBreach) ? 0.0 : 8.0;
+    irObstacle.position.x += (targetX - irObstacle.position.x) * 0.15;
+  }
 
-  if (irControls) irControls.update();
+  // Smooth Z distance positioning from slider
+  const targetZ = 2.0 + irTargetDistCm;
+  irObstacle.position.z += (targetZ - irObstacle.position.z) * 0.15;
+
+  const isBreached = irBreachState || manualIrBreach || irAutoScanBreach || Math.abs(irObstacle.position.x) < 1.5;
+  const beamHex = isBreached ? 0xf43f5e : 0x10b981;
+
+  // Obstacle Visuals
+  if (irObstacle.children.length >= 2) {
+    irObstacle.children[1].material.color.setHex(beamHex);
+  }
+
+  // Dynamic Laser Beam Geometry & Reflection
+  if (irBeamMesh) {
+    const obsInBeam = Math.abs(irObstacle.position.x) < 1.6;
+    if (obsInBeam) {
+      // Beam terminates exactly at obstacle plate
+      const beamLen = Math.max(0.6, irObstacle.position.z - 2.0);
+      irBeamMesh.scale.set(1.0, beamLen / 9.5, 1.0);
+      irBeamMesh.position.z = 2.0 + beamLen / 2;
+      irBeamMesh.position.x = -0.75;
+      irBeamMesh.material.color.setHex(0xf43f5e);
+      irBeamMesh.material.opacity = 0.8 + Math.sin(Date.now() * 0.02) * 0.2;
+
+      // Reflection Beam returns to receiver
+      if (irReflectBeam) {
+        irReflectBeam.scale.set(1.0, beamLen / 9.5, 1.0);
+        irReflectBeam.position.z = 2.0 + beamLen / 2;
+        irReflectBeam.position.x = 0.75;
+        irReflectBeam.material.color.setHex(0xf43f5e);
+        irReflectBeam.material.opacity = 0.7 + Math.sin(Date.now() * 0.02) * 0.2;
+      }
+
+      // Scatter and Glow PointLight at impact spot
+      if (irImpactPointLight) {
+        irImpactPointLight.position.set(0, 0.1, irObstacle.position.z);
+        irImpactPointLight.color.setHex(0xf43f5e);
+        irImpactPointLight.intensity = 2.5 + Math.sin(Date.now() * 0.03) * 1.0;
+      }
+
+      irScatterRings.forEach((ring, idx) => {
+        ring.position.set(0, 0.5, irObstacle.position.z);
+        const t = (Date.now() * 0.0035 + idx * 0.33) % 1.0;
+        ring.scale.set(1.0 + t * 2.2, 1.0 + t * 2.2, 1.0);
+        ring.material.opacity = Math.max(0, 0.85 * (1.0 - t));
+      });
+
+    } else {
+      // Clear path: beam shoots straight out
+      irBeamMesh.scale.set(1.0, 1.6, 1.0);
+      irBeamMesh.position.z = 9.6;
+      irBeamMesh.position.x = -0.75;
+      irBeamMesh.material.color.setHex(0x10b981);
+      irBeamMesh.material.opacity = 0.6;
+
+      if (irReflectBeam) {
+        irReflectBeam.scale.set(1.0, 1.6, 1.0);
+        irReflectBeam.position.z = 9.6;
+        irReflectBeam.position.x = 0.75;
+        irReflectBeam.material.color.setHex(0x10b981);
+        irReflectBeam.material.opacity = 0.15;
+      }
+
+      if (irImpactPointLight) {
+        irImpactPointLight.intensity = 0;
+      }
+
+      irScatterRings.forEach(ring => {
+        ring.material.opacity = 0;
+      });
+    }
+  }
+
+  // Update D0 LED
+  if (irD0Led) {
+    irD0Led.material.emissive.setHex(beamHex);
+    irD0Led.material.emissiveIntensity = isBreached ? 3.0 : 0.2;
+  }
+
+  // Update Laser Dimension Line
+  if (irDimensionLine) {
+    const pts = irDimensionLine.geometry.attributes.position.array;
+    pts[5] = irObstacle.position.z;
+    irDimensionLine.geometry.attributes.position.needsUpdate = true;
+    irDimensionLine.computeLineDistances();
+    irDimensionLine.material.color.setHex(beamHex);
+  }
+
+  // Orbit Controls Auto-Rotate sync
+  if (irControls) {
+    irControls.autoRotate = state.autoRotate;
+    irControls.autoRotateSpeed = 0.65;
+    irControls.update();
+  }
+
   irRenderer.render(irScene, irCamera);
 }
 
@@ -3435,6 +3750,9 @@ let vibScene, vibCamera, vibRenderer, vibControls;
 let vibModel, vibD0Led, vibCapsuleGroup, vibSpringMesh, vibSparkLight;
 const vibShockwaveRings = [];
 let vibShockEnergy = 0;
+let vibGain = 2;
+let quakeEndTime = 0;
+let peakGForce = 0;
 
 function initVibPlayground() {
   const container = $("vibCanvasContainer");
@@ -3595,51 +3913,72 @@ function animateVibPlayground() {
   requestAnimationFrame(animateVibPlayground);
   if (!vibScene || !vibCamera || !vibRenderer) return;
 
-  vibShockEnergy *= 0.94;
-  if (vibShockEnergy < 0.01) vibShockEnergy = 0;
+  const isQuake = Date.now() < quakeEndTime;
+  if (isQuake) {
+    vibShockEnergy = Math.max(vibShockEnergy, 1.35 + (Math.random() - 0.5) * 0.3);
+    currentVibIntensity = Math.max(currentVibIntensity, 1.2 + (Math.random() - 0.5) * 0.4);
+    vibCamera.position.x += (Math.random() - 0.5) * 0.14;
+  }
 
+  vibShockEnergy *= 0.93;
+  if (vibShockEnergy < 0.005) vibShockEnergy = 0;
+
+  // Spring Oscillation Physics
   if (vibSpringMesh) {
     if (vibShockEnergy > 0.01) {
-      vibSpringMesh.position.y = Math.sin(Date.now() * 0.08) * 0.24 * vibShockEnergy;
-      vibSpringMesh.position.z = Math.cos(Date.now() * 0.09) * 0.24 * vibShockEnergy;
-      vibSpringMesh.rotation.x = Math.sin(Date.now() * 0.1) * 0.2 * vibShockEnergy;
+      const freq = Date.now() * 0.085;
+      const amp = vibShockEnergy * 0.28;
+      vibSpringMesh.position.y = Math.sin(freq) * amp;
+      vibSpringMesh.position.z = Math.cos(freq * 1.1) * amp;
+      vibSpringMesh.rotation.x = Math.sin(freq * 0.75) * amp * 0.7;
     } else {
       vibSpringMesh.position.set(0, 0, 0);
       vibSpringMesh.rotation.set(0, 0, 0);
     }
   }
 
+  // Board Physical Rumble
   if (vibModel) {
-    if (vibShockEnergy > 0.05) {
-      vibModel.position.y = Math.sin(Date.now() * 0.06) * 0.12 * vibShockEnergy;
-      vibModel.rotation.z = Math.sin(Date.now() * 0.05) * 0.04 * vibShockEnergy;
+    if (vibShockEnergy > 0.04) {
+      const shakeAmp = isQuake ? 0.18 : 0.08;
+      vibModel.position.x = (Math.random() - 0.5) * shakeAmp * vibShockEnergy;
+      vibModel.position.y = (Math.random() - 0.5) * shakeAmp * vibShockEnergy;
+      vibModel.rotation.z = (Math.random() - 0.5) * 0.03 * vibShockEnergy;
     } else {
       vibModel.position.set(0, 0, 0);
       vibModel.rotation.set(0, 0, 0);
     }
   }
 
+  // Electrical Contact Spark & D0 LED
+  const isContact = vibShockEnergy > 0.18;
   if (vibSparkLight) {
-    vibSparkLight.intensity = (vibShockEnergy > 0.2) ? (vibShockEnergy * 3.5) : 0;
+    vibSparkLight.intensity = isContact ? Math.min(5.5, vibShockEnergy * 4.0) : 0;
   }
-
   if (vibD0Led) {
-    const isShock = vibShockEnergy > 0.15;
-    vibD0Led.material.emissive.setHex(isShock ? 0xef4444 : 0xfbbf24);
-    vibD0Led.material.emissiveIntensity = isShock ? 3.0 : 0.2;
+    vibD0Led.material.emissive.setHex(isContact ? 0xef4444 : 0xfbbf24);
+    vibD0Led.material.emissiveIntensity = isContact ? 3.2 : 0.2;
   }
 
+  // Ground Shockwave Ripples
   vibShockwaveRings.forEach((ring, idx) => {
-    if (vibShockEnergy > 0.05) {
-      const t = (Date.now() * 0.003 + idx * 0.33) % 1.0;
-      ring.scale.set(1.0 + t * 4.5, 1.0 + t * 4.5, 1.0);
-      ring.material.opacity = Math.max(0, vibShockEnergy * 0.85 * (1.0 - t));
+    if (vibShockEnergy > 0.04) {
+      const t = (Date.now() * 0.0032 + idx * 0.33) % 1.0;
+      ring.scale.set(1.0 + t * 4.8, 1.0 + t * 4.8, 1.0);
+      ring.material.opacity = Math.max(0, vibShockEnergy * 0.9 * (1.0 - t));
+      ring.material.color.setHex(vibShockEnergy > 0.6 ? 0xef4444 : 0xfbbf24);
     } else {
       ring.material.opacity = 0;
     }
   });
 
-  if (vibControls) vibControls.update();
+  // Sync Auto Rotate
+  if (vibControls) {
+    vibControls.autoRotate = state.autoRotate;
+    vibControls.autoRotateSpeed = 0.65;
+    vibControls.update();
+  }
+
   vibRenderer.render(vibScene, vibCamera);
 }
 
@@ -3907,7 +4246,8 @@ function processTelemetry(data) {
       if (countBadge) countBadge.textContent = `${modules.irBreachCount} BREACH${modules.irBreachCount > 1 ? 'ES' : ''}`;
       if (stripIr) stripIr.innerHTML = '<span class="micro-dot" style="background:#f43f5e;"></span> TRIP!';
       logEvent("HW-201 Optical IR: Tripwire Beam Broken!", "danger");
-      if (state.acoustic) playDramaticPulse(12);
+      playLaserBeep();
+      if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
     } else if (stripIr) {
       stripIr.innerHTML = '<span class="micro-dot" style="background:#10b981;"></span> ARMED';
     }
@@ -3936,7 +4276,8 @@ function processTelemetry(data) {
       }
       if (stripVib) stripVib.innerHTML = '<span class="micro-dot" style="background:#ef4444;"></span> SHOCK';
       logEvent("SW-420 Seismic Guard: Shock / Vibration Alert!", "danger");
-      if (state.acoustic) playDramaticPulse(15);
+      playShockSound(1.0);
+      if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
     } else {
       if (vibText && currentVibIntensity < 0.15) {
         vibText.textContent = "CALM";
@@ -4680,36 +5021,222 @@ function drawSeismograph() {
   }
 
   // Waveform Path
+  const isHighShock = currentVibIntensity > 0.35;
+  const waveColor = isHighShock ? "#ef4444" : "#fbbf24";
+
   vibCtx.beginPath();
-  vibCtx.strokeStyle = currentVibIntensity > 0.3 ? "#ef4444" : "#fbbf24";
-  vibCtx.lineWidth = 2.5;
-  vibCtx.shadowColor = currentVibIntensity > 0.3 ? "#ef4444" : "#fbbf24";
-  vibCtx.shadowBlur = 8;
+  vibCtx.strokeStyle = waveColor;
+  vibCtx.lineWidth = 2.4;
+  vibCtx.shadowColor = waveColor;
+  vibCtx.shadowBlur = isHighShock ? 10 : 4;
 
   const step = w / (vibHistory.length - 1);
   for (let i = 0; i < vibHistory.length; i++) {
     const x = i * step;
-    const y = midY + vibHistory[i] * (h * 0.4);
+    const y = midY + vibHistory[i] * (h * 0.38) * (vibGain / 2);
     if (i === 0) vibCtx.moveTo(x, y);
     else vibCtx.lineTo(x, y);
   }
   vibCtx.stroke();
   vibCtx.shadowBlur = 0;
+
+  // Peak G readout update
+  peakGForce = Math.max(peakGForce * 0.94, currentVibIntensity * 2.85);
+  if (peakGForce < 0.01) peakGForce = 0;
+  const peakEl = $("seismoPeakG");
+  if (peakEl) {
+    peakEl.textContent = `${peakGForce.toFixed(2)} G`;
+    peakEl.style.color = isHighShock ? "#ef4444" : "#fbbf24";
+  }
 }
 
 function updateSeismographLoop() {
   requestAnimationFrame(updateSeismographLoop);
-  // Decay vibration shock spike smoothly
-  currentVibIntensity *= 0.88;
+  currentVibIntensity *= 0.91;
+
+  if (Date.now() < quakeEndTime) {
+    currentVibIntensity = Math.max(currentVibIntensity, 1.25 + (Math.random() - 0.5) * 0.4);
+  }
+
   const jitter = (Math.random() - 0.5) * currentVibIntensity;
   vibHistory.push(jitter);
   if (vibHistory.length > 80) vibHistory.shift();
 
-  if ($("paneVibration").classList.contains("active-pane")) {
+  if ($("paneVibration") && $("paneVibration").classList.contains("active-pane")) {
     drawSeismograph();
   }
 }
 updateSeismographLoop();
+
+// --- INTERACTIVE PLAYGROUND SENSOR CONTROLLERS ---
+function initIrInteractions() {
+  const btnTrip = $("btnTripwireTest");
+  const slider = $("sliderIrRange");
+  const btnScan = $("btnIrAutoScan");
+  const cCont = $("irCanvasContainer");
+
+  if (btnTrip) {
+    const activateBreach = (e) => {
+      if (e) e.preventDefault();
+      manualIrBreach = true;
+      btnTrip.classList.add("held");
+      if ($("btnTripwireLabel")) $("btnTripwireLabel").textContent = "Beam Intercepted!";
+      modules.irBreachCount++;
+      if ($("irEventCountBadge")) $("irEventCountBadge").textContent = `${modules.irBreachCount} BREACH${modules.irBreachCount > 1 ? 'ES' : ''}`;
+      if ($("irStatusText")) {
+        $("irStatusText").textContent = "BREACH DETECTED";
+        $("irStatusText").style.color = "#f43f5e";
+      }
+      playLaserBeep();
+      if (navigator.vibrate) navigator.vibrate([45, 25, 45]);
+      logEvent("HW-201 Optical IR: Tripwire Beam Broken (Simulated)", "danger");
+    };
+
+    const clearBreach = (e) => {
+      manualIrBreach = false;
+      btnTrip.classList.remove("held");
+      if ($("btnTripwireLabel")) $("btnTripwireLabel").textContent = "Hold to Break Beam";
+      if (!irBreachState && !irAutoScanBreach) {
+        if ($("irStatusText")) {
+          $("irStatusText").textContent = "SECURE";
+          $("irStatusText").style.color = "#10b981";
+        }
+      }
+    };
+
+    btnTrip.addEventListener("mousedown", activateBreach);
+    btnTrip.addEventListener("mouseup", clearBreach);
+    btnTrip.addEventListener("mouseleave", clearBreach);
+    btnTrip.addEventListener("touchstart", activateBreach, { passive: false });
+    btnTrip.addEventListener("touchend", clearBreach);
+    btnTrip.addEventListener("touchcancel", clearBreach);
+  }
+
+  if (slider) {
+    slider.oninput = (e) => {
+      irTargetDistCm = parseFloat(e.target.value);
+      if ($("lblIrDist")) $("lblIrDist").textContent = `${irTargetDistCm.toFixed(1)} cm`;
+    };
+  }
+
+  if (btnScan) {
+    btnScan.onclick = () => {
+      irAutoCycle = !irAutoCycle;
+      btnScan.classList.toggle("active", irAutoCycle);
+      btnScan.querySelector("span").textContent = irAutoCycle ? "Auto: Scanning" : "Auto Cycle";
+      logEvent(`HW-201 Optical IR: Intrusion Auto Cycle ${irAutoCycle ? "Activated" : "Deactivated"}`, "normal");
+    };
+  }
+
+  if (cCont) {
+    cCont.addEventListener("click", (e) => {
+      if (e.target.tagName.toLowerCase() === "canvas" && !irAutoCycle && !manualIrBreach) {
+        manualIrBreach = true;
+        playLaserBeep();
+        if (navigator.vibrate) navigator.vibrate(30);
+        setTimeout(() => { manualIrBreach = false; }, 450);
+      }
+    });
+  }
+}
+
+function initVibInteractions() {
+  const btnTap = $("btnShockTap");
+  const btnImpact = $("btnShockImpact");
+  const btnQuake = $("btnShockQuake");
+  const slider = $("sliderVibGain");
+  const btnClear = $("btnVibClearSeismo");
+  const cCont = $("vibCanvasContainer");
+
+  if (btnTap) {
+    btnTap.onclick = () => triggerShock(0.35, "Surface Vibration Tap");
+  }
+  if (btnImpact) {
+    btnImpact.onclick = () => triggerShock(0.85, "Direct Impact Strike");
+  }
+  if (btnQuake) {
+    btnQuake.onclick = () => triggerShock(1.65, "Seismic Quake Tremor");
+  }
+
+  if (slider) {
+    slider.oninput = (e) => {
+      vibGain = parseInt(e.target.value, 10);
+      if ($("lblVibGain")) $("lblVibGain").textContent = `${vibGain}x`;
+    };
+  }
+
+  if (btnClear) {
+    btnClear.onclick = () => {
+      vibHistory.fill(0);
+      vibShockEnergy = 0;
+      currentVibIntensity = 0;
+      peakGForce = 0;
+      if ($("seismoPeakG")) $("seismoPeakG").textContent = "0.00 G";
+      if ($("vibStatusText")) {
+        $("vibStatusText").textContent = "CALM";
+        $("vibStatusText").style.color = "#10b981";
+      }
+      if ($("vibBadge")) {
+        $("vibBadge").textContent = "MONITORING";
+        $("vibBadge").style.color = "#fbbf24";
+        $("vibBadge").style.borderColor = "rgba(251, 191, 36, 0.3)";
+      }
+      logEvent("SW-420 Seismograph: Waveform peaks cleared", "normal");
+    };
+  }
+
+  if (cCont) {
+    cCont.addEventListener("click", (e) => {
+      if (e.target.tagName.toLowerCase() === "canvas") {
+        triggerShock(0.65, "Surface Tap");
+      }
+    });
+    cCont.addEventListener("dblclick", (e) => {
+      if (e.target.tagName.toLowerCase() === "canvas") {
+        triggerShock(1.65, "Seismic Tremor");
+      }
+    });
+  }
+}
+
+function triggerShock(intensity, label = "Shock Alert") {
+  initAudioSystem();
+  vibShockEnergy = Math.max(vibShockEnergy, intensity);
+  currentVibIntensity = Math.max(currentVibIntensity, intensity);
+
+  if (intensity > 1.0) {
+    quakeEndTime = Date.now() + 2200;
+  }
+
+  playShockSound(intensity);
+
+  if (navigator.vibrate) {
+    if (intensity > 1.0) navigator.vibrate([60, 30, 60, 30, 90, 40, 110]);
+    else if (intensity > 0.6) navigator.vibrate([45, 25, 45]);
+    else navigator.vibrate(25);
+  }
+
+  const isQuake = intensity > 1.0;
+  const isHigh = intensity > 0.6;
+  const statusEl = $("vibStatusText");
+  const badgeEl = $("vibBadge");
+  const stripEl = $("stripVibVal");
+
+  if (statusEl) {
+    statusEl.textContent = isQuake ? "SEISMIC QUAKE ALERT!" : (isHigh ? "SHOCK DETECTED" : "SURFACE TAP");
+    statusEl.style.color = isHigh ? "#ef4444" : "#fbbf24";
+  }
+  if (badgeEl) {
+    badgeEl.textContent = isQuake ? "QUAKE ALERT" : (isHigh ? "SEISMIC ALERT" : "VIBRATION");
+    badgeEl.style.color = isHigh ? "#ef4444" : "#fbbf24";
+    badgeEl.style.borderColor = isHigh ? "rgba(239, 68, 68, 0.4)" : "rgba(251, 191, 36, 0.35)";
+  }
+  if (stripEl) {
+    stripEl.innerHTML = '<span class="micro-dot" style="background:#ef4444;"></span> SHOCK';
+  }
+
+  logEvent(`SW-420 Seismic Guard: ${label} (${(intensity * 2.4).toFixed(1)}G)`, isHigh ? "danger" : "warn");
+}
 
 window.onload = () => {
   initSensorPlayground();
@@ -4719,6 +5246,8 @@ window.onload = () => {
   initVibPlayground();
   animateVibPlayground();
   initSmdInteractions();
+  initIrInteractions();
+  initVibInteractions();
   selectPin("D9");
   startWS();
 };
