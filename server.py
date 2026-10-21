@@ -2,7 +2,9 @@ import asyncio
 import glob
 import json
 import os
+import socket
 import subprocess
+import sys
 import time
 from aiohttp import web, ClientSession, ClientTimeout
 
@@ -18,32 +20,107 @@ SERIAL_BAUD = 9600
 
 clients = set()
 
-def discover_esp_ip():
-    """Scans ip neigh (Android/Linux) or arp -a (macOS) for Espressif OUI"""
+def discover_candidates():
+    """Gathers all potential ESP IP candidates from CLI, hotspot neighbors, arp, and subnets"""
+    candidates = []
+
+    # 1. Direct CLI argument: python3 server.py 192.168.43.xxx
+    for arg in sys.argv[1:]:
+        if arg.count(".") == 3 and not arg.startswith("-"):
+            clean_ip = arg.strip()
+            if clean_ip not in candidates:
+                candidates.append(clean_ip)
+
+    # 2. Environment variables
+    for var in ["ESP_IP", "WIFI_HOST", "ARDUINO_IP"]:
+        val = os.getenv(var)
+        if val and val.strip() not in candidates:
+            candidates.append(val.strip())
+
+    # 3. ip neigh (Android Termux / Linux)
     try:
         out = subprocess.check_output(["ip", "neigh"], text=True, stderr=subprocess.DEVNULL)
         for line in out.splitlines():
             parts = line.split()
-            if len(parts) >= 5:
-                ip = parts[0]
-                mac = parts[4].lower()
-                if any(oui in mac for oui in ["2c:f4:32", "24:0a:c4", "30:ae:a4", "84:cc:a8", "60:01:94", "5c:cf:7f"]):
-                    return ip
+            if len(parts) >= 1 and parts[0].count(".") == 3:
+                ip = parts[0].strip()
+                if "FAILED" not in line and ip not in candidates:
+                    candidates.append(ip)
     except Exception:
         pass
 
+    # 4. /proc/net/arp (Linux / Android direct arp table)
+    try:
+        with open("/proc/net/arp", "r") as f:
+            for line in f.readlines()[1:]:
+                parts = line.split()
+                if len(parts) >= 1 and parts[0].count(".") == 3:
+                    ip = parts[0].strip()
+                    if ip not in candidates:
+                        candidates.append(ip)
+    except Exception:
+        pass
+
+    # 5. arp -a (macOS / BSD)
     try:
         out = subprocess.check_output(["arp", "-a"], text=True, stderr=subprocess.DEVNULL)
         for line in out.splitlines():
-            if any(oui in line.lower() for oui in ["2c:f4:32", "24:0a:c4", "30:ae:a4", "84:cc:a8", "60:01:94", "5c:cf:7f"]):
-                start = line.find("(")
-                end = line.find(")")
-                if start != -1 and end != -1:
-                    return line[start+1:end]
+            start = line.find("(")
+            end = line.find(")")
+            if start != -1 and end != -1:
+                ip = line[start+1:end].strip()
+                if ip not in candidates:
+                    candidates.append(ip)
     except Exception:
         pass
 
-    return DEFAULT_ESP_IP
+    # 6. Auto-detect active hotspot / local subnet
+    subnets = []
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        sub = local_ip.rsplit(".", 1)[0] + "."
+        subnets.append(sub)
+    except Exception:
+        pass
+
+    # Android hotspot defaults & common mobile tethering subnets
+    for s in ["192.168.43.", "172.20.10.", "10.13.44.", "10.11.176."]:
+        if s not in subnets:
+            subnets.append(s)
+
+    for sub in subnets:
+        # Standard mobile DHCP lease assignments
+        for octet in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 50, 100, 101, 102, 103, 140, 142, 145, 150, 200]:
+            ip = f"{sub}{octet}"
+            if ip not in candidates:
+                candidates.append(ip)
+
+    return candidates
+
+async def probe_single_esp(ip, port):
+    try:
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(ip, port),
+            timeout=0.6
+        )
+        return ip, reader, writer
+    except Exception:
+        return None
+
+async def find_active_esp(candidates, port):
+    """Concurrently sweeps candidate IPs in small batches to find the active TCP server"""
+    batch_size = 12
+    for i in range(0, len(candidates), batch_size):
+        batch = candidates[i:i + batch_size]
+        tasks = [probe_single_esp(ip, port) for ip in batch]
+        results = await asyncio.gather(*tasks)
+        for res in results:
+            if res is not None:
+                return res
+    return None
 
 latest = {
     "connected": False,
@@ -270,37 +347,39 @@ async def start_udp_listener(app):
         print(f"[UDP ⚠️] Failed to bind: {e}")
 
 async def tcp_stream_reader(app):
-    """High-reliability persistent TCP client that streams directly from Arduino (port 8888)"""
+    """High-reliability persistent TCP client that auto-discovers and streams directly from Arduino (port 8888)"""
     global active_tcp_writer
     while True:
-        target_ip = discover_esp_ip()
         try:
-            reader, writer = await asyncio.wait_for(
-                asyncio.open_connection(target_ip, WIFI_PORT),
-                timeout=1.5
-            )
-            print(f"[TCP 🔌] Connected to ProxiGuard stream at {target_ip}:{WIFI_PORT}!")
-            active_tcp_writer = writer
+            candidates = discover_candidates()
+            found = await find_active_esp(candidates, WIFI_PORT)
+            if found:
+                target_ip, reader, writer = found
+                active_tcp_writer = writer
+                print(f"[TCP 🔌] Connected to ProxiGuard stream at {target_ip}:{WIFI_PORT}!")
 
-            while True:
-                line_bytes = await reader.readline()
-                if not line_bytes:
-                    break
-                line = line_bytes.decode("utf-8", errors="replace").strip()
-                processed = process_reading(line, source=f"Wi-Fi TCP ({target_ip})")
-                if processed:
-                    await broadcast(processed)
+                while True:
+                    line_bytes = await reader.readline()
+                    if not line_bytes:
+                        break
+                    line = line_bytes.decode("utf-8", errors="replace").strip()
+                    processed = process_reading(line, source=f"Wi-Fi TCP ({target_ip})")
+                    if processed:
+                        await broadcast(processed)
 
-            active_tcp_writer = None
-            writer.close()
-            await writer.wait_closed()
-        except (asyncio.TimeoutError, ConnectionRefusedError, OSError):
-            active_tcp_writer = None
-            await asyncio.sleep(1.0)
+                active_tcp_writer = None
+                try:
+                    writer.close()
+                    await writer.wait_closed()
+                except Exception:
+                    pass
+                print(f"[TCP ⚠️] Disconnected from {target_ip}:{WIFI_PORT}, scanning for link...")
+            else:
+                await asyncio.sleep(1.0)
         except asyncio.CancelledError:
             active_tcp_writer = None
             break
-        except Exception as e:
+        except Exception:
             active_tcp_writer = None
             await asyncio.sleep(1.0)
 
