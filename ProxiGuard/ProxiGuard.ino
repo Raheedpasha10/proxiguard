@@ -24,13 +24,13 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-SoftwareSerial esp(A0, A1);
+SoftwareSerial esp(11, 12);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Hardware Pin Assignments
 const byte TRIG_PIN = 9;
 const byte ECHO_PIN = 10;
-const byte IR_PIN   = 12;
+const byte IR_PIN   = A2;
 const byte VIB_PIN  = 13;
 const byte LED_PIN  = 8;
 
@@ -180,7 +180,7 @@ void setup() {
   digitalWrite(LED_PIN, LOW);
 
   Serial.println(F("\n=== ProxiGuard Sentinel Booting ==="));
-  Serial.println(F("Sensors: HC-SR04 (D9/D10) | IR (D12) | VIB (D13) | LED (D8) | LCD (A4/A5)"));
+  Serial.println(F("Sensors: HC-SR04 (D9/D10) | IR (A2) | VIB (D13) | LED (D8) | LCD (A4/A5)"));
 
   delay(2000);
   initServer();
