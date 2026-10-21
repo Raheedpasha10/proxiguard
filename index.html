@@ -367,9 +367,21 @@ header.nav-header {
   gap: 10px;
 }
 
-@media (min-width: 540px) {
+@media (min-width: 600px) {
+  .hardware-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
   .hardware-strip {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .hardware-strip {
+    grid-template-columns: repeat(7, 1fr);
   }
 }
 
@@ -1593,6 +1605,187 @@ footer.footer-note {
   color: var(--text-tertiary);
 }
 
+/* SIMULATION MODE NAVBAR BUTTON */
+.btn-sim-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-sm);
+  color: #fbbf24;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-sim-mode:hover {
+  background: rgba(245, 158, 11, 0.22);
+  border-color: #fbbf24;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-sim-mode.active {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: #10b981;
+  color: #34d399;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+}
+
+.sim-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: simPulse 1.8s infinite;
+}
+
+.btn-sim-mode:not(.active) .sim-pulse-dot {
+  background: #64748b;
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes simPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+/* 16x2 I2C CHARACTER LCD PLAYGROUND CARD */
+.lcd-stage {
+  height: 290px;
+  position: relative;
+  background: radial-gradient(circle at 50% 50%, rgba(10, 30, 20, 0.4) 0%, rgba(4, 7, 14, 0.96) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  gap: 14px;
+}
+
+.lcd-bezel {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 3px solid #334155;
+  border-radius: 8px;
+  padding: 10px 16px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.lcd-screen-glass {
+  background: #022c22;
+  border: 2px solid #042f2e;
+  border-radius: 4px;
+  padding: 10px 14px;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.85), 0 0 20px rgba(16, 185, 129, 0.35);
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  min-width: 250px;
+}
+
+.lcd-screen-glass.backlight-off {
+  background: #07100e;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.95);
+}
+
+.lcd-line {
+  font-size: 17px;
+  line-height: 1.4;
+  color: #34d399;
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.7);
+  white-space: pre;
+  user-select: none;
+}
+
+.lcd-screen-glass.backlight-off .lcd-line {
+  color: rgba(52, 211, 153, 0.2);
+  text-shadow: none;
+}
+
+.lcd-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 520px;
+}
+
+.lcd-input {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-sm);
+  color: #f8fafc;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 10px;
+  flex: 1;
+  min-width: 130px;
+}
+
+.lcd-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.lcd-btn-send {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid #10b981;
+  color: #34d399;
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lcd-btn-send:hover {
+  background: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+}
+
+.lcd-presets-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.lcd-preset-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lcd-preset-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+#sensorCanvasContainer canvas, #board3dCanvasContainer canvas {
+  touch-action: none;
+}
 </style>
 </head>
 <body>
@@ -1615,6 +1808,12 @@ footer.footer-note {
     </div>
     
     <div class="header-actions">
+      <!-- Simulation Mode Toggle Button -->
+      <button id="btnToggleSim" class="btn-sim-mode active" title="Toggle Live Telemetry Simulation">
+        <span class="sim-pulse-dot"></span>
+        <span id="simBtnLabel">Sim: ON</span>
+      </button>
+
       <!-- Board Status Navbar Button -->
       <button id="btnOpenBoardModal" class="btn-board-status">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line><line x1="9" y1="15" x2="9.01" y2="15"></line><line x1="15" y1="15" x2="15.01" y2="15"></line></svg>
@@ -1641,6 +1840,10 @@ footer.footer-note {
     <button class="carousel-pill" data-tab="paneVibration">
       <span class="pill-indicator" style="background:var(--accent-amber);"></span>
       <span>SW-420 Seismic Guard</span>
+    </button>
+    <button class="carousel-pill" data-tab="paneLcd">
+      <span class="pill-indicator" style="background:#a855f7;"></span>
+      <span>16x2 I2C Display</span>
     </button>
   </nav>
 
@@ -1695,7 +1898,7 @@ footer.footer-note {
       <div class="hud-telemetry">
         <div class="hud-readout">
           <div id="irStatusText" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#10b981;">SECURE</div>
-          <div class="hud-unit">Active Optical Beam • Sub-Millisecond Response</div>
+          <div class="hud-unit">Active Optical Beam &bull; Sub-Millisecond Response</div>
         </div>
         <div id="irEventCountBadge" class="hud-badge-zone" style="background:rgba(244,63,94,0.15);color:#f43f5e;border-color:rgba(244,63,94,0.3);">0 BREACHES</div>
       </div>
@@ -1718,9 +1921,54 @@ footer.footer-note {
       <div class="hud-telemetry">
         <div class="hud-readout">
           <div id="vibStatusText" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#10b981;">CALM</div>
-          <div class="hud-unit">Seismic Shock Sensor • Anti-Tamper Contact Switch</div>
+          <div class="hud-unit">Seismic Shock Sensor &bull; Anti-Tamper Contact Switch</div>
         </div>
         <div id="vibBadge" class="hud-badge-zone" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);">MONITORING</div>
+      </div>
+    </div>
+
+    <!-- PANE 4: 16x2 I2C CHARACTER LCD PLAYGROUND -->
+    <div id="paneLcd" class="carousel-pane">
+      <div class="playground-toolbar">
+        <span class="orbit-badge" style="background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.3);">16x2 I2C HD44780 Character Display (A4/SDA &bull; A5/SCL)</span>
+        <div id="gateLcd" class="card-quick-gate active" title="Toggle LCD Backlight Power">
+          <span class="gate-label">Backlight Power</span>
+          <div class="gate-switch"></div>
+        </div>
+      </div>
+
+      <div class="lcd-stage">
+        <!-- Hitachi HD44780 Retro Bezel -->
+        <div class="lcd-bezel">
+          <div id="virtualLcdScreen" class="lcd-screen-glass backlight-on">
+            <div id="lcdLine1" class="lcd-line">PROXIGUARD SECURE</div>
+            <div id="lcdLine2" class="lcd-line">DIST: -- cm  [OK]</div>
+          </div>
+        </div>
+
+        <!-- Custom Command Row -->
+        <div class="lcd-controls-row">
+          <input type="text" id="lcdInputL1" class="lcd-input" placeholder="Line 1 text (16 chars)" maxlength="16">
+          <input type="text" id="lcdInputL2" class="lcd-input" placeholder="Line 2 text (16 chars)" maxlength="16">
+          <button id="btnSendLcd" class="lcd-btn-send">Send to LCD</button>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="lcd-presets-row">
+          <button class="lcd-preset-btn" data-l1="PROXIGUARD ARMED" data-l2="STATUS: ACTIVE">Preset: Armed</button>
+          <button class="lcd-preset-btn" data-l1="** INTRUDER! **" data-l2="BREACH DETECTED">Preset: Breach Alert</button>
+          <button class="lcd-preset-btn" data-l1="SEISMIC EVENT!" data-l2="SHOCK DETECTED">Preset: Seismic</button>
+          <button class="lcd-preset-btn" data-l1="STANDBY MODE" data-l2="SYSTEM SLEEPING">Preset: Standby</button>
+          <button class="lcd-preset-btn" data-l1="" data-l2="">Clear Screen</button>
+        </div>
+      </div>
+
+      <div class="hud-telemetry">
+        <div class="hud-readout">
+          <div id="lcdBacklightStatus" class="hud-num" style="font-size:32px;letter-spacing:1px;color:#34d399;">BACKLIGHT ON</div>
+          <div class="hud-unit">Hardware Address 0x27 &bull; PCF8574 Backpack Driver</div>
+        </div>
+        <div class="hud-badge-zone" style="background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.3);">I2C BUS 100 kHz</div>
       </div>
     </div>
 
@@ -1734,18 +1982,33 @@ footer.footer-note {
       <span class="hw-sub">Arduino USB Rail</span>
     </div>
     <div class="hw-chip">
-      <span class="hw-label">Pin 9 (TRIG)</span>
-      <span class="hw-val"><span class="micro-dot pulse"></span> 10 µs Pulse</span>
-      <span class="hw-sub">Active Ultrasonic Burst</span>
+      <span class="hw-label">Sonar (D9/D10)</span>
+      <span class="hw-val"><span class="micro-dot pulse"></span> 10 µs Burst</span>
+      <span class="hw-sub">HC-SR04 Transducer</span>
     </div>
     <div class="hw-chip echo">
-      <span class="hw-label">Pin 10 (ECHO)</span>
-      <span class="hw-val"><span class="micro-dot" style="background:#818cf8;"></span> Timing Read</span>
-      <span class="hw-sub">Pulse-Width Receiver</span>
+      <span class="hw-label">IR Guard (D2)</span>
+      <span class="hw-val" id="stripIrVal"><span class="micro-dot" style="background:#10b981;"></span> ARMED</span>
+      <span class="hw-sub">HW-201 940nm Beam</span>
+    </div>
+    <div class="hw-chip" style="border-color:rgba(251,191,36,0.25);">
+      <span class="hw-label">Seismic (D3)</span>
+      <span class="hw-val" id="stripVibVal"><span class="micro-dot" style="background:#fbbf24;"></span> CALM</span>
+      <span class="hw-sub">SW-420 Shock Guard</span>
+    </div>
+    <div class="hw-chip" style="border-color:rgba(52,211,153,0.25);">
+      <span class="hw-label">Sentinel LED (D8)</span>
+      <span class="hw-val" id="stripLedVal"><span class="micro-dot" style="background:#64748b;"></span> OFF</span>
+      <span class="hw-sub">220Ω Current Limit</span>
+    </div>
+    <div class="hw-chip" style="border-color:rgba(168,85,247,0.25);">
+      <span class="hw-label">I2C LCD (A4/A5)</span>
+      <span class="hw-val"><span class="micro-dot" style="background:#a855f7;"></span> 0x27 BUS</span>
+      <span class="hw-sub">16x2 Character Array</span>
     </div>
     <div class="hw-chip wifi">
-      <span class="hw-label">ESP-01 (UART)</span>
-      <span class="hw-val"><span class="micro-dot" style="background:#f59e0b;"></span> 3.3V Link</span>
+      <span class="hw-label">ESP-01 Link</span>
+      <span class="hw-val"><span class="micro-dot" style="background:#f59e0b;"></span> 3.3V UART</span>
       <span class="hw-sub">D11(RX) / D12(TX)</span>
     </div>
   </section>
@@ -1843,11 +2106,7 @@ footer.footer-note {
 
     <!-- Hardware Twin View Mode Tabs -->
     <div class="board-view-tabs">
-      <button class="board-tab-btn active" data-board-tab="pane3dBoard">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-        <span>3D Digital Twin</span>
-      </button>
-      <button class="board-tab-btn" data-board-tab="pane2dSvg">
+      <button class="board-tab-btn active" data-board-tab="pane2dSvg">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
         <span>2D Pinout Inspector</span>
       </button>
@@ -1857,61 +2116,8 @@ footer.footer-note {
       </button>
     </div>
 
-    <!-- PANE 1: AUTHENTIC 3D ARDUINO UNO HARDWARE TWIN (GLTF 2.0 WEBGL) -->
-    <div id="pane3dBoard" class="board-view-pane active-view">
-      <div class="b3d-stage">
-        <!-- Modern Cyber Glass Toolbar -->
-        <div class="b3d-toolbar">
-          <div class="b3d-group">
-            <button class="b3d-btn active" data-b3d-view="iso">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-              <span>Isometric 3D</span>
-            </button>
-            <button class="b3d-btn" data-b3d-view="top">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-              <span>Top PCB</span>
-            </button>
-            <button class="b3d-btn" data-b3d-view="front">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-              <span>Front Ports</span>
-            </button>
-          </div>
-
-          <div class="b3d-group">
-            <button id="btnB3dOrbit" class="b3d-btn active" title="Toggle 360 Auto-Orbit Rotation">
-              <span class="dot-indicator" id="orbitDot"></span>
-              <span id="orbitLabel">Auto-Orbit: ON</span>
-            </button>
-            <button id="btnB3dReset" class="b3d-btn" title="Reset Camera Perspective">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-              <span>Reset</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 3D Canvas Viewport -->
-        <div class="b3d-canvas-container" id="board3dCanvasContainer"></div>
-
-        <!-- Sleek Loading Spinner Overlay -->
-        <div id="board3dLoader" class="b3d-loader-overlay">
-          <div class="b3d-spinner"></div>
-          <div class="b3d-loader-title">Loading 3D Hardware Digital Twin...</div>
-          <div class="b3d-loader-sub" id="board3dProgress">2.1 MB Compressed GLTF &bull; Real-Time WebGL</div>
-        </div>
-
-        <!-- Footer Telemetry -->
-        <div class="b3d-footer">
-          <span class="b3d-badge">
-            <span class="badge-dot"></span>
-            GLTF 2.0 &bull; 60 FPS WebGL Engine
-          </span>
-          <span class="b3d-hint">Drag to Rotate 360&deg; &bull; Pinch/Scroll to Zoom &bull; Touch &amp; Inspect</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANE 2: AUTHENTIC 2D ARDUINO UNO R3 SMD DIGITAL TWIN (OFFICIAL CAD LAYOUT A000073) -->
-    <div id="pane2dSvg" class="board-view-pane" style="display:none;">
+    <!-- PANE 1: AUTHENTIC 2D ARDUINO UNO R3 SMD DIGITAL TWIN (OFFICIAL CAD LAYOUT A000073) -->
+    <div id="pane2dSvg" class="board-view-pane active-view" style="display:block;">
       <div class="modal-smd-stage" id="smdStageContainer">
       <div id="smdSvgWrapper" class="smd-svg-wrapper">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 686 533" width="100%" height="100%" class="uno-smd-svg">
@@ -3070,9 +3276,14 @@ function processTelemetry(data) {
     dot.className = "status-dot active";
     label.textContent = data.source ? data.source.replace("10.13.44.103", "").trim() : "Live Stream";
     $("sourceTag").textContent = data.source || "Active Link";
+  } else if (state.simulating) {
+    dot.className = "status-dot active";
+    label.textContent = "Simulation Mode";
+    $("sourceTag").textContent = "Virtual Telemetry (Sim)";
   } else {
     dot.className = "status-dot";
     label.textContent = "Offline";
+    $("sourceTag").textContent = "Awaiting Hardware";
   }
 
   state.packetCount++;
@@ -3161,12 +3372,102 @@ function processTelemetry(data) {
     state.history.push(d);
     if (state.history.length > 60) state.history.shift();
 
+    // Mirror distance to virtual 16x2 LCD display
+    if (modules.lcd && $("lcdLine2")) {
+      const dStr = `${formatDist(d)}${state.unit}`;
+      const statusPill = d < 18 ? "[DANGER]" : (d < state.threshold ? "[WARN]" : "[OK]");
+      $("lcdLine2").textContent = `DIST: ${dStr.padEnd(6)} ${statusPill}`;
+    }
+
   } else {
     state.rawDistance = null;
     $("distanceNumber").textContent = "--";
     const badge = $("zoneBadge");
     badge.textContent = data.error === "NO_ECHO" ? "OUT OF RANGE" : "AWAITING ECHO";
     badge.style.color = "var(--text-tertiary)";
+  }
+
+  // --- HW-201 Optical IR Tripwire State Processing ---
+  if (data.ir_triggered !== undefined) {
+    const isBreach = !!data.ir_triggered;
+    const beam = $("irLaserBeam");
+    const statusText = $("irStatusText");
+    const countBadge = $("irEventCountBadge");
+    const stripIr = $("stripIrVal");
+
+    if (beam) beam.classList.toggle("broken", isBreach);
+    if (statusText) {
+      statusText.textContent = isBreach ? "BREACH DETECTED" : "SECURE";
+      statusText.style.color = isBreach ? "#f43f5e" : "#10b981";
+    }
+    if (isBreach) {
+      modules.irBreachCount++;
+      if (countBadge) countBadge.textContent = `${modules.irBreachCount} BREACH${modules.irBreachCount > 1 ? 'ES' : ''}`;
+      if (stripIr) stripIr.innerHTML = '<span class="micro-dot" style="background:#f43f5e;"></span> TRIP!';
+      logEvent("HW-201 Optical IR: Tripwire Beam Broken!", "danger");
+      if (state.acoustic) playDramaticPulse(12);
+    } else if (stripIr) {
+      stripIr.innerHTML = '<span class="micro-dot" style="background:#10b981;"></span> ARMED';
+    }
+  }
+
+  // --- SW-420 Seismic Shock Processing ---
+  if (data.vib_triggered !== undefined) {
+    const isShock = !!data.vib_triggered;
+    const vibText = $("vibStatusText");
+    const vibBadge = $("vibBadge");
+    const stripVib = $("stripVibVal");
+
+    if (isShock) {
+      currentVibIntensity = 1.0;
+      if (vibText) {
+        vibText.textContent = "SHOCK DETECTED";
+        vibText.style.color = "#ef4444";
+      }
+      if (vibBadge) {
+        vibBadge.textContent = "SEISMIC ALERT";
+        vibBadge.style.color = "#ef4444";
+        vibBadge.style.borderColor = "rgba(239, 68, 68, 0.4)";
+      }
+      if (stripVib) stripVib.innerHTML = '<span class="micro-dot" style="background:#ef4444;"></span> SHOCK';
+      logEvent("SW-420 Seismic Guard: Shock / Vibration Alert!", "danger");
+      if (state.acoustic) playDramaticPulse(15);
+    } else {
+      if (vibText && currentVibIntensity < 0.15) {
+        vibText.textContent = "CALM";
+        vibText.style.color = "#10b981";
+      }
+      if (vibBadge && currentVibIntensity < 0.15) {
+        vibBadge.textContent = "MONITORING";
+        vibBadge.style.color = "#fbbf24";
+        vibBadge.style.borderColor = "rgba(251, 191, 36, 0.3)";
+      }
+      if (stripVib && currentVibIntensity < 0.15) {
+        stripVib.innerHTML = '<span class="micro-dot" style="background:#fbbf24;"></span> CALM';
+      }
+    }
+  }
+
+  // --- Sentinel LED State Processing ---
+  if (data.led_state !== undefined) {
+    const isOn = data.led_state === 1;
+    modules.led = isOn;
+    if ($("btnDeckLed")) $("btnDeckLed").classList.toggle("active", isOn);
+    if ($("deckLedBadge")) {
+      $("deckLedBadge").textContent = isOn ? "ON" : "OFF";
+      $("deckLedBadge").style.color = isOn ? "#34d399" : "#94a3b8";
+    }
+    if ($("stripLedVal")) {
+      $("stripLedVal").innerHTML = `<span class="micro-dot" style="background:${isOn ? '#34d399' : '#64748b'};"></span> ${isOn ? 'ON' : 'OFF'}`;
+    }
+  }
+
+  // --- Live LCD Text Processing ---
+  if (data.lcd_line1 !== undefined && $("lcdLine1")) {
+    $("lcdLine1").textContent = data.lcd_line1 || "PROXIGUARD SECURE";
+  }
+  if (data.lcd_line2 !== undefined && $("lcdLine2")) {
+    $("lcdLine2").textContent = data.lcd_line2 || "DIST: -- cm  [OK]";
   }
 }
 
@@ -3177,16 +3478,28 @@ function startWS() {
   window.wsInstance = ws;
 
   ws.onopen = () => {
-    logEvent("3D Spatial Telemetry connected", "normal");
+    logEvent("3D Spatial Telemetry gateway online", "normal");
   };
 
   ws.onmessage = e => {
-    try { processTelemetry(JSON.parse(e.data)); } catch (err) {}
+    try {
+      const data = JSON.parse(e.data);
+      if (data.connected && data.source && !data.source.includes("Simulation")) {
+        // Real hardware active: pause client simulation
+        if (state.simulating) {
+          stopSimulation();
+          logEvent(`Real hardware stream detected: ${data.source}`, "normal");
+        }
+      }
+      processTelemetry(data);
+    } catch (err) {}
   };
 
   ws.onclose = () => {
-    processTelemetry({ connected: false, distance: null });
-    setTimeout(startWS, 1500);
+    if (!state.simulating) {
+      processTelemetry({ connected: false, distance: null });
+    }
+    setTimeout(startWS, 2000);
   };
 
   ws.onerror = () => ws.close();
@@ -3656,10 +3969,6 @@ document.querySelectorAll("[data-board-tab]").forEach(tabBtn => {
 $("btnOpenBoardModal").onclick = () => {
   modal.classList.add("open");
   selectPin(selectedPinId);
-  setTimeout(() => {
-    initBoard3D();
-    onResizeBoard3D();
-  }, 80);
 };
 
 $("btnCloseModal").onclick = () => {
